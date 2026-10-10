@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, Variants } from 'motion/react';
 import Link from 'next/link';
 import { 
-  BookOpen, Heart, DollarSign, Briefcase, Scale,
-  Check
+  BookOpen, Heart, DollarSign, Briefcase, Scale
 } from 'lucide-react';
 import { useLifeStore } from '@/store/lifeStore';
 import { useReducedMotion } from '@/lib/hooks/useReducedMotion';
@@ -29,7 +28,6 @@ const challenges = [
 ];
 
 export default function OnboardingPage() {
-  const router = useRouter();
   const setProfileField = useLifeStore((state) => state.setProfileField);
   const prefersReduced = useReducedMotion();
   
@@ -37,7 +35,7 @@ export default function OnboardingPage() {
   const [direction, setDirection] = useState(1);
   
   const handlePrioritySelect = (id: string) => {
-    setProfileField('priority', id as any);
+    setProfileField('priority', id as 'study' | 'health' | 'money' | 'career' | 'balance');
     setDirection(1);
     setStep(2);
   };
@@ -70,10 +68,10 @@ export default function OnboardingPage() {
     })
   };
 
-  const transition: any = {
+  const transition = {
     x: { type: "spring", stiffness: 300, damping: 30 },
     opacity: { duration: 0.25 }
-  };
+  } as const;
 
   return (
     <main className="min-h-screen flex flex-col items-center pt-12 pb-24 px-4 sm:px-6">
@@ -170,7 +168,7 @@ export default function OnboardingPage() {
               className="flex flex-col items-center"
             >
               <h1 className="font-display text-[40px] sm:text-5xl text-ink mb-10 text-center">
-                What's your biggest challenge?
+                What&apos;s your biggest challenge?
               </h1>
               
               <div 

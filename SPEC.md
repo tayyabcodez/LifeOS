@@ -215,28 +215,25 @@ Every interactive component needs: default, hover, focus-visible, active/pressed
 ## 6. Screen specifications
 
 ### SCREEN 1 — Landing (`/`)
-**Purpose:** 5-second emotional hook + one clear action.
+**Purpose:** 5-second emotional hook + one clear action via a Scroll Story.
 
-**Layout (desktop, 1440×900):** full viewport, centred. Faint animated Life Orbit as background (6 small nodes on 3 thin rings, slow drift, low opacity ~40%), vignette to bg.
+**SCROLL STORY SECTIONS**
+0. **HERO (100vh):** headline "Your life, in one clear view.", subtext, "Enter LIFEOS" button (visible without scrolling), "Skip setup" link, a small "Scroll" hint with a gentle bounce. Orbit behind it, clearly visible (6 dimension-coloured nodes with icons, visible rings, centre YOU node, slow drift, mouse parallax on desktop).
+1. **SCATTERED:** heading "Your life is scattered." Six floating cards (Study notes, Sleep tracker, Bank balance, Gym log, Calendar, Goals notebook) in different positions and slight rotations, each tinted with its dimension colour. They fade/slide in as the section enters (staggered), then drift subtly.
+2. **ONE VIEW (pinned):** a section 300vh tall with a sticky 100vh stage. Heading "LIFEOS brings it into one view." Scroll progress (useScroll on the section) drives the six scattered cards to move, shrink, and morph into the six orbit nodes in their orbit positions, while rings draw in and the YOU node appears. This is the signature moment: make it smooth and clearly scroll-linked (use useTransform on x, y, scale, rotate, opacity; no per-frame React state).
+3. **CONNECTED (pinned, 300vh, can share the same sticky orbit):** three beats driven by scroll progress, each swapping the caption and highlighting links between related nodes: (a) "Sleep shapes your focus." (b) "Focus shapes your study." (c) "Everything feeds your goals." Captions crossfade.
+4. **WHAT IF (night):** a dark rounded panel (data-theme="night" scoped to this section only) scales up from a rounded card to fill the viewport as you scroll in (transform only). Inside: "What if…" in Instrument Serif, a typing animation of "I sleep 1 hour earlier", then the results appear one by one with count-up numbers: Sleep +14, Focus +9, Energy +11, Stress -8 (DeltaTag style, arrow + sign, not colour only). Add a small line "Estimates based on demo data."
+5. **MADE FOR EVERYONE:** three cards (Keyboard friendly, Reduced motion, List view for screen readers) revealed with stagger via whileInView (once: true).
+6. **FINAL CTA:** large headline "Understand. Simulate. Decide. Act." with the "Enter LIFEOS" button, then a minimal footer.
 
-**Content:**
-- Small wordmark top-left: `LIFEOS`.
-- H1 (Display): **"Your life, in one clear view."**
-- Sub (Body, `--ink-2`, max 48ch): "See how your study, sleep, health and money connect — then test a decision before you make it."
-- Primary button: **Enter LIFEOS** → `/onboarding`.
-- Secondary text link: "Skip setup, go straight to the demo" → `/app`.
-- Footer micro text: "Demo experience · No sign-up needed".
-
-**Animation (on load, ~1.6s):**
-1. Background fades in; orbit rings draw (stroke-dashoffset) sequentially.
-2. Nodes scale in with 80ms stagger.
-3. H1 reveals line by line (translateY 16px→0, opacity 0→1, 0.7s, stagger 120ms).
-4. Sub + buttons fade up.
-- Mouse move: orbit shifts ≤ 8px parallax (disabled on touch and reduced motion).
-
-**Mobile (390×844):** H1 at 40px, orbit smaller and centred behind text, buttons full width.
-
-**States:** reduced motion → everything appears with a simple 0.2s fade, no drift/parallax.
+**GENERAL RULES**
+- Sticky top bar with the LIFEOS wordmark and an "Enter LIFEOS" button that appears after the hero scrolls away.
+- Scroll reveals: opacity + translateY (24px to 0, 0.7s, ease.out), staggered, using whileInView with viewport={{ once: true, amount: 0.3 }}. Content below the fold must NOT be visible before it animates in.
+- Only animate transform and opacity. Use motion values (useTransform/useSpring), never setState on scroll.
+- Reduced motion (OS or in-app): no scroll-linked movement, no pinning. Show every section in its final static layout with a simple 0.2s fade. All content must remain in the DOM in logical order and be readable by screen readers.
+- Keep proper heading order (one h1 in the hero, h2 per section), visible focus rings, contrast >= 4.5:1.
+- Mobile (390x844): same story but simplified: smaller orbit, pinned sections shorter (200vh), cards stacked 2 columns, no mouse parallax.
+- Performance target: no dropped frames on a normal laptop; lazy mount heavy sections if needed.
 
 ---
 
