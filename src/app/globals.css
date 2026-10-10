@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+:root {
+  --paper:      #F6F3EC;  /* page background, warm off-white */
+  --surface:    #FFFFFF;  /* cards */
+  --surface-2:  #EFEBE2;  /* inset areas, hover */
+  --line:       rgba(21,23,28,0.10);
+  --ink:        #15171C;  /* primary text, primary buttons, YOU node */
+  --ink-2:      #5B606B;  /* secondary text (≥ 4.5:1 on paper and surface) */
+  --focus-ring: #15171C;  /* 3px ring + 2px paper offset */
+
+  /* Dimension colours — each has a FILL (large areas, nodes, charts) and a DEEP (text/icons on light) */
+  --study-fill:  #BFD0FF;  --study-deep:  #2A3FA8;  /* cobalt */
+  --focus-fill:  #FFD98A;  --focus-deep:  #8A5A00;  /* amber */
+  --health-fill: #B9E6B0;  --health-deep: #1F6B2E;  /* green */
+  --sleep-fill:  #CFC4F5;  --sleep-deep:  #4B3A9A;  /* dusk indigo */
+  --money-fill:  #A9E3DC;  --money-deep:  #0F6B63;  /* teal */
+  --goals-fill:  #FFC1B0;  --goals-deep:  #A33A20;  /* coral */
+
+  /* Meaning colours (always paired with an arrow/icon + sign) */
+  --up:   #1F6B2E;  /* improvement */
+  --down: #A33A20;  /* decline / trade-off */
+}
+
+[data-theme="night"] {
+  --paper:     #14161C;
+  --surface:   #1D2028;
+  --surface-2: #262A34;
+  --line:      rgba(246,243,236,0.12);
+  --ink:       #F6F3EC;
+  --ink-2:     #A9AEBA;
+  --focus-ring:#F6F3EC;
+  --up:        #B9E6B0;
+  --down:      #FFC1B0;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-focus-ring: var(--focus-ring);
+  
+  --color-study-fill: var(--study-fill);
+  --color-study-deep: var(--study-deep);
+  --color-focus-fill: var(--focus-fill);
+  --color-focus-deep: var(--focus-deep);
+  --color-health-fill: var(--health-fill);
+  --color-health-deep: var(--health-deep);
+  --color-sleep-fill: var(--sleep-fill);
+  --color-sleep-deep: var(--sleep-deep);
+  --color-money-fill: var(--money-fill);
+  --color-money-deep: var(--money-deep);
+  --color-goals-fill: var(--goals-fill);
+  --color-goals-deep: var(--goals-deep);
+
+  --color-up: var(--up);
+  --color-down: var(--down);
+
+  --font-display: var(--font-instrument-serif), serif;
+  --font-heading: var(--font-geist), sans-serif;
+  --font-body: var(--font-inter), sans-serif;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+/* Base interactive focus */
+*:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
