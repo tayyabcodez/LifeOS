@@ -28,7 +28,7 @@ export function AnimatedNumber({ value, className = '' }: AnimatedNumberProps) {
 
   if (prefersReduced) {
     return (
-      <span className={`tabular-nums ${className}`} aria-live="polite">
+      <span className={`font-heading tabular-nums ${className}`} aria-live="polite">
         {value}
       </span>
     );
@@ -38,7 +38,7 @@ export function AnimatedNumber({ value, className = '' }: AnimatedNumberProps) {
     <span className="relative inline-flex items-center">
       {/* Invisible screen reader element for polite announcement */}
       <span className="sr-only" aria-live={hasAnimated ? "polite" : "off"}>{value}</span>
-      <motion.span className={`tabular-nums ${className}`} aria-hidden="true">
+      <motion.span className={`font-heading tabular-nums ${className}`} aria-hidden="true">
         {display}
       </motion.span>
     </span>

@@ -54,7 +54,7 @@ export const useLifeStore = create<LifeState>((set) => ({
       const newSettings = { ...state.settings, [key]: value };
       try {
         localStorage.setItem('lifeos-settings', JSON.stringify(newSettings));
-      } catch (e) {
+      } catch {
         console.warn('Failed to save settings to localStorage');
       }
       return { settings: newSettings };

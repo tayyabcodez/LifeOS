@@ -48,7 +48,7 @@ export default function DevComponentsPage() {
           <Card className="p-6 space-y-4" hoverable>
             <h3 className="font-heading text-lg font-medium text-ink-2">Hoverable Card</h3>
             <div className="flex items-baseline gap-2">
-              <span className="font-display text-4xl"><AnimatedNumber value={84} /></span>
+              <span className="font-heading text-4xl"><AnimatedNumber value={84} /></span>
               <DeltaTag delta={14} unit="%" />
             </div>
             <ProgressBar value={84} colorVar="var(--color-focus-fill)" />
@@ -57,7 +57,7 @@ export default function DevComponentsPage() {
           <Card className="p-6 space-y-4">
             <h3 className="font-heading text-lg font-medium text-ink-2">Static Card</h3>
             <div className="flex items-baseline gap-2">
-              <span className="font-display text-4xl"><AnimatedNumber value={61} /></span>
+              <span className="font-heading text-4xl"><AnimatedNumber value={61} /></span>
               <DeltaTag delta={-4} unit="pts" />
             </div>
             <ProgressBar value={61} colorVar="var(--color-sleep-fill)" />
@@ -82,7 +82,7 @@ export default function DevComponentsPage() {
             <Card className="p-6 space-y-4">
               <h3 className="font-heading text-lg font-medium text-ink-2">Focus simulated</h3>
               <div className="flex items-baseline gap-2">
-                <span className="font-display text-4xl"><AnimatedNumber value={93} /></span>
+                <span className="font-heading text-4xl"><AnimatedNumber value={93} /></span>
                 <DeltaTag delta={9} unit="pts" />
               </div>
               <ProgressBar value={93} colorVar="var(--color-focus-fill)" />
