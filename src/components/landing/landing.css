@@ -37,7 +37,8 @@
   font-size: 17px;
   line-height: 1.55;
   font-weight: 400;
-  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
   position: relative;
   min-height: 100vh;
   box-sizing: border-box;
