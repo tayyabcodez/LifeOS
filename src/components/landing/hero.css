@@ -15,6 +15,7 @@
   --e: cubic-bezier(.22, 1, .36, 1);
   position: relative;
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -59,9 +60,9 @@
   margin: auto;
   display: grid;
   grid-template-columns: 1.05fr .95fr;
-  gap: 48px;
+  gap: clamp(24px, 3.5vw, 48px);
   align-items: center;
-  padding: 96px 0 72px;
+  padding: clamp(52px, 9vh, 96px) 0 clamp(22px, 5vh, 56px);
 }
 
 .lp .hero-v2 .pill {
@@ -85,15 +86,15 @@
 }
 
 .lp .hero-v2 h1 {
-  font: 400 clamp(48px, 6.4vw, 104px)/.98 var(--font-instrument-serif), Georgia, serif;
+  font: 400 clamp(40px, min(6.4vw, 10.6vh), 104px)/.98 var(--font-instrument-serif), Georgia, serif;
   letter-spacing: -.02em;
-  margin: 22px 0 24px;
+  margin: clamp(10px, 2.4vh, 22px) 0 clamp(10px, 2.4vh, 24px);
 }
 
 .lp .hero-v2 h1 .ml {
   display: block;
   overflow: hidden;
-  padding: .06em 0 .14em;
+  padding: .04em 0 .1em;
 }
 
 .lp .hero-v2 h1 .ml > span {
@@ -135,7 +136,7 @@
 .lp .hero-v2 .sub {
   color: var(--ink2);
   max-width: 46ch;
-  font-size: 19px;
+  font-size: clamp(15px, 2.3vh, 19px);
   font-family: var(--font-inter), sans-serif;
   animation: heroFade .9s var(--e) 1s backwards;
 }
@@ -144,7 +145,7 @@
   display: flex;
   gap: 22px;
   align-items: center;
-  margin: 32px 0 26px;
+  margin: clamp(14px, 3.4vh, 32px) 0 clamp(10px, 2.4vh, 26px);
   animation: heroFade .9s var(--e) 1.2s backwards;
 }
 
@@ -154,7 +155,7 @@
   align-items: center;
   background: var(--ink);
   color: var(--paper);
-  padding: 16px 28px;
+  padding: clamp(11px, 2vh, 16px) 26px;
   border-radius: 14px;
   text-decoration: none;
   font: 500 16px var(--font-inter), sans-serif;
@@ -223,7 +224,7 @@
 .lp .hero-v2 .dial {
   position: relative;
   width: 100%;
-  max-width: min(100%, clamp(420px, calc(100vh - 230px), 660px));
+  max-width: clamp(300px, calc(100svh - 245px), 640px);
   margin: 0 auto;
   aspect-ratio: 1;
   animation: heroRise 1.2s var(--e) .4s backwards;
@@ -297,7 +298,7 @@
   box-shadow: 0 12px 26px -12px rgba(21, 23, 28, .4);
   cursor: pointer;
   pointer-events: auto;
-  transition: box-shadow .3s, opacity .3s;
+  transition: box-shadow .3s, opacity .3s, color .3s, filter .3s;
   animation: heroPop .8s var(--e) backwards;
   animation-delay: calc(1s + var(--i) * .1s);
 }
@@ -335,9 +336,16 @@
 
 .lp .hero-v2 .pl.dim {
   opacity: .45;
+  color: rgba(21, 23, 28, .42);
+  filter: saturate(.5);
+}
+
+.lp .hero-v2 .pl.dim i {
+  opacity: .5;
 }
 
 .lp .hero-v2 .cue {
+  display: none;
   position: absolute;
   z-index: 3;
   bottom: 20px;
@@ -365,8 +373,8 @@
 .lp .hero-v2 .ins {
   position: relative;
   width: min(540px, 100%);
-  margin: 8px auto 0;
-  padding: 14px 18px;
+  margin: 4px auto 0;
+  padding: 12px 16px;
   border-radius: 20px;
   background: rgba(255, 255, 255, .8);
   backdrop-filter: blur(14px);
@@ -375,7 +383,7 @@
   box-shadow: 0 20px 40px -22px rgba(21, 23, 28, .45);
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 6px 16px;
+  gap: 4px 16px;
   align-items: center;
   animation: heroFade .9s var(--e) 1.6s backwards;
   transition: border-color .4s, box-shadow .4s;
@@ -440,9 +448,10 @@
 .lp .hero-v2 .ins p {
   grid-column: 1;
   margin: 0;
-  font-size: 14px;
+  font-size: 13.5px;
+  line-height: 1.45;
   color: var(--ink2);
-  min-height: 2.8em;
+  min-height: 2.5em;
   font-family: var(--font-inter), sans-serif;
 }
 

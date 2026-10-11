@@ -437,6 +437,9 @@ export function Hero() {
             <div className="pls" id="pls">
               {K.map((k, i) => {
                 const m = (-90 + i * 60 + 30) * (Math.PI / 180);
+                const r = 44 + 5.5 * Math.pow(Math.abs(Math.cos(m)), 3);
+                const left = 50 + r * Math.cos(m);
+                const top = 50 + r * Math.sin(m);
                 const score = B[i];
                 return (
                   <button
@@ -452,8 +455,8 @@ export function Hero() {
                     aria-label={`${N[i]}, ${score} out of 100`}
                     style={
                       {
-                        left: `${50 + 44 * Math.cos(m)}%`,
-                        top: `${50 + 44 * Math.sin(m)}%`,
+                        left: `${left}%`,
+                        top: `${top}%`,
                         '--c': `var(--${k}d)`,
                         '--i': i,
                       } as React.CSSProperties
