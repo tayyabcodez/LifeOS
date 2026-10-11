@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useReducedMotion as useMotionReducedMotion } from 'motion/react';
 import { useLifeStore } from '@/store/lifeStore';
@@ -32,13 +32,29 @@ const bal = (a: number[]) => {
   return Math.round(m - 0.05 * (m - Math.min(...a)));
 };
 
+// Deterministic pill position helper rounding to 2 decimals to eliminate float hydration mismatch
+const pos = (i: number) => {
+  const m = ((-90 + i * 60 + 30) * Math.PI) / 180;
+  const pr = 44 + 8 * Math.abs(Math.cos(m)) ** 3;
+  return {
+    left: `${(50 + pr * Math.cos(m)).toFixed(2)}%`,
+    top: `${(50 + pr * Math.sin(m)).toFixed(2)}%`,
+  };
+};
+
 export function Hero() {
+  const [mounted, setMounted] = useState(false);
   const dimensions = useLifeStore((s) => s.dimensions);
   const storeReducedMotion = useLifeStore((s) => s.settings.reducedMotion);
   const motionReduced = useMotionReducedMotion();
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const prefersReduced =
     storeReducedMotion === 'on' ? true : storeReducedMotion === 'off' ? false : !!motionReduced;
+  const isReduced = mounted && prefersReduced;
 
   // Scores pulled from store dynamically
   const B = [
@@ -330,7 +346,7 @@ export function Hero() {
   }, [dimensions, prefersReduced]);
 
   return (
-    <section className={`hx hero-v2 ${prefersReduced ? 'rm' : ''}`} id="hx" ref={sectionRef}>
+    <section className={`hx hero-v2 ${isReduced ? 'rm' : ''}`} id="hx" ref={sectionRef}>
       <span className="mark">LIFEOS</span>
 
       {/* Static soft gradient blobs in the background */}
@@ -355,15 +371,15 @@ export function Hero() {
           </span>
 
           <h1>
-            <span className="ml" style={{ '--i': 0 } as React.CSSProperties}>
+            <span className="ml" style={{ ['--i' as any]: '0' } as React.CSSProperties}>
               <span>Your life,</span>
             </span>
-            <span className="ml" style={{ '--i': 1 } as React.CSSProperties}>
+            <span className="ml" style={{ ['--i' as any]: '1' } as React.CSSProperties}>
               <span>
                 in <em>one</em>
               </span>
             </span>
-            <span className="ml" style={{ '--i': 2 } as React.CSSProperties}>
+            <span className="ml" style={{ ['--i' as any]: '2' } as React.CSSProperties}>
               <span>
                 <em className="hl">clear view.</em>
               </span>
@@ -436,10 +452,7 @@ export function Hero() {
             {/* Six pills around the dial */}
             <div className="pls" id="pls">
               {K.map((k, i) => {
-                const m = (-90 + i * 60 + 30) * (Math.PI / 180);
-                const r = 44 + 5.5 * Math.pow(Math.abs(Math.cos(m)), 3);
-                const left = 50 + r * Math.cos(m);
-                const top = 50 + r * Math.sin(m);
+                const p = pos(i);
                 const score = B[i];
                 return (
                   <button
@@ -455,10 +468,10 @@ export function Hero() {
                     aria-label={`${N[i]}, ${score} out of 100`}
                     style={
                       {
-                        left: `${left}%`,
-                        top: `${top}%`,
+                        left: p.left,
+                        top: p.top,
                         '--c': `var(--${k}d)`,
-                        '--i': i,
+                        ['--i' as any]: String(i),
                       } as React.CSSProperties
                     }
                   >
