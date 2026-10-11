@@ -588,59 +588,7 @@ export function initLanding(root: HTMLElement): () => void {
     }, 450);
   };
 
-  /* hero balance card */
-  const hx = $('#hx'), dash = $('#dash'), card = $('#c2'), ringS = $('#ring'), rn = $('#rn'), lg = $('#lg');
-  ringS.innerHTML = '';
-  const arcs = D.map((d, i) => mk('circle', { cx: 0, cy: 0, fill: 'none', style: `stroke:var(--${d[0].toLowerCase()});transition:opacity .25s` }, ringS));
-  
-  lg.innerHTML = '';
-  D.forEach((d, i) => {
-    const li = document.createElement('li'), k = d[0].toLowerCase();
-    li.innerHTML = `<i style="background:var(--${k}d)"></i>${d[0]}<span class="num">${SCORE[i]}</span>`;
-    lg.appendChild(li);
-    li.onmouseenter = () => setHv(i);
-    li.onmouseleave = () => setHv(-1);
-    arcs[i].onmouseenter = () => setHv(i);
-    arcs[i].onmouseleave = () => setHv(-1);
-  });
-  let hvi = -1;
-  function setHv(i: number) {
-    hvi = i;
-    arcs.forEach((a, j) => a.style.opacity = i < 0 || i === j ? 1 : .25);
-    [...lg.children].forEach((l: HTMLElement, j) => {
-      l.classList.toggle('on', i === j);
-      l.style.opacity = i < 0 || i === j ? 1 : .5;
-    });
-  }
-
-  let t0 = 0;
-  const onPointerMove = (e: PointerEvent) => {
-    hx.style.setProperty('--mx', e.clientX + 'px');
-    hx.style.setProperty('--my', (e.clientY + window.scrollY) + 'px');
-    const r = dash.getBoundingClientRect(), px = clamp((e.clientX - r.left) / r.width), py = clamp((e.clientY - r.top) / r.height);
-    if (!RM) {
-      card.style.transform = `rotateY(${(px - .5) * 12}deg) rotateX(${((.5 - py) * 10)}deg)`;
-      card.style.setProperty('--gx', px * 100 + '%');
-      card.style.setProperty('--gy', py * 100 + '%');
-    }
-  };
-
-  if (window.matchMedia('(pointer:fine)').matches && !RM) {
-    window.addEventListener('pointermove', onPointerMove);
-  }
-
-  function heroOrbit(t: number) {
-    if (!t0) t0 = t;
-    const pr = RM ? 1 : ease(clamp((t - t0 - 900) / 1500));
-    D.forEach((d, i) => {
-      const th = 12 + SCORE[i] * .3 * pr, r = 108 - th / 2, C = 2 * Math.PI * r, seg = (54 / 360) * C * pr, a = arcs[i];
-      a.setAttribute('r', r);
-      a.setAttribute('stroke-width', th);
-      a.setAttribute('stroke-dasharray', `${seg} ${C}`);
-      a.setAttribute('transform', `rotate(${-90 + i * 60 + 3})`);
-    });
-    rn.textContent = String(Math.round(74 * pr));
-  }
+  /* hero section is now handled by Hero.tsx */
 
   const prog = (el: HTMLElement) => {
     const r = el.getBoundingClientRect();
@@ -662,28 +610,11 @@ export function initLanding(root: HTMLElement): () => void {
       bar.classList.toggle('on', (y > window.innerHeight * .6 && y < lastY) || (y > window.innerHeight * .6 && y < window.innerHeight * 1.2));
       lastY = y;
     }
-    heroOrbit(t);
     rafFrame = requestAnimationFrame(frame);
   }
   rafFrame = requestAnimationFrame(frame);
 
-  /* ---- v4 additions ---- */
-  const pSub = $('#hsub');
-  const originalHsubText = pSub.getAttribute('data-orig') || pSub.textContent;
-  pSub.setAttribute('data-orig', originalHsubText);
-  pSub.setAttribute('aria-label', originalHsubText);
-  pSub.innerHTML = originalHsubText.split(' ').map((w: string, i: number) => `<span class="w" aria-hidden="true" style="--i:${i}">${w}</span> `).join('');
 
-  const goHero = () => {
-    if (cancelled) return;
-    hx.classList.add('in');
-    $('#hh1').classList.add('in');
-  };
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(() => setTimeout(goHero, 150));
-  } else {
-    goHero();
-  }
 
   const io = new IntersectionObserver(es => {
     es.forEach(e => {
@@ -910,9 +841,6 @@ export function initLanding(root: HTMLElement): () => void {
     clearTimeout(headTimeout);
 
     window.removeEventListener('scroll', onScroll);
-    if (window.matchMedia('(pointer:fine)').matches) {
-      window.removeEventListener('pointermove', onPointerMove);
-    }
     pointerMoveHandlers.forEach(({ el, fn }) => el.removeEventListener('pointermove', fn));
     btnMoveHandlers.forEach(({ el, move, leave }) => {
       el.removeEventListener('pointermove', move);

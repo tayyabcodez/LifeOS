@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import './landing.css';
 import { initLanding } from './engine';
+import { Hero } from './Hero';
 
 export function Landing() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -33,51 +34,7 @@ export function Landing() {
       </header>
 
       <div id="mainw">
-        <section className="hx" id="hx">
-          <div className="spot" id="spot" aria-hidden="true"></div>
-          <span className="mark">LIFEOS</span>
-          <div className="hx-in">
-            <div className="hx-l">
-              <span className="chip">For students · Demo experience</span>
-              <h1 className="mask hh1" id="hh1">
-                <span className="ml" style={{ '--i': 0 } as React.CSSProperties}><span>Your life,</span></span>
-                <span className="ml" style={{ '--i': 1 } as React.CSSProperties}><span>in <em>one</em></span></span>
-                <span className="ml" style={{ '--i': 2 } as React.CSSProperties}><span><em>clear view.</em></span></span>
-              </h1>
-              <p id="hsub">See how your study, sleep, health and money connect, then test a decision before you make it.</p>
-              <div className="cta">
-                <Link className="btn" href="/onboarding">
-                  <span className="rl">
-                    <span>Enter LIFEOS</span>
-                    <span aria-hidden="true">Enter LIFEOS</span>
-                  </span>
-                  <svg className="ar" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                </Link>
-                <Link className="skip" href="/app">Skip setup, open the demo</Link>
-              </div>
-            </div>
-            <div className="hx-r">
-              <div className="dash" id="dash">
-                <span className="fl f1"><i style={{ background: 'var(--goalsd)' }}></i>Exam in 3 days</span>
-                <div className="c2" id="c2">
-                  <div className="glare" id="glare"></div>
-                  <div className="ch"><b>Today · Alex</b><span className="dm">Demo data</span></div>
-                  <div className="rw">
-                    <svg id="ring" viewBox="-120 -120 240 240" aria-hidden="true"></svg>
-                    <div className="rc"><span className="num" id="rn">0</span><small>Life balance</small></div>
-                  </div>
-                  <p className="rh">Thicker arc = stronger area</p>
-                  <ul className="lg" id="lg"></ul>
-                  <div className="ins"><b>↓ Needs attention</b><span>Sleep is lowest, and it pulls your focus down. Test a change in What if?</span></div>
-                </div>
-                <span className="fl f2"><i style={{ background: 'var(--sleepd)' }}></i>Sleep 6h 42m ↓</span>
-              </div>
-            </div>
-          </div>
-          <span className="hint">Scroll to see how it works</span>
-        </section>
+        <Hero />
 
         <section className="pin" id="pin">
           <div className="stage" id="stage">
