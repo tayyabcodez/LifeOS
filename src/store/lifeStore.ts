@@ -5,6 +5,9 @@ interface Profile {
   name: string;
   priority: 'study' | 'health' | 'money' | 'career' | 'balance' | null;
   challenge: string | null;
+  selectedDimensions?: DimensionId[];
+  onboardingChallenge?: string | null;
+  onboardingCompleted?: boolean;
 }
 
 interface Settings {
@@ -34,6 +37,9 @@ export const useLifeStore = create<LifeState>((set) => ({
     name: 'Alex',
     priority: null,
     challenge: null,
+    selectedDimensions: [],
+    onboardingChallenge: null,
+    onboardingCompleted: false,
   },
   dimensions: demoDimensions,
   balance: demoBalance,
