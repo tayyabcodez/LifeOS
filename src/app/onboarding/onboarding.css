@@ -1,12 +1,7 @@
-/* Scoped Onboarding styles matching Hero visual language */
+/* Scoped Onboarding styles matching Hero visual design language */
 
 .ob {
   position: relative;
-  min-height: 100vh;
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  overflow-x: clip;
   width: 100%;
   background: var(--paper, #F6F3EC);
   color: var(--ink, #15171C);
@@ -34,12 +29,15 @@
   --e: cubic-bezier(.22, 1, .36, 1);
 }
 
-/* Counter landing global SVG position rule */
+/* Explicit SVG sizing constraint: nothing may exceed 24px except the dial SVG */
 .ob svg {
   position: static;
   inset: auto;
-  width: auto;
-  height: auto;
+}
+
+.ob svg:not(.ob-dial-svg) {
+  max-width: 24px;
+  max-height: 24px;
 }
 
 /* Background mesh blobs matching hero */
@@ -78,7 +76,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 0 12px;
+  padding: clamp(10px, 2vh, 18px) 0 4px;
+  flex-shrink: 0;
 }
 
 .ob-mark {
@@ -95,7 +94,7 @@
   font-weight: 500;
   color: var(--ink2);
   text-decoration: none;
-  padding: 8px 14px;
+  padding: 6px 14px;
   border-radius: 999px;
   transition: color .2s var(--e), background-color .2s var(--e);
   min-height: 44px;
@@ -108,18 +107,16 @@
   background: rgba(21, 23, 28, .05);
 }
 
-/* Two-column layout */
+/* Main Content Grid */
 .ob-content {
   position: relative;
   z-index: 2;
   width: min(1240px, 92vw);
-  margin: 0 auto;
-  flex: 1;
+  margin: auto;
   display: grid;
   grid-template-columns: 1.05fr .95fr;
-  gap: clamp(24px, 4vw, 56px);
+  gap: clamp(20px, 3.5vw, 48px);
   align-items: center;
-  padding: clamp(12px, 2vh, 28px) 0 clamp(32px, 5vh, 60px);
 }
 
 .ob-left-col {
@@ -127,11 +124,13 @@
   max-width: 580px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .ob-right-col {
   width: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -140,18 +139,18 @@
 .ob-step-pill {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, .75);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 999px;
-  padding: 6px 14px;
-  font-size: 13px;
+  padding: 5px 12px;
+  font-size: 12.5px;
   font-weight: 500;
   color: var(--ink2);
   width: fit-content;
-  margin-bottom: clamp(12px, 2vh, 20px);
+  margin-bottom: clamp(6px, 1.4vh, 12px);
 }
 
 .ob-progress-segments {
@@ -161,8 +160,8 @@
 }
 
 .ob-segment {
-  width: 16px;
-  height: 3.5px;
+  width: 14px;
+  height: 3px;
   border-radius: 999px;
   background: rgba(21, 23, 28, .15);
   transition: background-color .3s var(--e);
@@ -176,13 +175,13 @@
 .ob-h1 {
   font-family: var(--font-instrument-serif), Georgia, serif;
   font-weight: 400;
-  font-size: clamp(44px, 5.2vw, 72px);
-  line-height: 1.02;
+  font-size: clamp(34px, 4.4vh, 58px);
+  line-height: 1.0;
   letter-spacing: -.02em;
   color: var(--ink);
   text-wrap: balance;
   max-width: 650px;
-  margin: 0 0 clamp(8px, 1.6vh, 16px);
+  margin: 0 0 clamp(4px, 1vh, 8px);
 }
 
 .ob-h1 em {
@@ -200,11 +199,14 @@
 }
 
 .ob-subtitle {
-  font-size: clamp(15px, 2vh, 18px);
-  line-height: 1.5;
+  font-size: clamp(14px, 1.6vh, 16px);
+  line-height: 1.35;
   color: var(--ink2);
-  margin: 0 0 clamp(18px, 3vh, 28px);
-  max-width: 46ch;
+  margin: 0 0 clamp(10px, 1.8vh, 16px);
+  max-width: 48ch;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Numbers */
@@ -214,145 +216,192 @@
   font-weight: 600;
 }
 
-/* Step 1 Pill Cards */
+/* Step 1 Cards: 2 cols x 3 rows, exactly 64px tall */
 .ob-step1-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 9px;
   width: 100%;
-  margin-bottom: 24px;
+  margin-bottom: clamp(10px, 1.8vh, 16px);
 }
 
 .ob-card-pill {
+  all: unset;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  background: rgba(255, 255, 255, .82);
+  gap: 12px;
+  height: 64px;
+  min-height: 64px;
+  max-height: 64px;
+  padding: 0 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .72);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 13px 16px;
-  min-height: 52px;
+  border: 1px solid rgba(0, 0, 0, .06);
+  box-shadow: 0 4px 16px -4px rgba(21, 23, 28, .05);
   cursor: pointer;
-  transition: border-color .2s var(--e), box-shadow .2s var(--e), background-color .2s var(--e);
   color: var(--ink);
-  text-align: left;
   width: 100%;
+  transition: transform .2s var(--e), box-shadow .2s var(--e), border-color .2s var(--e), background-color .2s var(--e);
 }
 
-.ob-card-pill:hover {
-  background: rgba(255, 255, 255, .96);
-  border-color: rgba(21, 23, 28, .22);
+.ob-card-pill:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, .9);
+  border-color: rgba(0, 0, 0, .1);
 }
 
 .ob-card-pill.is-selected {
   background: #ffffff;
-  border-color: var(--dim-color);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--dim-color) 45%, transparent), 0 10px 24px -10px rgba(21, 23, 28, .2);
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--card-c), 0 8px 24px -8px rgba(21, 23, 28, .15);
+  transform: translateY(-1px);
 }
 
-.ob-card-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.ob-dim-dot {
-  width: 9px;
-  height: 9px;
+/* 36px icon tile tinted with dimension color at ~18% opacity */
+.ob-icon-tile {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
   border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.ob-dim-name {
-  font-weight: 500;
-  font-size: 15px;
-  color: var(--ink);
-}
-
-.ob-dim-key {
-  font-size: 11px;
-  color: var(--ink2);
-  opacity: .7;
-  font-family: var(--font-geist), sans-serif;
-  margin-left: 4px;
-}
-
-.ob-check-wrap {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 1px solid var(--line);
   display: flex;
   align-items: center;
   justify-content: center;
+  background: color-mix(in srgb, var(--card-c) 18%, transparent);
+  color: var(--card-cd);
   flex-shrink: 0;
-  background: rgba(255, 255, 255, .6);
-  transition: all .2s var(--e);
 }
 
-.ob-card-pill.is-selected .ob-check-wrap {
-  background: var(--dim-colord, var(--ink));
-  border-color: var(--dim-colord, var(--ink));
+.ob-card-label {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.ob-card-key {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink2);
+  opacity: .7;
+  font-family: var(--font-geist), sans-serif;
+  letter-spacing: .02em;
+}
+
+/* 20px check circle */
+.ob-check-circle {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid rgba(0, 0, 0, .12);
+  background: rgba(255, 255, 255, .4);
+  transition: all .2s var(--e);
+  flex-shrink: 0;
+}
+
+.ob-card-pill.is-selected .ob-check-circle {
+  background: var(--card-cd);
+  border-color: var(--card-cd);
   color: #ffffff;
 }
 
-/* Step 2 Challenge Cards */
+/* Step 2 Challenge Cards: 56-60px tall */
 .ob-step2-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 7px;
   width: 100%;
-  margin-bottom: 24px;
+  margin-bottom: clamp(10px, 1.8vh, 16px);
 }
 
 .ob-card-challenge {
+  all: unset;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
-  background: rgba(255, 255, 255, .82);
+  height: 58px;
+  min-height: 58px;
+  max-height: 58px;
+  padding: 0 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .72);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 13px 18px;
-  min-height: 58px;
+  border: 1px solid rgba(0, 0, 0, .06);
+  box-shadow: 0 4px 16px -4px rgba(21, 23, 28, .05);
   cursor: pointer;
-  transition: border-color .2s var(--e), box-shadow .2s var(--e), background-color .2s var(--e);
   color: var(--ink);
-  text-align: left;
   width: 100%;
+  transition: transform .2s var(--e), box-shadow .2s var(--e), border-color .2s var(--e), background-color .2s var(--e);
 }
 
 .ob-card-challenge:hover {
-  background: rgba(255, 255, 255, .96);
-  border-color: rgba(21, 23, 28, .22);
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, .9);
+  border-color: rgba(0, 0, 0, .1);
 }
 
 .ob-card-challenge.is-selected {
   background: #ffffff;
-  border-color: var(--ink);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 25%, transparent), 0 12px 28px -12px rgba(21, 23, 28, .2);
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--card-c, var(--ink)), 0 8px 24px -8px rgba(21, 23, 28, .15);
+  transform: translateY(-1px);
 }
 
 .ob-ch-text {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
+  min-width: 0;
 }
 
 .ob-ch-title {
-  font-weight: 500;
-  font-size: 15px;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.15;
   color: var(--ink);
 }
 
 .ob-ch-helper {
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--ink2);
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.ob-radio-circle {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid rgba(0, 0, 0, .15);
+  background: rgba(255, 255, 255, .5);
+  transition: all .2s var(--e);
+  flex-shrink: 0;
+}
+
+.ob-card-challenge.is-selected .ob-radio-circle {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.ob-radio-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffffff;
 }
 
 /* Step 3 Glass Summary Card */
@@ -362,18 +411,18 @@
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--line);
   border-radius: 20px;
-  padding: clamp(18px, 3vh, 24px);
-  box-shadow: 0 1px 2px rgba(21, 23, 28, .05), 0 20px 40px -20px rgba(21, 23, 28, .25);
-  margin-bottom: clamp(16px, 2.5vh, 28px);
+  padding: clamp(16px, 2.4vh, 22px);
+  box-shadow: 0 1px 2px rgba(21, 23, 28, .05), 0 20px 40px -20px rgba(21, 23, 28, .2);
+  margin-bottom: clamp(14px, 2vh, 22px);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .ob-summary-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -381,9 +430,9 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--sleepd);
   background: rgba(207, 196, 245, .45);
@@ -399,12 +448,13 @@
   font-weight: 600;
 }
 
-/* Action buttons */
+/* Action Buttons */
 .ob-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
+  margin-top: clamp(6px, 1.4vh, 12px);
 }
 
 .ob-btn-primary {
@@ -414,11 +464,11 @@
   gap: 10px;
   background: var(--ink);
   color: var(--paper);
-  padding: 13px 28px;
+  padding: 12px 26px;
   border-radius: 14px;
   font-family: var(--font-inter), sans-serif;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 15.5px;
   line-height: 1.2;
   text-decoration: none;
   position: relative;
@@ -477,9 +527,9 @@
   color: var(--ink2);
   font-family: var(--font-inter), sans-serif;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14.5px;
   cursor: pointer;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-radius: 12px;
   text-decoration: none;
   min-height: 44px;
@@ -495,7 +545,7 @@
 .ob-dial-wrap {
   position: relative;
   width: 100%;
-  max-width: clamp(280px, calc(100svh - 260px), 520px);
+  max-width: clamp(260px, calc(100dvh - 190px), 430px);
   margin: 0 auto;
   aspect-ratio: 1;
 }
@@ -506,6 +556,10 @@
   width: 100% !important;
   height: 100% !important;
   overflow: visible;
+}
+
+.ob-dial-arcs {
+  filter: drop-shadow(0 12px 14px rgba(21, 23, 28, .18));
 }
 
 .ob-dial-center {
@@ -520,20 +574,21 @@
 
 .ob-dial-score {
   display: block;
-  font-size: clamp(38px, 4.8vw, 64px);
+  font-size: clamp(38px, 4.8vh, 62px);
   line-height: 1;
   color: var(--ink);
 }
 
 .ob-dial-label {
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--ink2);
   display: block;
-  margin-top: 3px;
+  margin-top: 2px;
   font-weight: 500;
+  white-space: nowrap;
 }
 
-/* Orbiting pills */
+/* Orbiting pills matching hero .hx-pl */
 .ob-dial-pills {
   position: absolute;
   inset: 0;
@@ -572,24 +627,34 @@
 }
 
 .ob-dial-pill.is-active {
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--pill-color) 40%, transparent), 0 12px 26px -12px rgba(21, 23, 28, .4);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--pill-color) 40%, transparent), 0 12px 26px -12px rgba(21, 23, 28, .4);
+  opacity: 1;
 }
 
 .ob-dial-pill.is-dimmed {
-  opacity: .35;
-  filter: saturate(.5);
+  opacity: .7;
 }
 
-/* Arc pulse animation */
-@keyframes ob-arc-pulse {
-  0% { transform: scale(1); opacity: .9; }
-  50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 8px currentColor); }
-  100% { transform: scale(1); opacity: .9; }
+/* Glass chip under dial (Step 1) */
+.ob-dial-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px auto 0;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  box-shadow: 0 8px 20px -8px rgba(21, 23, 28, .15);
 }
 
-.ob-arc-pulsing {
-  animation: ob-arc-pulse .6s var(--e);
-  transform-origin: 0 0;
+.ob-dial-chip-sep {
+  opacity: .4;
 }
 
 /* Focus styles */
@@ -598,34 +663,50 @@
   outline-offset: 3px;
 }
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .ob *, .ob *::before, .ob *::after {
-    animation-duration: 0.01ms !important;
-    animation-delay: 0s !important;
-    transition-duration: 0.01ms !important;
+/* Desktop 100dvh No-Scroll constraint at 1349x600 and 1366x768 */
+@media (min-width: 1024px) {
+  .ob {
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ob-content {
+    flex: 1;
+    min-height: 0;
+    max-height: calc(100dvh - 54px);
+    overflow: hidden;
+    padding: 0;
   }
 }
 
 /* Mobile responsive (390x844 and below 1024px) */
 @media (max-width: 1023px) {
+  .ob {
+    min-height: 100dvh;
+    overflow-y: auto;
+  }
+
   .ob-content {
     grid-template-columns: 1fr;
-    gap: 20px;
-    padding-top: 8px;
+    gap: 16px;
+    padding: 8px 0 24px;
   }
 
   .ob-right-col {
     order: -1;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
 
   .ob-dial-wrap {
-    max-width: 240px;
+    max-width: 230px;
   }
 
   .ob-dial-score {
-    font-size: 34px;
+    font-size: 32px;
   }
 
   .ob-dial-label {
@@ -638,12 +719,20 @@
   }
 
   .ob-h1 {
-    font-size: clamp(34px, 8.5vw, 44px);
+    font-size: clamp(30px, 8vw, 40px);
   }
 
   .ob-actions {
-    flex-direction: column;
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    background: rgba(246, 243, 236, .94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 12px 0 16px;
     width: 100%;
+    flex-direction: column;
+    margin-top: 14px;
   }
 
   .ob-btn-primary {
@@ -657,5 +746,14 @@
 
   .ob-step1-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ob *, .ob *::before, .ob *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
   }
 }

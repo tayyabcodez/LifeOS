@@ -14,6 +14,15 @@ import { StepOne } from './components/StepOne';
 import { StepTwo, CHALLENGE_OPTIONS, ChallengeOption } from './components/StepTwo';
 import { StepThree } from './components/StepThree';
 
+const DIMENSION_DATA: Record<DimensionId, { name: string; score: number; colorDVar: string }> = {
+  study: { name: 'Study', score: 82, colorDVar: 'var(--studyd)' },
+  focus: { name: 'Focus', score: 84, colorDVar: 'var(--focusd)' },
+  health: { name: 'Health', score: 68, colorDVar: 'var(--healthd)' },
+  sleep: { name: 'Sleep', score: 61, colorDVar: 'var(--sleepd)' },
+  money: { name: 'Money', score: 74, colorDVar: 'var(--moneyd)' },
+  goals: { name: 'Goals', score: 79, colorDVar: 'var(--goalsd)' },
+};
+
 export default function OnboardingPage() {
   const router = useRouter();
   const setProfileField = useLifeStore((state) => state.setProfileField);
@@ -28,28 +37,26 @@ export default function OnboardingPage() {
   const [direction, setDirection] = useState(1);
 
   // User selections
-  const [selectedDimensions, setSelectedDimensions] = useState<DimensionId[]>(['study', 'sleep']);
+  const [selectedDimensions, setSelectedDimensions] = useState<DimensionId[]>([]);
   const [selectedChallenge, setSelectedChallenge] = useState<string | null>(null);
-  const [challengeTargetDim, setChallengeTargetDim] = useState<DimensionId | null>(null);
+  const [activeChallengeDims, setActiveChallengeDims] = useState<DimensionId[]>([]);
+  const [challengeLowestScore, setChallengeLowestScore] = useState<number | null>(null);
   const [pulseTrigger, setPulseTrigger] = useState(0);
 
   // Announce step change to screen readers
   const [announcement, setAnnouncement] = useState('Step 1 of 3: What matters most right now?');
 
-  const updateStep = useCallback(
-    (newStep: number, dir: number) => {
-      setDirection(dir);
-      setStep(newStep);
-      if (newStep === 1) {
-        setAnnouncement('Step 1 of 3: What matters most right now?');
-      } else if (newStep === 2) {
-        setAnnouncement("Step 2 of 3: What's your biggest challenge?");
-      } else if (newStep === 3) {
-        setAnnouncement('Step 3 of 3: Your view is ready.');
-      }
-    },
-    []
-  );
+  const updateStep = useCallback((newStep: number, dir: number) => {
+    setDirection(dir);
+    setStep(newStep);
+    if (newStep === 1) {
+      setAnnouncement('Step 1 of 3: What matters most right now?');
+    } else if (newStep === 2) {
+      setAnnouncement("Step 2 of 3: What's your biggest challenge?");
+    } else if (newStep === 3) {
+      setAnnouncement('Step 3 of 3: Your view is ready.');
+    }
+  }, []);
 
   const toggleDimension = useCallback((id: DimensionId) => {
     setSelectedDimensions((prev) => {
@@ -65,7 +72,8 @@ export default function OnboardingPage() {
 
   const handleChallengeSelect = useCallback((opt: ChallengeOption) => {
     setSelectedChallenge(opt.title);
-    setChallengeTargetDim(opt.targetDimension);
+    setActiveChallengeDims(opt.targetDimensions);
+    setChallengeLowestScore(opt.lowestScore);
     setPulseTrigger((prev) => prev + 1);
   }, []);
 
@@ -104,7 +112,7 @@ export default function OnboardingPage() {
       }
 
       if (e.key === 'Enter') {
-        if (step === 1 && selectedDimensions.length > 0) {
+        if (step === 1) {
           e.preventDefault();
           updateStep(2, 1);
         } else if (step === 2 && selectedChallenge) {
@@ -137,7 +145,7 @@ export default function OnboardingPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [step, selectedDimensions, selectedChallenge, updateStep, toggleDimension, handleChallengeSelect, handleFinish, handleSkip]);
+  }, [step, selectedChallenge, updateStep, toggleDimension, handleChallengeSelect, handleFinish, handleSkip]);
 
   // Mouse spotlight tracking matching hero
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
@@ -150,7 +158,7 @@ export default function OnboardingPage() {
 
   const slideVariants = {
     enter: (dir: number) => ({
-      x: isReducedMotion ? 0 : dir > 0 ? 28 : -28,
+      x: isReducedMotion ? 0 : dir > 0 ? 24 : -24,
       opacity: 0,
     }),
     center: {
@@ -158,9 +166,35 @@ export default function OnboardingPage() {
       opacity: 1,
     },
     exit: (dir: number) => ({
-      x: isReducedMotion ? 0 : dir > 0 ? -28 : 28,
+      x: isReducedMotion ? 0 : dir > 0 ? -24 : 24,
       opacity: 0,
     }),
+  };
+
+  // Determine lowest chosen area for Step 3
+  const candidateIds: DimensionId[] =
+    selectedDimensions.length > 0
+      ? selectedDimensions
+      : activeChallengeDims.length > 0
+      ? activeChallengeDims
+      : ['sleep'];
+
+  let lowestId: DimensionId = candidateIds[0] || 'sleep';
+  let minScore = DIMENSION_DATA[lowestId]?.score ?? 100;
+
+  for (const id of candidateIds) {
+    const score = DIMENSION_DATA[id]?.score ?? 100;
+    if (score < minScore) {
+      minScore = score;
+      lowestId = id;
+    }
+  }
+
+  const lowestAreaInfo = {
+    id: lowestId,
+    name: DIMENSION_DATA[lowestId]?.name || 'Sleep',
+    score: minScore,
+    colorDVar: DIMENSION_DATA[lowestId]?.colorDVar || 'var(--sleepd)',
   };
 
   return (
@@ -227,7 +261,7 @@ export default function OnboardingPage() {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                transition={{ duration: isReducedMotion ? 0.05 : 0.28, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: isReducedMotion ? 0.05 : 0.25, ease: [0.22, 1, 0.36, 1] }}
                 className="w-full flex flex-col"
               >
                 <h1 className="ob-h1" id="ob-title">
@@ -247,12 +281,13 @@ export default function OnboardingPage() {
                   <button
                     type="button"
                     id="ob-btn-continue"
-                    disabled={selectedDimensions.length === 0}
                     onClick={() => updateStep(2, 1)}
                     className="ob-btn-primary"
                   >
                     <span>Continue</span>
                     <svg
+                      width={18}
+                      height={18}
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -276,7 +311,7 @@ export default function OnboardingPage() {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                transition={{ duration: isReducedMotion ? 0.05 : 0.28, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: isReducedMotion ? 0.05 : 0.25, ease: [0.22, 1, 0.36, 1] }}
                 className="w-full flex flex-col"
               >
                 <h1 className="ob-h1" id="ob-title">
@@ -302,6 +337,8 @@ export default function OnboardingPage() {
                   >
                     <span>Continue</span>
                     <svg
+                      width={18}
+                      height={18}
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -334,7 +371,7 @@ export default function OnboardingPage() {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                transition={{ duration: isReducedMotion ? 0.05 : 0.28, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: isReducedMotion ? 0.05 : 0.25, ease: [0.22, 1, 0.36, 1] }}
                 className="w-full flex flex-col"
               >
                 <h1 className="ob-h1 ob-h1-step3" id="ob-title">
@@ -345,6 +382,7 @@ export default function OnboardingPage() {
                 </p>
 
                 <StepThree
+                  lowestArea={lowestAreaInfo}
                   onComplete={handleFinish}
                   onSkipDemo={handleSkip}
                   reducedMotion={isReducedMotion}
@@ -363,7 +401,9 @@ export default function OnboardingPage() {
           <OrbitPreview
             step={step}
             selectedDimensions={selectedDimensions}
-            challengeTarget={challengeTargetDim}
+            activeChallengeDimensions={activeChallengeDims}
+            centerScoreOverride={challengeLowestScore}
+            centerLabelOverride={selectedChallenge ? 'Start here' : null}
             pulseTrigger={pulseTrigger}
             reducedMotion={isReducedMotion}
           />
