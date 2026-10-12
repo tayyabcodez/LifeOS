@@ -2,38 +2,24 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import { DimensionId } from '@/data/demo-data';
-
-interface LowestAreaInfo {
-  id: DimensionId;
-  name: string;
-  score: number;
-  colorDVar: string;
-}
+import { demoDimensions, DimensionId } from '@/data/demo-data';
 
 interface StepThreeProps {
-  lowestArea: LowestAreaInfo;
   onComplete: () => void;
   onSkipDemo: () => void;
   reducedMotion?: boolean;
 }
 
-const STARTER_ACTIONS: Record<DimensionId, { action: string; gain: string }> = {
-  sleep: { action: 'Be in bed by 11:00 pm', gain: '+12 est.' },
-  health: { action: 'Walk 30 minutes today', gain: '+12 est.' },
-  money: { action: 'Skip one delivery order this week', gain: '+5 est.' },
-  goals: { action: 'Review your goals on Sunday', gain: '+6 est.' },
-  study: { action: 'Block 2 focused hours before noon', gain: '+8 est.' },
-  focus: { action: 'Protect 9–11am for deep work', gain: '+6 est.' },
-};
+export function StepThree({ onComplete, onSkipDemo, reducedMotion = false }: StepThreeProps) {
+  // Find lowest area dynamically from demoDimensions
+  const dimensionEntries = Object.entries(demoDimensions) as [DimensionId, typeof demoDimensions[DimensionId]][];
+  const lowest = dimensionEntries.reduce((min, curr) =>
+    curr[1].score < min[1].score ? curr : min
+  , dimensionEntries[0]);
 
-export function StepThree({
-  lowestArea,
-  onComplete,
-  onSkipDemo,
-  reducedMotion = false,
-}: StepThreeProps) {
-  const item = STARTER_ACTIONS[lowestArea.id] || STARTER_ACTIONS.sleep;
+  const lowestName = lowest[0].charAt(0).toUpperCase() + lowest[0].slice(1);
+  const lowestScore = lowest[1].score;
+  const recommendedAction = "Be in bed by 11:00 pm";
 
   return (
     <div className="w-full" id="ob-step3-container">
@@ -41,9 +27,9 @@ export function StepThree({
       <motion.div
         id="ob-summary-card"
         className="ob-summary-card"
-        initial={!reducedMotion ? { opacity: 0, y: 10 } : false}
+        initial={!reducedMotion ? { opacity: 0, y: 12 } : false}
         animate={{ opacity: 1, y: 0 }}
-        transition={reducedMotion ? { duration: 0.05 } : { duration: 0.35, delay: 0.1 }}
+        transition={reducedMotion ? { duration: 0.1 } : { duration: 0.4, delay: 0.15 }}
       >
         <div className="ob-summary-row">
           <span className="text-xs uppercase tracking-wider font-semibold text-[var(--ink2)]">
@@ -52,24 +38,21 @@ export function StepThree({
           <span id="ob-summary-badge" className="ob-summary-badge">
             <span
               className="w-2 h-2 rounded-full"
-              style={{ background: lowestArea.colorDVar }}
+              style={{ background: 'var(--sleepd)' }}
               aria-hidden="true"
             />
-            {lowestArea.name} · {lowestArea.score}
+            {lowestName} · {lowestScore}
           </span>
         </div>
 
         <p id="ob-summary-action" className="ob-summary-action">
-          Start with <b>{lowestArea.name} ({lowestArea.score})</b>. Target 80.
+          Based on your answers: <b>{lowestName} is your lowest area.</b>
           <br />
-          Next move: <b>{item.action}</b>{' '}
-          <span className="text-[var(--healthd)] font-semibold text-xs ml-1">
-            ({item.gain})
-          </span>
+          Start with: <b>{recommendedAction}</b>
         </p>
       </motion.div>
 
-      {/* Buttons */}
+      {/* Buttons: Primary "Open my LIFEOS", Secondary "Skip setup, open the demo" */}
       <div className="ob-actions">
         <button
           type="button"
@@ -79,8 +62,6 @@ export function StepThree({
         >
           <span>Open my LIFEOS</span>
           <svg
-            width={18}
-            height={18}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
