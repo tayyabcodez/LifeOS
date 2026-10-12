@@ -101,18 +101,21 @@
 .hx .hx-in {
   position: relative;
   z-index: 2;
-  width: min(1240px, 92vw);
-  margin: 0 auto;
+  width: min(1240px, 92vw) !important;
+  max-width: min(1240px, 92vw) !important;
+  margin: 0 auto !important;
   display: grid;
   grid-template-columns: 1.05fr .95fr;
   gap: clamp(24px, 3.5vw, 48px);
   align-items: center;
-  padding: clamp(52px, 9vh, 96px) 0 clamp(22px, 5vh, 56px);
+  padding: clamp(52px, 9vh, 96px) 0 clamp(22px, 5vh, 56px) !important;
 }
 
 .hx .hx-in > div:first-child {
   width: 100%;
   text-align: left;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* Pill badge */
@@ -160,17 +163,17 @@
   animation-delay: calc(.15s * var(--i) + .25s);
 }
 
-.hx h1 em {
-  font-style: italic;
-  font-family: inherit;
+.hx h1 em,
+.hx em,
+.hx .hx-hl {
+  font-style: italic !important;
+  font-family: var(--font-instrument-serif), Georgia, serif !important;
 }
 
 .hx .hx-hl {
   position: relative;
   display: inline-block;
   isolation: isolate;
-  font-style: italic;
-  font-family: inherit;
 }
 
 .hx .hx-hl::after {
