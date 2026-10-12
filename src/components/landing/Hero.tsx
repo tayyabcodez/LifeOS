@@ -49,6 +49,9 @@ export function Hero() {
 
   return (
     <section className="hx" id="hero-hx" ref={rootRef}>
+      {/* Top Wordmark */}
+      <span className="mark">LIFEOS</span>
+
       {/* Background ambient mesh blobs */}
       <div className="hx-mesh" aria-hidden="true">
         <i style={{ left: '48%', top: '-6%', background: 'var(--study)' }}></i>

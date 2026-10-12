@@ -13,9 +13,15 @@
   display: flex;
   align-items: center;
   overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
   background: var(--paper, #F6F3EC);
   color: var(--ink, #15171C);
   font-family: var(--font-inter), system-ui, sans-serif;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
 
   /* Scoped color & easing variables */
   --paper: #F6F3EC;
@@ -40,13 +46,32 @@
   --grey-subtle: #7a7f8c;
 }
 
+/* Ensure no global SVG rule overrides hero SVGs */
+.hx svg {
+  position: static;
+  inset: auto;
+  width: auto;
+  height: auto;
+}
+
+/* Hero Top Wordmark */
+.hx .mark {
+  position: absolute;
+  z-index: 3;
+  top: 26px;
+  left: 4vw;
+  font: 600 15px var(--font-geist), sans-serif;
+  letter-spacing: .18em;
+  color: var(--ink);
+}
+
 .hx .hx-num {
   font-family: var(--font-geist), var(--font-inter), sans-serif;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
 }
 
-/* Background mesh blobs */
+/* Background mesh blobs (static, matching reference) */
 .hx .hx-mesh {
   position: absolute;
   inset: -10%;
@@ -61,13 +86,6 @@
   border-radius: 50%;
   filter: blur(90px);
   opacity: .5;
-  animation: hx-dr 24s ease-in-out infinite alternate;
-}
-
-@keyframes hx-dr {
-  to {
-    transform: translate3d(6vw, -4vw, 0) scale(1.15);
-  }
 }
 
 /* Cursor spotlight */
@@ -84,12 +102,17 @@
   position: relative;
   z-index: 2;
   width: min(1240px, 92vw);
-  margin: auto;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: 1.05fr .95fr;
   gap: clamp(24px, 3.5vw, 48px);
   align-items: center;
   padding: clamp(52px, 9vh, 96px) 0 clamp(22px, 5vh, 56px);
+}
+
+.hx .hx-in > div:first-child {
+  width: 100%;
+  text-align: left;
 }
 
 /* Pill badge */
@@ -119,6 +142,9 @@
   letter-spacing: -.02em;
   margin: clamp(10px, 2.4vh, 22px) 0 clamp(10px, 2.4vh, 24px);
   color: var(--ink);
+  max-width: none;
+  text-align: left;
+  font-weight: 400;
 }
 
 .hx h1 .hx-ml {
@@ -136,6 +162,7 @@
 
 .hx h1 em {
   font-style: italic;
+  font-family: inherit;
 }
 
 .hx .hx-hl {
@@ -143,6 +170,7 @@
   display: inline-block;
   isolation: isolate;
   font-style: italic;
+  font-family: inherit;
 }
 
 .hx .hx-hl::after {
@@ -186,6 +214,7 @@
   font-size: clamp(15px, 2.3vh, 19px);
   animation: hx-fade .9s var(--e) 1s backwards;
   line-height: 1.55;
+  text-align: left;
 }
 
 /* CTAs */
@@ -229,6 +258,8 @@
 .hx .hx-btn svg {
   width: 18px;
   height: 18px;
+  position: static;
+  flex: none;
   transition: transform .25s var(--e);
 }
 
@@ -271,6 +302,7 @@
 .hx .hx-hr {
   position: relative;
   padding: 0;
+  width: 100%;
 }
 
 .hx .hx-dial {
@@ -426,8 +458,9 @@
 .hx .hx-ins {
   position: relative;
   overflow: hidden;
-  width: min(600px, 100%);
-  margin: 8px auto 0;
+  width: 100%;
+  max-width: 100%;
+  margin: 8px 0 0;
   display: grid;
   grid-template-columns: 1fr 236px;
   border-radius: 18px;
@@ -477,6 +510,8 @@
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
+  position: static;
+  flex: none;
 }
 
 .hx .hx-ins-top b {
@@ -697,6 +732,7 @@
 
 /* Sparkline SVG Chart */
 .hx .hx-ins-ch {
+  position: static;
   width: 100%;
   height: auto;
   overflow: visible;
