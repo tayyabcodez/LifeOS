@@ -65,3 +65,31 @@ export const demoRhythm = {
     { time: '9pm', value: 85 },
   ],
 };
+
+export const HERO_SERIES: number[][] = [
+  [76, 78, 79, 80, 81, 82, 82], // Study
+  [80, 82, 81, 83, 85, 84, 84], // Focus
+  [64, 66, 65, 67, 66, 67, 68], // Health
+  [72, 70, 68, 66, 64, 63, 61], // Sleep
+  [70, 72, 71, 73, 72, 74, 74], // Money
+  [74, 75, 76, 77, 78, 79, 79], // Goals
+];
+
+export const HERO_ADVICE: Array<[string, 'good' | 'warn' | 'neutral', string]> = [
+  ['On track', 'good', 'On track for your exam in 3 days. Two focused hours today keeps it there.'],
+  ['Strong', 'good', 'Your best hours are before noon. Protect them for the hardest topics.'],
+  ['Below target', 'warn', 'Under your target of 80. A 30-minute daily walk lifts it by about 12 points.'],
+  ['Needs attention', 'warn', 'Your lowest area. Short nights are pulling your Focus down.'],
+  ['Steady', 'neutral', 'Holding steady. Food delivery is your biggest leak this week.'],
+  ['On track', 'good', 'Moving well. Study and Focus are both feeding this goal.'],
+];
+
+export const HERO_ACTIONS: string[] = [
+  'Block 2 focused hours before noon',
+  'Hardest topic first, before noon',
+  'Walk 30 minutes today',
+  'Be in bed by 11:00 pm',
+  'Cap delivery at 2 orders',
+  'Review your goals on Sunday',
+];
+

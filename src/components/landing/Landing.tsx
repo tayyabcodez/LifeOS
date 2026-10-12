@@ -315,7 +315,7 @@ export function Landing() {
             <p className="fts">A student project for the HyperBloom October UI/UX &amp; Web Design Hackathon.</p>
           </div>
           <nav className="ftn" aria-label="Footer">
-            <a href="#hx">Top</a>
+            <a href="#hero-hx">Top</a>
             <a href="#pin">How it works</a>
             <a href="#nightpin">What if?</a>
             <a href="#dd">Design your day</a>
