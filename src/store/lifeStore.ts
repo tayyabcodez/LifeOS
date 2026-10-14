@@ -1,6 +1,23 @@
 import { create } from 'zustand';
 import { demoBalance, demoDimensions, demoToday, DimensionData, DimensionId } from '@/data/demo-data';
 
+export interface OnboardingPlanArea {
+  now: number;
+  plan: number;
+  gain: number;
+}
+
+export interface OnboardingData {
+  priorities: string[];
+  challengeId: string | null;
+  plan: {
+    now: number;
+    plan: number;
+    areas: Record<string, OnboardingPlanArea>;
+  };
+  completed: boolean;
+}
+
 interface Profile {
   name: string;
   priority: 'study' | 'health' | 'money' | 'career' | 'balance' | null;
@@ -23,6 +40,16 @@ interface LifeState {
   todayActions: string[];
   todayStats: typeof demoToday;
   settings: Settings;
+  onboarding?: OnboardingData;
+  setOnboarding: (data: {
+    priorities: string[];
+    challenge: string | null;
+    plan: {
+      now: number;
+      plan: number;
+      areas: Record<string, OnboardingPlanArea>;
+    };
+  }) => void;
   
   setProfileField: <K extends keyof Profile>(key: K, value: Profile[K]) => void;
   updateSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
@@ -50,6 +77,42 @@ export const useLifeStore = create<LifeState>((set) => ({
     textSize: 'default',
     orbitView: 'auto',
   },
+  onboarding: {
+    priorities: [],
+    challengeId: null,
+    plan: {
+      now: demoBalance,
+      plan: demoBalance,
+      areas: {},
+    },
+    completed: false,
+  },
+
+  setOnboarding: (data) =>
+    set((state) => {
+      const firstPriority = data.priorities[0];
+      const validPriority =
+        firstPriority &&
+        ['study', 'health', 'money', 'career', 'balance'].includes(firstPriority)
+          ? (firstPriority as Profile['priority'])
+          : null;
+      return {
+        profile: {
+          ...state.profile,
+          priority: validPriority ?? state.profile.priority,
+          challenge: data.challenge ?? state.profile.challenge,
+          selectedDimensions: data.priorities as DimensionId[],
+          onboardingChallenge: data.challenge,
+          onboardingCompleted: true,
+        },
+        onboarding: {
+          priorities: data.priorities,
+          challengeId: data.challenge,
+          plan: data.plan,
+          completed: true,
+        },
+      };
+    }),
 
   setProfileField: (key, value) => set((state) => ({
     profile: { ...state.profile, [key]: value }
