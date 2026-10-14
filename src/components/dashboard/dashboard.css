@@ -666,55 +666,61 @@
 .db .bal-main {
   display: flex;
   align-items: center;
-  gap: 26px;
+  gap: 22px;
   flex: 1;
-  padding: 14px 0 18px;
+  padding: 10px 0 16px;
 }
 
-.db .ring-box {
+.db .bal-dial-wrap {
   position: relative;
-  width: 200px;
+  width: 280px;
+  max-width: 100%;
+  aspect-ratio: 1;
   flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
 }
 
-.db .ring-box svg {
+.db .dial {
+  position: relative;
   width: 100%;
-  height: auto;
-  overflow: visible;
-  filter: drop-shadow(0 10px 26px color-mix(in srgb, var(--acc) 30%, transparent));
+  height: 100%;
+  aspect-ratio: 1;
 }
 
-.db .seg-track {
-  fill: none;
-  stroke: color-mix(in srgb, var(--c) 22%, var(--sunk));
-  stroke-width: 13;
-  stroke-linecap: round;
-}
-
-.db .seg-fill {
-  fill: none;
-  stroke: var(--c);
-  stroke-width: 13;
-  stroke-linecap: round;
-  transition: stroke-dasharray 1.4s cubic-bezier(.2, .8, .2, 1);
-}
-
-.db .ring-c {
+.db .dial > svg {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-content: center;
-  text-align: center;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
-.db .ring-c .n {
+.db .dial .arcs {
+  filter: drop-shadow(0 10px 14px rgba(21, 23, 28, .16));
+}
+
+.db .dial .rc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.db .dial .rc .n {
   font-family: var(--serif);
-  font-size: 62px;
+  font-size: 52px;
   line-height: 1;
   letter-spacing: -.03em;
+  color: var(--ink);
+  transition: transform .2s ease;
 }
 
-.db .ring-c .n.bump {
+.db .dial .rc .n.bump {
   animation: db-bump .7s cubic-bezier(.3, 1.6, .5, 1);
 }
 
@@ -722,18 +728,108 @@
   40% { transform: scale(1.14); }
 }
 
-.db .ring-c .s {
-  font-size: 12px;
+.db .dial .rc .s {
+  font-size: 11px;
   color: var(--ink3);
   margin-top: 2px;
+  font-family: var(--sans);
+  font-weight: 500;
+  transition: opacity .2s;
 }
 
-.db .ring-c .l {
+.db .dial .rc .l {
   font-size: 10.5px;
   letter-spacing: .16em;
   color: var(--ink3);
-  margin-top: 8px;
+  margin-top: 4px;
+  text-transform: uppercase;
+  font-family: var(--sans);
+  font-weight: 600;
+  transition: color .2s;
 }
+
+.db .dial .pls {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.db .dial .pl {
+  all: unset;
+  box-sizing: border-box;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, .95);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 11px;
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--ink);
+  box-shadow: 0 10px 22px -10px rgba(21, 23, 28, .35);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: box-shadow .25s var(--e), transform .2s var(--e), background .25s var(--e);
+  animation: db-pop .8s var(--e) backwards;
+  animation-delay: calc(.2s + var(--i, 0) * .08s);
+}
+
+.db .dial .pl:hover {
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+.db .dial .pl i {
+  width: 7.5px;
+  height: 7.5px;
+  border-radius: 50%;
+  background: var(--c);
+}
+
+.db .dial .pl b.num {
+  font-weight: 600;
+  font-size: 11.5px;
+  color: var(--ink);
+  margin-left: 2px;
+}
+
+.db .dial .pl.on {
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--c) 42%, transparent), 0 12px 24px -10px rgba(21, 23, 28, .4);
+  background: #fff;
+}
+
+.db .dial .pl.att {
+  animation: db-pop .8s var(--e) backwards, db-pu 2.4s ease-in-out 2s infinite;
+}
+
+@keyframes db-pu {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.08); }
+}
+
+[data-theme="dark"] .db .dial .pl {
+  background: rgba(30, 32, 40, .94);
+  border-color: rgba(255, 255, 255, .14);
+  color: var(--ink);
+  box-shadow: 0 10px 22px -10px rgba(0, 0, 0, .7);
+}
+
+[data-theme="dark"] .db .dial .pl.on {
+  background: rgba(36, 40, 52, 1);
+}
+
+[data-theme="dark"] .db #db-plate stop:first-child {
+  stop-color: #232733;
+}
+
+[data-theme="dark"] .db #db-plate stop:last-child {
+  stop-color: #171922;
+}
+
 
 .db .bal-t h2 {
   margin: 0 0 12px;

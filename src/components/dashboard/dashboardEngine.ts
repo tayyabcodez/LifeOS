@@ -335,42 +335,277 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
   const vListBtn = $('#db-vList');
   if (vListBtn) vListBtn.onclick = () => setView('list');
 
-  /* ───────── balance ring ───────── */
-  const pol = (cx: number, cy: number, r: number, a: number) => [
-    cx + r * Math.cos((a * Math.PI) / 180),
-    cy + r * Math.sin((a * Math.PI) / 180),
-  ];
-  function buildRing() {
-    const ringSvg = $('#db-ringSvg');
-    if (!ringSvg) return;
-    const cx = 110,
-      cy = 110,
-      r = 94;
-    let s = '';
-    DIMS.forEach((m, i) => {
-      const c = -90 + i * 60,
-        [x0, y0] = pol(cx, cy, r, c - 26),
-        [x1, y1] = pol(cx, cy, r, c + 26);
-      const d = `M${x0.toFixed(2)},${y0.toFixed(2)} A${r},${r} 0 0 1 ${x1.toFixed(2)},${y1.toFixed(2)}`;
-      s += `<g style="--c:var(--${m.k})"><path class="seg-track" d="${d}"/><path class="seg-fill" id="db-sf-${m.k}" d="${d}" pathLength="100" style="stroke-dasharray:0 100"/></g>`;
-    });
-    ringSvg.innerHTML =
-      `<circle class="ring dash spin" cx="110" cy="110" r="109"/><circle class="ring" cx="110" cy="110" r="77" opacity=".7"/>` +
-      s;
+  /* ───────── balance dial (onboarding style) ───────── */
+  const R0 = 74,
+    R1 = 112,
+    DM = 5,
+    HI = 0.385;
+  const P_ = (a0: number, a1: number, r0: number, r1: number) => {
+    const c = (a: number) => [Math.cos(a), Math.sin(a)];
+    const [x0, y0] = c(a0);
+    const [x1, y1] = c(a1);
+    return `M${(r1 * x0).toFixed(2)} ${(r1 * y0).toFixed(2)}A${r1} ${r1} 0 0 1 ${(r1 * x1).toFixed(2)} ${(
+      r1 * y1
+    ).toFixed(2)}L${(r0 * x1).toFixed(2)} ${(r0 * y1).toFixed(2)}A${r0} ${r0} 0 0 0 ${(r0 * x0).toFixed(2)} ${(
+      r0 * y0
+    ).toFixed(2)}Z`;
+  };
+  const W = (a0: number, fe: number, r0: number, r1: number, T: number, i: number, rm: boolean) => {
+    let d = `M${(r1 * Math.cos(a0)).toFixed(2)} ${(r1 * Math.sin(a0)).toFixed(2)}A${r1} ${r1} 0 0 1 ${(
+      r1 * Math.cos(fe)
+    ).toFixed(2)} ${(r1 * Math.sin(fe)).toFixed(2)}`;
+    for (let r = r1; r >= r0; r -= 3) {
+      const aa = fe + (rm ? 0 : Math.sin(r * 0.32 + T * 3.2 + i) * 0.022);
+      d += `L${(r * Math.cos(aa)).toFixed(2)} ${(r * Math.sin(aa)).toFixed(2)}`;
+    }
+    return (
+      d +
+      `L${(r0 * Math.cos(fe)).toFixed(2)} ${(r0 * Math.sin(fe)).toFixed(2)}A${r0} ${r0} 0 0 0 ${(
+        r0 * Math.cos(a0)
+      ).toFixed(2)} ${(r0 * Math.sin(a0)).toFixed(2)}Z`
+    );
+  };
+  const H_ = (a0: number, a1: number, r: number) =>
+    `M${(r * Math.cos(a0)).toFixed(2)} ${(r * Math.sin(a0)).toFixed(2)}A${r} ${r} 0 0 1 ${(r * Math.cos(a1)).toFixed(
+      2
+    )} ${(r * Math.sin(a1)).toFixed(2)}`;
+
+  const K = ['study', 'focus', 'health', 'sleep', 'money', 'goals'];
+  const N = ['Study', 'Focus', 'Health', 'Sleep', 'Money', 'Goals'];
+  const SM = (i: number) => ((-90 + i * 60 + 30) * Math.PI) / 180;
+
+  let dialBuilt = false;
+  let dialRafId = 0;
+  let hovD = -1;
+  const curScores = K.map((k) => state.dims[k] || 70);
+  const hs = K.map(() => 0);
+  let arcObjects: Array<{
+    g: SVGElement;
+    u: SVGPathElement;
+    t: SVGPathElement;
+    p: SVGPathElement;
+    h: SVGPathElement;
+  }> = [];
+  let pillObjects: Array<{
+    e: HTMLButtonElement;
+    b: HTMLElement | null;
+  }> = [];
+
+  function buildDial() {
+    if (dialBuilt) return;
+    dialBuilt = true;
+
+    // Ticks
+    const tk = $('#db-tk');
+    if (tk) {
+      let s = '';
+      for (let i = 0; i < 72; i++) {
+        const a = (i * Math.PI) / 36;
+        const L = i % 6 === 0;
+        const r0 = L ? 127 : 132;
+        s += `<line x1="${(r0 * Math.cos(a)).toFixed(2)}" y1="${(r0 * Math.sin(a)).toFixed(2)}" x2="${(
+          140 * Math.cos(a)
+        ).toFixed(2)}" y2="${(140 * Math.sin(a)).toFixed(2)}" stroke="rgba(21,23,28,${
+          L ? 0.45 : 0.2
+        })" stroke-width="${L ? 1.6 : 1}"/>`;
+      }
+      tk.innerHTML = s;
+    }
+
+    // Mask defs
+    const defs = $('#db-dsv defs');
+    if (defs) {
+      K.forEach((k, i) => {
+        const maskId = 'db-cp' + i;
+        let mm = $('#' + maskId);
+        if (!mm) {
+          mm = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
+          mm.setAttribute('id', maskId);
+          mm.setAttribute('maskUnits', 'userSpaceOnUse');
+          mm.setAttribute('x', '-200');
+          mm.setAttribute('y', '-200');
+          mm.setAttribute('width', '400');
+          mm.setAttribute('height', '400');
+          const m = SM(i);
+          const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          p.setAttribute('d', P_(m - HI, m + HI, R0 + DM, R1 - DM));
+          p.setAttribute('fill', '#fff');
+          p.setAttribute('stroke', '#fff');
+          p.setAttribute('stroke-width', String(2 * DM));
+          p.setAttribute('stroke-linejoin', 'round');
+          mm.appendChild(p);
+          defs.appendChild(mm);
+        }
+      });
+    }
+
+    // Arcs
+    const AG = $('#db-arcs');
+    if (AG) {
+      AG.innerHTML = '';
+      arcObjects = K.map((k, i) => {
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        const tr = `color-mix(in srgb, var(--${k}) 80%, #fff)`;
+        const f = `color-mix(in srgb, var(--${k}) 34%, var(--${k}d, var(--${k})))`;
+
+        const u = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        u.setAttribute('style', `fill:#fff;stroke:#fff;stroke-width:${2 * DM + 3};stroke-linejoin:round;opacity:.8`);
+        g.appendChild(u);
+
+        const t = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        t.setAttribute('style', `fill:${tr};stroke:${tr};stroke-width:${2 * DM};stroke-linejoin:round`);
+        g.appendChild(t);
+
+        const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        p.setAttribute('style', `fill:${f};stroke:none`);
+        p.setAttribute('mask', `url(#db-cp${i})`);
+        g.appendChild(p);
+
+        const h = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        h.setAttribute('fill', 'none');
+        h.setAttribute('stroke', '#fff');
+        h.setAttribute('stroke-width', '1.8');
+        h.setAttribute('stroke-linecap', 'round');
+        h.setAttribute('mask', `url(#db-cp${i})`);
+        g.appendChild(h);
+
+        g.style.cursor = 'pointer';
+        g.onclick = () => {
+          spotlight(k);
+        };
+        g.onmouseenter = () => {
+          hovD = i;
+        };
+        g.onmouseleave = () => {
+          hovD = -1;
+        };
+
+        AG.appendChild(g);
+        return { g, u, t, p, h };
+      });
+    }
+
+    // Floating pills
+    const pls = $('#db-pls');
+    if (pls) {
+      pls.innerHTML = '';
+      pillObjects = K.map((k, i) => {
+        const m = SM(i);
+        const e = document.createElement('button');
+        e.type = 'button';
+        e.className = 'pl';
+        const pr = 44 + 8 * Math.abs(Math.cos(m)) ** 3;
+        e.style.cssText = `left:${(50 + pr * Math.cos(m)).toFixed(2)}%;top:${(50 + pr * Math.sin(m)).toFixed(
+          2
+        )}%;--c:var(--${k});--i:${i}`;
+        e.innerHTML = `<i></i>${N[i]}<b class="num">${Math.round(state.dims[k] || 0)}</b>`;
+        e.onmouseenter = e.onfocus = () => {
+          hovD = i;
+        };
+        e.onmouseleave = e.onblur = () => {
+          hovD = -1;
+        };
+        e.onclick = () => {
+          spotlight(k);
+        };
+        pls.appendChild(e);
+        return { e, b: e.querySelector('b') };
+      });
+    }
+
+    // Dial animation loop
+    function tickDial(now: number) {
+      if (cancelled) return;
+      const T = now * 0.001;
+      const rm = reduced();
+      const d = state.dims;
+      const w = weakest(d);
+
+      K.forEach((k, i) => {
+        const targetVal = d[k] || 70;
+        curScores[i] += (targetVal - curScores[i]) * (rm ? 1 : 0.08);
+
+        const isSpot = state.spot === k;
+        const isHover = hovD === i;
+        const lit = isHover || isSpot;
+        hs[i] += ((lit ? 1 : 0) - hs[i]) * (rm ? 1 : 0.15);
+
+        const arc = arcObjects[i];
+        if (arc) {
+          const mid = SM(i);
+          const f0 = mid - HI - DM / 93;
+          const f1 = mid + HI + DM / 93;
+          const frac = clamp((curScores[i] - 30) / 70);
+          const fe = f0 + (f1 - f0) * frac;
+          const o = hs[i] * 10;
+
+          const td = P_(mid - HI, mid + HI, R0 + DM, R1 - DM);
+          arc.t.setAttribute('d', td);
+          arc.u.setAttribute('d', td);
+          arc.p.setAttribute('d', frac > 0.006 ? W(f0 - 0.03, fe, R0 - 2, R1 + 2, T, i, rm) : '');
+          arc.h.setAttribute('d', fe - f0 > 0.22 ? H_(f0 + 0.1, fe - 0.07, R1 - 9) : '');
+          arc.h.style.opacity = String(hs[i]);
+          arc.g.setAttribute('transform', `translate(${(o * Math.cos(mid)).toFixed(2)} ${(o * Math.sin(mid)).toFixed(2)})`);
+          arc.g.style.filter =
+            hs[i] > 0.02
+              ? `drop-shadow(0 ${(hs[i] * 8).toFixed(1)}px ${(hs[i] * 9).toFixed(1)}px rgba(21,23,28,${(
+                  0.3 * hs[i]
+                ).toFixed(2)})) drop-shadow(0 0 ${(18 * hs[i]).toFixed(1)}px color-mix(in srgb,var(--${k}) 50%,transparent))`
+              : '';
+        }
+
+        const pill = pillObjects[i];
+        if (pill) {
+          if (pill.b) pill.b.textContent = String(Math.round(curScores[i]));
+          pill.e.classList.toggle('on', lit);
+          pill.e.classList.toggle('att', w.k === k && !lit);
+        }
+      });
+
+      // Update Center text
+      const balN = $('#db-balN');
+      const balS = $('#db-balS');
+      const balL = $('#db-balL');
+      if (hovD >= 0) {
+        const k = K[hovD];
+        if (balN) balN.textContent = String(Math.round(curScores[hovD]));
+        if (balS) balS.style.opacity = '0';
+        if (balL) {
+          balL.textContent = N[hovD];
+          balL.style.color = `var(--${k})`;
+        }
+      } else if (state.spot && state.spot !== 'home') {
+        const idx = K.indexOf(state.spot);
+        if (idx >= 0) {
+          if (balN) balN.textContent = String(Math.round(curScores[idx]));
+          if (balS) balS.style.opacity = '0';
+          if (balL) {
+            balL.textContent = N[idx];
+            balL.style.color = `var(--${state.spot})`;
+          }
+        }
+      } else {
+        const b = balance(d);
+        if (balN) balN.textContent = String(Math.round(b));
+        if (balS) balS.style.opacity = '1';
+        if (balL) {
+          balL.textContent = 'BALANCE';
+          balL.style.color = 'var(--ink3)';
+        }
+      }
+
+      dialRafId = requestAnimationFrame(tickDial);
+    }
+
+    dialRafId = requestAnimationFrame(tickDial);
   }
 
   function updateBalance() {
-    const d = state.dims,
-      b = balance(d);
-    DIMS.forEach((m) => {
-      const el = $('#db-sf-' + m.k);
-      const v = clamp(d[m.k]);
-      if (el) el.style.strokeDasharray = `${Math.max(0.01, v)} 100`;
-    });
-    animateNum($('#db-balN'), b, 1300);
+    const d = state.dims;
+    const b = balance(d);
     bump(b);
-    const sorted = [...DIMS].sort((a, c) => d[c.k] - d[a.k]),
-      w = weakest(d);
+    const sorted = [...DIMS].sort((a, c) => d[c.k] - d[a.k]);
+    const w = weakest(d);
     const chip = $('#db-balChip');
     const balP = $('#db-balP');
     if (d[w.k] >= 75) {
@@ -1529,7 +1764,7 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
     if (balN) balN.dataset.v = '0';
     const wk = $('#db-wk');
     if (wk) wk.removeAttribute('data-drawn');
-    buildRing();
+    buildDial();
     renderLegend();
     renderGlance();
     renderChart();
@@ -1584,6 +1819,7 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
   /* Cleanup */
   return () => {
     cancelled = true;
+    if (dialRafId) cancelAnimationFrame(dialRafId);
     if (fraf) cancelAnimationFrame(fraf);
     if (toastT) clearTimeout(toastT);
     if (bootT) clearTimeout(bootT);

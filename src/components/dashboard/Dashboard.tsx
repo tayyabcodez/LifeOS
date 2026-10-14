@@ -154,14 +154,53 @@ export function Dashboard() {
                 Your balance
               </h2>
               <div className="bal-main">
-                <div className="ring-box">
-                  <svg viewBox="0 0 220 220" role="img" aria-label="Balance score ring" id="db-ringSvg"></svg>
-                  <div className="ring-c">
-                    <div className="n" id="db-balN">
-                      0
+                <div className="bal-dial-wrap" id="db-balDialWrap">
+                  <div className="dial" id="db-dial">
+                    <svg
+                      id="db-dsv"
+                      viewBox="-170 -170 340 340"
+                      role="img"
+                      aria-label="Life balance dial with six areas"
+                    >
+                      <defs>
+                        <radialGradient id="db-plate" cx=".4" cy=".35" r=".8">
+                          <stop offset="0" stopColor="#fff" />
+                          <stop offset="1" stopColor="#EEEAE1" />
+                        </radialGradient>
+                        <radialGradient id="db-sh" gradientUnits="userSpaceOnUse" cx="0" cy="-60" r="150">
+                          <stop offset="0" stopColor="#fff" stopOpacity=".65" />
+                          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+                        </radialGradient>
+                        <filter id="db-ps">
+                          <feDropShadow dx="0" dy="6" stdDeviation="7" floodColor="#15171C" floodOpacity=".18" />
+                        </filter>
+                        <filter id="db-zb" x="-30%" y="-30%" width="160%" height="160%">
+                          <feGaussianBlur stdDeviation="2.4" />
+                        </filter>
+                      </defs>
+                      <g id="db-tk"></g>
+                      <g className="arcs" id="db-arcs"></g>
+                      <circle r="64" fill="url(#db-plate)" filter="url(#db-ps)" />
+                      <circle r="68" fill="none" stroke="rgba(21,23,28,.35)" strokeDasharray="2 5" />
+                      <circle
+                        r="118"
+                        fill="url(#db-sh)"
+                        style={{ mixBlendMode: 'soft-light', pointerEvents: 'none' }}
+                        id="db-shc"
+                      />
+                    </svg>
+                    <div className="rc" id="db-rc">
+                      <div className="n" id="db-balN">
+                        0
+                      </div>
+                      <div className="s" id="db-balS">
+                        /100
+                      </div>
+                      <div className="l" id="db-balL">
+                        BALANCE
+                      </div>
                     </div>
-                    <div className="s">/100</div>
-                    <div className="l">BALANCE</div>
+                    <div className="pls" id="db-pls"></div>
                   </div>
                 </div>
                 <div className="bal-t">
