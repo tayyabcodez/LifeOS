@@ -222,7 +222,7 @@ export function Dashboard() {
             <div className="tiles" id="db-tiles"></div>
           </section>
 
-          <section className="grid g1 rv" style={{ '--s': 3, marginTop: '20px' } as any}>
+          <section className="grid g1 rv" style={{ '--s': 3, marginTop: '14px' } as any}>
             <article className="card" aria-labelledby="db-msT">
               <div className="card-h">
                 <h2 className="lab" id="db-msT">
@@ -259,7 +259,7 @@ export function Dashboard() {
             </article>
           </section>
 
-          <section className="grid g3 rv" style={{ '--s': 4, marginTop: '20px' } as any}>
+          <section className="grid g3 rv" style={{ '--s': 4, marginTop: '14px' } as any}>
             <article className="card" aria-labelledby="db-rhT">
               <div className="rh-h">
                 <div>

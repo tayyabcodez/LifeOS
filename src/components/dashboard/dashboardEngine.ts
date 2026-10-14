@@ -494,7 +494,7 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
         const e = document.createElement('button');
         e.type = 'button';
         e.className = 'pl';
-        const pr = 44 + 8 * Math.abs(Math.cos(m)) ** 3;
+        const pr = 37.5 + 3.5 * Math.abs(Math.cos(m)) ** 2;
         e.style.cssText = `left:${(50 + pr * Math.cos(m)).toFixed(2)}%;top:${(50 + pr * Math.sin(m)).toFixed(
           2
         )}%;--c:var(--${k});--i:${i}`;
@@ -712,11 +712,11 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
     const el = $('#db-chart');
     if (!el) return;
     const W = Math.max(300, el.clientWidth),
-      H = Math.min(250, Math.max(190, W * 0.34));
-    const ml = 34,
-      mr = 10,
-      mt = 26,
-      mb = 26,
+      H = Math.min(180, Math.max(150, W * 0.25));
+    const ml = 30,
+      mr = 8,
+      mt = 18,
+      mb = 20,
       iw = W - ml - mr,
       ih = H - mt - mb;
     const X = (h: number) => ml + ((h - 6) / 16) * iw,
