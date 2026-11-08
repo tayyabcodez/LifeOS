@@ -3539,83 +3539,98 @@
   color: #CFC4F5;
 }
 
+/* ---- Redesigned sleek modern slider & controller ---- */
+.lp .landing-logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.lp .mark-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.lp .slr {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(16px);
+  border-radius: 999px !important;
+  padding: 8px 18px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
 .lp .sbox {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding-bottom: 26px;
+  padding: 14px 0 16px !important;
 }
 
 .lp .trk {
   width: 200px !important;
-  height: 10px !important;
-  border-radius: 10px !important;
-  background: rgba(246, 243, 236, .14) !important;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .55);
+  height: 8px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5) !important;
   position: relative;
 }
 
 .lp .trk i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
   overflow: hidden;
-  border-radius: 10px !important;
-  background: linear-gradient(90deg, #5b4bd6, #CFC4F5 55%, #A6F0FF) !important;
-  background-size: 200% 100% !important;
-  animation: cur 2.2s linear infinite;
-  box-shadow: 0 0 14px rgba(166, 240, 255, .6);
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #6366f1 0%, #818cf8 60%, #a5b4fc 100%) !important;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.45) !important;
+  animation: none !important;
 }
 
 .lp .trk i::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(90deg, transparent 0 10px, rgba(255, 255, 255, .7) 10px 12px);
-  mix-blend-mode: overlay;
-  animation: cur2 .9s linear infinite;
-}
-
-@keyframes cur {
-  to { background-position: -200% 0; }
-}
-
-@keyframes cur2 {
-  to { transform: translateX(12px); }
+  display: none !important;
 }
 
 .lp .trk b {
-  width: 30px !important;
-  height: 30px !important;
-  margin: -10px 0 0 -15px !important;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff, #F6F3EC 45%, #cfc8ff) !important;
-  box-shadow: 0 0 0 4px rgba(207, 196, 245, .28), 0 0 24px rgba(207, 196, 245, .85) !important;
+  position: absolute;
+  top: 50%;
+  width: 24px !important;
+  height: 24px !important;
+  margin: -12px 0 0 -12px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  border: 2px solid #818cf8 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 14px rgba(129, 140, 248, 0.5) !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #4B3A9A;
+  color: #4f46e5 !important;
   z-index: 3;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.lp .trk b:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5), 0 0 18px rgba(129, 140, 248, 0.7) !important;
 }
 
 .lp .trk b svg {
-  width: 16px !important;
-  height: 16px !important;
+  width: 13px !important;
+  height: 13px !important;
   position: static !important;
   fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
+  stroke: #4f46e5 !important;
+  stroke-width: 2.2 !important;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .lp .halo {
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(207, 196, 245, .8);
-  animation: hal 1.8s ease-out infinite;
-}
-
-@keyframes hal {
-  to { transform: scale(1.9); opacity: 0; }
+  display: none !important;
 }
 
 .lp .tks {
@@ -3627,10 +3642,10 @@
 
 .lp .tks s {
   position: absolute;
-  top: 18px;
+  top: -16px !important;
   transform: translateX(-50%);
-  font: 500 10px var(--font-inter), sans-serif;
-  color: var(--night2);
+  font: 500 11px var(--font-inter), sans-serif;
+  color: rgba(255, 255, 255, 0.55) !important;
   text-decoration: none;
 }
 
@@ -3638,18 +3653,18 @@
   content: "";
   position: absolute;
   left: 50%;
-  top: -8px;
+  bottom: -6px !important;
   width: 1px;
-  height: 5px;
-  background: rgba(246, 243, 236, .4);
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3) !important;
 }
 
 .lp .sbed {
   position: absolute;
   left: 0;
-  bottom: 0;
+  bottom: 0 !important;
   font: 600 11px var(--font-geist), sans-serif;
-  color: #A6F0FF;
+  color: #a5b4fc !important;
   white-space: nowrap;
 }
 
@@ -3658,67 +3673,126 @@
   display: none;
 }
 
+/* ---- Professional High-End Glass Cards ---- */
+.lp .ncards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px !important;
+  width: min(440px, 100%);
+}
+
 .lp .nk {
-  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, -30%), rgba(255, 255, 255, .1), transparent 65%), var(--nightcard) !important;
-  transition: box-shadow .5s, border-color .5s;
+  background: rgba(18, 22, 36, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(20px) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  padding: 18px 18px 16px !important;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.lp .nk:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 14px 36px -4px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.lp .nk::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent 0%, var(--c) 50%, transparent 100%) !important;
+  opacity: 0.8;
 }
 
 .lp .nk::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.6px;
-  background: conic-gradient(from var(--a), transparent 0 62%, var(--c) 80%, #fff 100%);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  pointer-events: none;
+  display: none !important;
 }
 
-.lp .nk.fire::after {
-  animation: zap 1.2s ease-out;
+.lp .nh2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-@keyframes zap {
-  0% { --a: 0deg; opacity: 1; }
-  85% { opacity: 1; }
-  100% { --a: 360deg; opacity: 0; }
+.lp .nh2 .pi {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: var(--c) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.lp .nk.live {
-  box-shadow: 0 20px 44px -22px var(--c);
-  border-color: rgba(246, 243, 236, .22);
+.lp .nh2 .pi .ic {
+  width: 15px !important;
+  height: 15px !important;
+}
+
+.lp .nk .nh2 b {
+  color: #ffffff !important;
+  font: 600 14px var(--font-geist), sans-serif;
+  letter-spacing: -0.01em;
 }
 
 .lp .nk .big {
-  text-shadow: 0 0 20px color-mix(in srgb, currentColor 40%, transparent);
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em;
+  color: #ffffff !important;
 }
 
 .lp .badge {
   margin-left: auto;
   font: 600 11px var(--font-geist), sans-serif;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: rgba(185, 230, 176, .14);
-  color: var(--up);
-  border: 1px solid rgba(185, 230, 176, .32);
+  padding: 3px 8px !important;
+  border-radius: 999px !important;
+  background: rgba(16, 185, 129, 0.14) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.28) !important;
   white-space: nowrap;
 }
 
 .lp .badge.bad {
-  background: rgba(255, 193, 176, .12);
-  color: var(--down);
-  border-color: rgba(255, 193, 176, .34);
+  background: rgba(239, 68, 68, 0.14) !important;
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.28) !important;
 }
 
 .lp .ftl {
   display: block;
   font: 500 12px var(--font-inter), sans-serif;
-  color: var(--night2);
+  color: rgba(255, 255, 255, 0.5) !important;
   margin-top: 4px;
   font-variant-numeric: tabular-nums;
+}
+
+.lp .nk .why {
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6) !important;
+  line-height: 1.4;
+}
+
+.lp .sp {
+  position: static !important;
+  width: 100%;
+  height: 24px !important;
+  margin-top: 6px;
+  overflow: visible;
+}
+
+.lp .sp path {
+  stroke-width: 2 !important;
 }
 
 .lp .sp .ed {

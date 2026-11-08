@@ -49,8 +49,10 @@ export function Hero() {
 
   return (
     <section className="hx" id="hero-hx" ref={rootRef}>
-      {/* Top Wordmark */}
-      <span className="mark">LIFEOS</span>
+      {/* Top Wordmark Logo */}
+      <Link href="/" className="mark hero-logo-link" aria-label="LifeOS">
+        <img src="/logo.png" alt="LifeOS" className="hero-logo" />
+      </Link>
 
       {/* Background ambient mesh blobs */}
       <div className="hx-mesh" aria-hidden="true">

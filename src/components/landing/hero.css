@@ -58,11 +58,18 @@
 .hx .mark {
   position: absolute;
   z-index: 3;
-  top: 26px;
+  top: 22px;
   left: 4vw;
-  font: 600 15px var(--font-geist), sans-serif;
-  letter-spacing: .18em;
-  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.hx .hero-logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .hx .hx-num {

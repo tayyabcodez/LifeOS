@@ -40,7 +40,7 @@ export function Dashboard() {
   }, []);
 
   return (
-    <div className="db" id="db-root" ref={rootRef}>
+    <div className="db" data-theme="light" id="db-root" ref={rootRef}>
       <div className="aurora" aria-hidden="true">
         <i></i>
         <i></i>
@@ -59,12 +59,7 @@ export function Dashboard() {
             <b></b>
           </div>
           <div className="boot-word" aria-label="LifeOS">
-            <span style={{ '--k': 0 } as any}>L</span>
-            <span style={{ '--k': 1 } as any}>I</span>
-            <span style={{ '--k': 2 } as any}>F</span>
-            <span style={{ '--k': 3 } as any}>E</span>
-            <span style={{ '--k': 4 } as any}>O</span>
-            <span style={{ '--k': 5 } as any}>S</span>
+            <img src="/logo.png" alt="LifeOS" className="boot-logo" />
           </div>
           <p className="boot-tag">Your life, in one clear view.</p>
           <div className="boot-bar">
@@ -76,7 +71,7 @@ export function Dashboard() {
 
       <header className="top">
         <div className="brand">
-          <span className="logo">LIFEOS</span>
+          <img src="/logo.png" alt="LifeOS" className="brand-logo" />
           <span className="demo">
             <i></i>Demo data
           </span>
@@ -180,10 +175,10 @@ export function Dashboard() {
                       </defs>
                       <g id="db-tk"></g>
                       <g className="arcs" id="db-arcs"></g>
-                      <circle r="64" fill="url(#db-plate)" filter="url(#db-ps)" />
-                      <circle r="68" fill="none" stroke="rgba(21,23,28,.35)" strokeDasharray="2 5" />
+                      <circle r="58" fill="url(#db-plate)" filter="url(#db-ps)" />
+                      <circle r="62" fill="none" stroke="rgba(21,23,28,.35)" strokeDasharray="2 5" />
                       <circle
-                        r="118"
+                        r="104"
                         fill="url(#db-sh)"
                         style={{ mixBlendMode: 'soft-light', pointerEvents: 'none' }}
                         id="db-shc"
@@ -206,12 +201,14 @@ export function Dashboard() {
                 <div className="bal-t">
                   <h2 className="serif">Your life is finding its rhythm.</h2>
                   <p id="db-balP"></p>
-                  <button className="chip" id="db-balChip" style={{ '--c': 'var(--sleep)' } as any}></button>
+                  <div className="bal-actions">
+                    <button className="chip" id="db-balChip" style={{ '--c': 'var(--sleep)' } as any}></button>
+                    <button className="cta" id="db-ctaWhat">
+                      What if you slept 1 hour earlier? <span id="db-ctaArr"></span>
+                    </button>
+                  </div>
                 </div>
               </div>
-              <button className="cta" id="db-ctaWhat">
-                What if you slept 1 hour earlier? <span id="db-ctaArr"></span>
-              </button>
             </article>
           </section>
 
@@ -296,7 +293,7 @@ export function Dashboard() {
       </div>
 
       <div className="scrim" id="db-scrim"></div>
-      <aside className="drawer" id="db-drawer" role="dialog" aria-modal="true" aria-labelledby="db-drT" inert>
+      <aside className="drawer" id="db-drawer" role="dialog" aria-modal="true" aria-labelledby="db-drT">
         <div className="dr-h">
           <div>
             <p className="eyebrow">What if?</p>
@@ -307,56 +304,148 @@ export function Dashboard() {
           <button className="icon-btn" id="db-drClose" aria-label="Close"></button>
         </div>
 
-        <div className="lev" style={{ '--c': 'var(--sleep)' } as any}>
-          <div className="lev-h">
-            <label htmlFor="db-rSleep">Sleep earlier</label>
-            <output id="db-oSleep">No change</output>
-          </div>
-          <input type="range" id="db-rSleep" min="0" max="2" step="0.25" defaultValue="0" />
-        </div>
-        <div className="lev" style={{ '--c': 'var(--study)' } as any}>
-          <div className="lev-h">
-            <label htmlFor="db-rStudy">Study more each day</label>
-            <output id="db-oStudy">No change</output>
-          </div>
-          <input type="range" id="db-rStudy" min="0" max="3" step="0.5" defaultValue="0" />
-        </div>
-        <div className="lev" style={{ '--c': 'var(--health)' } as any}>
-          <div className="lev-h">
-            <label htmlFor="db-rSteps">Walk more each day</label>
-            <output id="db-oSteps">No change</output>
-          </div>
-          <input type="range" id="db-rSteps" min="0" max="5000" step="250" defaultValue="0" />
-        </div>
+        <div className="dr-body">
+          <div className="dr-levers">
+            <div className="lev" style={{ '--c': 'var(--sleep)' } as any}>
+              <div className="lev-h">
+                <label htmlFor="db-rSleep">
+                  <span className="lev-dot"></span>
+                  Sleep earlier
+                </label>
+                <output id="db-oSleep">No change</output>
+              </div>
+              <input type="range" id="db-rSleep" min="0" max="2" step="0.25" defaultValue="0" />
+            </div>
 
-        <div className="res" aria-live="polite">
-          <div className="big">
-            <span className="a" id="db-wiA">
-              74
-            </span>
-            <span aria-hidden="true" style={{ color: 'var(--ink3)' }}>
-              →
-            </span>
-            <span className="b" id="db-wiB">
-              74
-            </span>
-            <span className="df" id="db-wiD"></span>
-          </div>
-          <p className="narr" id="db-wiN"></p>
-          <div className="wrows" id="db-wiRows"></div>
-          <div className="exam">
-            <span>Marketing exam readiness</span>
-            <b id="db-wiE">62%</b>
-          </div>
-        </div>
+            <div className="lev" style={{ '--c': 'var(--study)' } as any}>
+              <div className="lev-h">
+                <label htmlFor="db-rStudy">
+                  <span className="lev-dot"></span>
+                  Study more each day
+                </label>
+                <output id="db-oStudy">No change</output>
+              </div>
+              <input type="range" id="db-rStudy" min="0" max="3" step="0.5" defaultValue="0" />
+            </div>
 
-        <div className="dr-f">
-          <button className="cta" id="db-wiApply">
-            Apply to my plan
-          </button>
-          <button className="ghost" id="db-wiReset">
-            Reset demo
-          </button>
+            <div className="lev" style={{ '--c': 'var(--health)' } as any}>
+              <div className="lev-h">
+                <label htmlFor="db-rSteps">
+                  <span className="lev-dot"></span>
+                  Walk more each day
+                </label>
+                <output id="db-oSteps">No change</output>
+              </div>
+              <input type="range" id="db-rSteps" min="0" max="5000" step="250" defaultValue="0" />
+            </div>
+          </div>
+
+          <div className="res" aria-live="polite">
+            <div className="big">
+              <span className="a" id="db-wiA">
+                74
+              </span>
+              <span className="wi-arrow" aria-hidden="true">
+                →
+              </span>
+              <span className="b" id="db-wiB">
+                74
+              </span>
+              <span className="df" id="db-wiD">
+                0
+              </span>
+            </div>
+            <p className="narr" id="db-wiN">
+              Move a lever to see how one change spreads across all six dimensions.
+            </p>
+            <div className="wrows" id="db-wiRows">
+              <div className="wr" style={{ '--c': 'var(--study)' } as any}>
+                <span className="wr-name"><i className="wr-dot"></i>Study</span>
+                <div className="wr-track"><div className="wr-fill base" style={{ width: '82%', background: 'var(--study)' }}></div></div>
+                <div className="wr-meta"><span className="wr-num">82</span><span className="wr-delta-empty"></span></div>
+              </div>
+              <div className="wr" style={{ '--c': 'var(--focus)' } as any}>
+                <span className="wr-name"><i className="wr-dot"></i>Focus</span>
+                <div className="wr-track"><div className="wr-fill base" style={{ width: '84%', background: 'var(--focus)' }}></div></div>
+                <div className="wr-meta"><span className="wr-num">84</span><span className="wr-delta-empty"></span></div>
+              </div>
+              <div className="wr" style={{ '--c': 'var(--health)' } as any}>
+                <span className="wr-name"><i className="wr-dot"></i>Health</span>
+                <div className="wr-track"><div className="wr-fill base" style={{ width: '68%', background: 'var(--health)' }}></div></div>
+                <div className="wr-meta"><span className="wr-num">68</span><span className="wr-delta-empty"></span></div>
+              </div>
+              <div className="wr" style={{ '--c': 'var(--sleep)' } as any}>
+                <span className="wr-name"><i className="wr-dot"></i>Sleep</span>
+                <div className="wr-track"><div className="wr-fill base" style={{ width: '61%', background: 'var(--sleep)' }}></div></div>
+                <div className="wr-meta"><span className="wr-num">61</span><span className="wr-delta-empty"></span></div>
+              </div>
+              <div className="wr" style={{ '--c': 'var(--money)' } as any}>
+                <span className="wr-name"><i className="wr-dot"></i>Money</span>
+                <div className="wr-track"><div className="wr-fill base" style={{ width: '74%', background: 'var(--money)' }}></div></div>
+                <div className="wr-meta"><span className="wr-num">74</span><span className="wr-delta-empty"></span></div>
+              </div>
+              <div className="wr" style={{ '--c': 'var(--goals)' } as any}>
+                <span className="wr-name"><i className="wr-dot"></i>Goals</span>
+                <div className="wr-track"><div className="wr-fill base" style={{ width: '79%', background: 'var(--goals)' }}></div></div>
+                <div className="wr-meta"><span className="wr-num">79</span><span className="wr-delta-empty"></span></div>
+              </div>
+            </div>
+            <div className="exam">
+              <span className="exam-lbl">
+                <svg className="exam-ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                  <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                </svg>
+                Marketing exam readiness
+              </span>
+              <b id="db-wiE">62%</b>
+            </div>
+          </div>
+
+          {/* ── Impact Stats Strip ── */}
+          <div className="wi-stats" id="db-wiStats">
+            <div className="wis-pill" id="db-wisPill1">
+              <span className="wis-label">Top gain</span>
+              <span className="wis-val" id="db-wisTop">—</span>
+            </div>
+            <div className="wis-divider" aria-hidden="true"/>
+            <div className="wis-pill" id="db-wisPill2">
+              <span className="wis-label">Exam boost</span>
+              <span className="wis-val" id="db-wisExam">62%</span>
+            </div>
+            <div className="wis-divider" aria-hidden="true"/>
+            <div className="wis-pill" id="db-wisPill3">
+              <span className="wis-label">Balance Δ</span>
+              <span className="wis-val" id="db-wisBal">0</span>
+            </div>
+          </div>
+
+          <div className="dr-f">
+            <button
+              className="cta"
+              id="db-wiApply"
+              type="button"
+              onClick={() => {
+                if (typeof window !== 'undefined' && (window as any).lifeOSApplyPlan) {
+                  (window as any).lifeOSApplyPlan();
+                }
+              }}
+            >
+              Apply to my plan
+            </button>
+            <button
+              className="ghost"
+              id="db-wiReset"
+              type="button"
+              onClick={() => {
+                if (typeof window !== 'undefined' && (window as any).lifeOSResetDemo) {
+                  (window as any).lifeOSResetDemo();
+                }
+              }}
+            >
+              Reset demo
+            </button>
+          </div>
         </div>
       </aside>
 

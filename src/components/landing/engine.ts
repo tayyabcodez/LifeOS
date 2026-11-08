@@ -402,17 +402,47 @@ export function initLanding(root: HTMLElement): () => void {
 
   function afterSc() {
     chipB.forEach((b, i) => b.classList.toggle('on', i === sc));
-    slLab.textContent = SCEN[sc].lab;
-    ty.setAttribute('aria-label', SCEN[sc].t);
+    const S0 = SCEN[sc];
+    if (slLab) slLab.textContent = S0.lab;
+    if (ty) {
+      ty.textContent = S0.t;
+      ty.setAttribute('aria-label', S0.t);
+    }
+    if (sl) sl.textContent = S0.fmt(S0.to);
+    if (slrE) slrE.dataset.k = S0.lab;
+    if (sbed) sbed.textContent = S0.lab === 'Sleep' ? 'Bedtime ' + fclock(420 - S0.to) : '';
+    if (knob) knob.style.left = '64%';
+    if (fillE) fillE.style.width = '64%';
+    if (status) {
+      status.textContent = '✓ Estimate ready';
+      status.classList.add('done');
+      status.style.opacity = '1';
+    }
+    rowsE.forEach(r => {
+      const now = SCORE[r.d], tg = S0.sim[r.d], df = tg - now;
+      if (r.bv) r.bv.textContent = String(tg);
+      if (r.dl) {
+        r.dl.textContent = df ? (df > 0 ? '+' : '−') + Math.abs(df) : '–';
+        r.dl.classList.toggle('neg', df < 0);
+        r.dl.style.opacity = '1';
+      }
+      water(r, tg, now, tg, 1);
+    });
+    nks.forEach(n => {
+      n.style.opacity = '1';
+      n.style.transform = 'none';
+      n.classList.add('live');
+    });
     apply.querySelectorAll('.rl>span').forEach(x => x.textContent = 'Apply to my plan');
-    bn2.className = 'num ' + (SCEN[sc].bal >= 74 ? 'up' : 'dn');
+    bn2.textContent = String(S0.bal);
+    bn2.className = 'num ' + (S0.bal >= 74 ? 'up' : 'dn');
   }
 
   chipB.forEach((b, i) => {
-    b.onclick = () => {
+    b.onclick = (e) => {
+      e.preventDefault();
       sc = i;
       buildCards(i);
-      liveT = performance.now();
       afterSc();
     };
   });
@@ -525,67 +555,88 @@ export function initLanding(root: HTMLElement): () => void {
   const slrE = root.querySelector('#slr') as HTMLElement, sbed = root.querySelector('#sbed') as HTMLElement;
 
   function night(p: number) {
-    if (liveT !== null && p < .9) {
-      liveT = null;
-      if (sc) { sc = 0; buildCards(0); afterSc(); }
-    }
     const nr = npinE.getBoundingClientRect();
     NV = nr.top < window.innerHeight && nr.bottom > 0;
-    const lp = liveT === null ? 0 : clamp((performance.now() - liveT) / 3000), pe = liveT === null ? p : .2 + .6 * lp, S0 = SCEN[sc], SM = S0.sim;
+    const lp = liveT === null ? 0 : clamp((performance.now() - liveT) / 1500), pe = liveT === null ? p : .2 + .6 * lp, S0 = SCEN[sc], SM = S0.sim;
     nin.style.transform = `scale(${Math.min(1, (ncE.clientHeight - 48) / nin.offsetHeight)})`;
     const e = ease(clamp(p / .16)), hk = ease(clamp((p - .1) / .1));
     nw.style.clipPath = `circle(${lerp(0, 150, e)}% at 50% 64%)`; nhs.style.transform = `translateY(${(1 - hk) * 115}%)`;
-    const tp = clamp((pe - .2) / .14); ty.textContent = S0.t.slice(0, Math.floor(tp * S0.t.length)); nrow.style.opacity = clamp((pe - .18) / .04);
-    const sk = ease(clamp((pe - .34) / .08)); knob.style.left = lerp(34, 64, sk) + '%'; fillE.style.width = lerp(34, 64, sk) + '%'; sl.textContent = S0.fmt(lerp(S0.fr, S0.to, sk)); slrE.dataset.k = S0.lab; sbed.textContent = S0.lab === 'Sleep' ? 'Bedtime ' + fclock(420 - lerp(S0.fr, S0.to, sk)) : '';
-    const rk = clamp((pe - .42) / .34), u = rk * 5.9, rh = rowsE[0].e.offsetHeight || 48, V: number[] = [];
-    rowsE.forEach((r, j) => {
-      const ap = ease(clamp((pe - .28 - j * .012) / .06)), vp = ease(clamp((u - j) / .9)), now = SCORE[r.d], tg = SM[r.d], cur = lerp(now, tg, vp), df = tg - now; V[j] = vp;
-      r.e.style.opacity = ap; r.e.style.transform = `translateY(${(1 - ap) * 12}px)`;
-      water(r, cur, now, tg, vp); r.bv.textContent = String(Math.round(cur));
-      r.dl.textContent = df ? (vp > .5 ? (df > 0 ? '+' : '−') + Math.abs(df) : '') : (ap > .9 ? '–' : ''); r.dl.classList.toggle('neg', df < 0); r.dl.style.opacity = df ? clamp((vp - .4) / .4) : ap * .5;
-      r.nd.style.transform = `scale(${.6 + .6 * vp})`; r.nd.style.opacity = .35 + .65 * vp;
-    });
-    rail.style.transform = `scaleY(${clamp(u / 5)})`; drawBolt(rk, u, rh); pls.style.transform = `translateY(${Math.min(u, 5) * rh}px)`; pls.style.opacity = rk > 0 && rk < 1 ? 1 : 0;
-    status.style.opacity = clamp((pe - .36) / .03) * (liveT === null && p > .9 ? 0 : 1); status.classList.toggle('done', pe > .78); status.textContent = pe > .78 ? '✓ Estimate ready' : 'Simulating…';
-    nks.forEach(n => {
-      const dl = +n.dataset.dl || 0, k = clamp((V[+n.dataset.row] - dl) / (1 - dl)), o = clamp(k * 3);
-      n.style.opacity = o; n.style.transform = `translateY(${(1 - o) * 18}px)`;
-      if (k > .04 && !n._f) { n._f = 1; n.classList.add('fire'); setTimeout(() => n.classList.remove('fire'), 1300); }
-      if (k <= .01) n._f = 0;
-      n.classList.toggle('live', k > .6); n._ed.style.opacity = k > .95 ? 1 : 0;
-      n._st.forEach((st: HTMLElement, i: number) => st.style.transform = `translateY(${-n._dig[i] * ease(k)}em)`); n._sp.style.strokeDashoffset = 1 - k;
-    });
-    nnote.style.opacity = clamp((p - .3) / .1);
-    const sg = liveT === null ? ease(clamp((p - .76) / .08)) : ease(clamp((pe - .7) / .1)); stat.style.opacity = sg; bn2.textContent = String(Math.round(lerp(74, S0.bal, sg)));
-    const ab = clamp((p - .82) / .05); apply.style.opacity = ab; apply.style.pointerEvents = ab > .5 ? 'auto' : 'none';
-    const cb = clamp((p - .86) / .05); chipsE.style.opacity = cb; chipsE.style.pointerEvents = cb > .5 ? 'auto' : 'none';
+    
+    // Only animate typing and slider from scroll if scenario hasn't been explicitly selected by user or during initial scroll
+    if (pe < .8 && liveT === null && sc === 0) {
+      const tp = clamp((pe - .2) / .14); 
+      ty.textContent = S0.t.slice(0, Math.floor(tp * S0.t.length)); 
+      nrow.style.opacity = clamp((pe - .18) / .04);
+      const sk = ease(clamp((pe - .34) / .08)); 
+      knob.style.left = lerp(34, 64, sk) + '%'; 
+      fillE.style.width = lerp(34, 64, sk) + '%'; 
+      sl.textContent = S0.fmt(lerp(S0.fr, S0.to, sk)); 
+      slrE.dataset.k = S0.lab; 
+      sbed.textContent = S0.lab === 'Sleep' ? 'Bedtime ' + fclock(420 - lerp(S0.fr, S0.to, sk)) : '';
+      const rk = clamp((pe - .42) / .34), u = rk * 5.9, rh = rowsE[0].e.offsetHeight || 48, V: number[] = [];
+      rowsE.forEach((r, j) => {
+        const ap = ease(clamp((pe - .28 - j * .012) / .06)), vp = ease(clamp((u - j) / .9)), now = SCORE[r.d], tg = SM[r.d], cur = lerp(now, tg, vp), df = tg - now; V[j] = vp;
+        r.e.style.opacity = ap; r.e.style.transform = `translateY(${(1 - ap) * 12}px)`;
+        water(r, cur, now, tg, vp); r.bv.textContent = String(Math.round(cur));
+        r.dl.textContent = df ? (vp > .5 ? (df > 0 ? '+' : '−') + Math.abs(df) : '') : (ap > .9 ? '–' : ''); r.dl.classList.toggle('neg', df < 0); r.dl.style.opacity = df ? clamp((vp - .4) / .4) : ap * .5;
+        r.nd.style.transform = `scale(${.6 + .6 * vp})`; r.nd.style.opacity = .35 + .65 * vp;
+      });
+      rail.style.transform = `scaleY(${clamp(u / 5)})`; drawBolt(rk, u, rh); pls.style.transform = `translateY(${Math.min(u, 5) * rh}px)`; pls.style.opacity = rk > 0 && rk < 1 ? 1 : 0;
+      status.style.opacity = clamp((pe - .36) / .03); status.classList.toggle('done', pe > .78); status.textContent = pe > .78 ? '✓ Estimate ready' : 'Simulating…';
+      nks.forEach(n => {
+        const dl = +n.dataset.dl || 0, k = clamp((V[+n.dataset.row] - dl) / (1 - dl)), o = clamp(k * 3);
+        n.style.opacity = o; n.style.transform = `translateY(${(1 - o) * 18}px)`;
+        n.classList.toggle('live', k > .6); n._ed.style.opacity = k > .95 ? 1 : 0;
+        n._st.forEach((st: HTMLElement, i: number) => st.style.transform = `translateY(${-n._dig[i] * ease(k)}em)`); n._sp.style.strokeDashoffset = 1 - k;
+      });
+      const sg = ease(clamp((pe - .7) / .1)); stat.style.opacity = sg; bn2.textContent = String(Math.round(lerp(74, S0.bal, sg)));
+    } else {
+      // Steady or user-clicked scenario
+      ty.textContent = S0.t;
+      nrow.style.opacity = '1';
+      status.textContent = '✓ Estimate ready';
+      status.classList.add('done');
+      status.style.opacity = '1';
+      stat.style.opacity = '1';
+      bn2.textContent = String(S0.bal);
+      rowsE.forEach(r => {
+        r.e.style.opacity = '1';
+        r.e.style.transform = 'none';
+        const now = SCORE[r.d], tg = SM[r.d];
+        water(r, tg, now, tg, 1);
+      });
+    }
+
+    nnote.style.opacity = clamp((p - .25) / .1);
+    const ab = clamp((p - .35) / .1); 
+    apply.style.opacity = Math.max(ab, 0.95); 
+    apply.style.pointerEvents = 'auto';
+    const cb = clamp((p - .35) / .1); 
+    chipsE.style.opacity = Math.max(cb, 0.95); 
+    chipsE.style.pointerEvents = 'auto';
   }
 
   apply.onclick = (e: MouseEvent) => {
     e.preventDefault();
     apply.querySelectorAll('.rl>span').forEach(x => x.textContent = 'Added to today ✓');
-    if (RM) {
-      window.location.href = '/onboarding';
-      return;
-    }
-    const r = apply.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-    for (let i = 0; i < 22; i++) {
-      const d = document.createElement('i'), a = Math.random() * Math.PI * 2, dist = 70 + Math.random() * 90, k = D[i % 6][0].toLowerCase();
-      d.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;width:8px;height:8px;border-radius:${i % 2 ? '50%' : '2px'};background:var(--${k});pointer-events:none;z-index:60`;
-      root.appendChild(d);
-      d.animate([
-        { transform: 'translate(0,0) scale(1)', opacity: 1 },
-        { transform: `translate(${Math.cos(a) * dist}px,${Math.sin(a) * dist - 30}px) scale(.3) rotate(${Math.random() * 360}deg)`, opacity: 0 }
-      ], {
-        duration: 800 + Math.random() * 300,
-        easing: 'cubic-bezier(.22,1,.36,1)'
-      }).onfinish = () => d.remove();
-    }
-    setTimeout(() => {
-      if (!cancelled) {
-        window.location.href = '/onboarding';
+    try {
+      const r = apply.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      for (let i = 0; i < 24; i++) {
+        const d = document.createElement('i'), a = Math.random() * Math.PI * 2, dist = 70 + Math.random() * 90, k = D[i % 6][0].toLowerCase();
+        d.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;width:8px;height:8px;border-radius:${i % 2 ? '50%' : '2px'};background:var(--${k});pointer-events:none;z-index:99999`;
+        document.body.appendChild(d);
+        d.animate([
+          { transform: 'translate(0,0) scale(1)', opacity: 1 },
+          { transform: `translate(${Math.cos(a) * dist}px,${Math.sin(a) * dist - 30}px) scale(.3) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+        ], {
+          duration: 700 + Math.random() * 300,
+          easing: 'cubic-bezier(.22,1,.36,1)'
+        }).onfinish = () => d.remove();
       }
-    }, 450);
+    } catch {}
+    setTimeout(() => {
+      window.location.href = '/onboarding';
+    }, 400);
   };
 
   /* hero section is now handled by Hero.tsx */

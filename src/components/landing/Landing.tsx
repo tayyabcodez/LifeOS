@@ -21,7 +21,9 @@ export function Landing() {
     <div ref={rootRef} className="lp">
       <div id="sp"></div>
       <header className="bar" id="bar">
-        <span className="mark">LIFEOS</span>
+        <Link href="/" className="mark-link" aria-label="LifeOS Home">
+          <img src="/logo.png" alt="LifeOS" className="landing-logo" />
+        </Link>
         <Link className="btn" href="/onboarding">
           <span className="rl">
             <span>Enter LIFEOS</span>
@@ -311,6 +313,9 @@ export function Landing() {
         </div>
         <div className="ftc" id="ftc">
           <div>
+            <div style={{ marginBottom: 12 }}>
+              <img src="/logo.png" alt="LifeOS" style={{ height: 26, width: 'auto', objectFit: 'contain' }} />
+            </div>
             <p className="ftt">Understand. Simulate. Decide. Act.</p>
             <p className="fts">A student project for the HyperBloom October UI/UX &amp; Web Design Hackathon.</p>
           </div>

@@ -27,16 +27,25 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
     useLifeStore.getState().settings.reducedMotion === 'on';
 
   /* ───────── icons ───────── */
+  /* ───────── icons (upgraded detailed SVGs) ───────── */
   const ICON = {
     home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
-    study: '<path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2.5 9 2.5 12 0v-5"/>',
-    focus: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/>',
-    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/>',
-    health: '<path d="M12 20.5s-7.5-4.6-9.3-10C1.6 7 3.8 4 7 4c2 0 3.5 1 5 3 1.5-2 3-3 5-3 3.200 0 5.400 3 4.300 6.500-1.800 5.400-9.300 10-9.300 10z"/>',
-    heart: '<path d="M12 20.5s-7.5-4.6-9.3-10C1.6 7 3.8 4 7 4c2 0 3.500 1 5 3 1.500-2 3-3 5-3 3.200 0 5.400 3 4.300 6.500-1.800 5.400-9.300 10-9.300 10z"/>',
-    sleep: '<path d="M20.500 14.500A8.500 8.500 0 0 1 9.500 3.500 8.500 8.500 0 1 0 20.500 14.500z"/>',
-    money: '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.700 3.600 3 8 3s8-1.300 8-3V6"/><path d="M4 12v6c0 1.700 3.600 3 8 3s8-1.300 8-3v-6"/>',
-    goals: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.400"/>',
+    study:
+      '<path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.2v4.5c0 0 2.5 3.3 6 3.3s6-3.3 6-3.3v-4.5"/><path d="M22 10v6"/><circle cx="22" cy="16.5" r="1.3" fill="currentColor"/><polygon points="12 6.5 17.5 9.5 12 12.5 6.5 9.5" fill="currentColor" fill-opacity=".25"/>',
+    focus:
+      '<circle cx="12" cy="12" r="5" fill="currentColor" fill-opacity=".22"/><circle cx="12" cy="12" r="2.8"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 3" opacity=".55"/>',
+    sun:
+      '<circle cx="12" cy="12" r="4.8" fill="currentColor" fill-opacity=".22"/><circle cx="12" cy="12" r="2.8"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 3" opacity=".55"/>',
+    health:
+      '<path d="M12 21s-7.5-4.5-9.3-10C1.2 7.2 3.5 4 7 4c2.2 0 3.8 1.2 5 3.2 1.2-2 2.8-3.2 5-3.2 3.5 0 5.8 3.2 4.3 7-1.8 5.5-9.3 10-9.3 10z" fill="currentColor" fill-opacity=".15"/><path d="M7.5 12.5h2l1.5-3 2 5.5 1.5-2.5h2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+    heart:
+      '<path d="M12 21s-7.5-4.5-9.3-10C1.2 7.2 3.5 4 7 4c2.2 0 3.8 1.2 5 3.2 1.2-2 2.8-3.2 5-3.2 3.5 0 5.8 3.2 4.3 7-1.8 5.5-9.3 10-9.3 10z" fill="currentColor" fill-opacity=".15"/><path d="M7.5 12.5h2l1.5-3 2 5.5 1.5-2.5h2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+    sleep:
+      '<path d="M20.5 14.5A8.8 8.8 0 0 1 9.5 3.5 9 9 0 1 0 20.5 14.5z" fill="currentColor" fill-opacity=".2"/><path d="M15.5 6.5l.5 1.2 1.2.5-1.2.5-.5 1.2-.5-1.2-1.2-.5 1.2-.5z" fill="currentColor" stroke="none"/><circle cx="12.5" cy="5.2" r=".8" fill="currentColor"/><circle cx="17.8" cy="11.2" r=".6" fill="currentColor"/>',
+    money:
+      '<ellipse cx="12" cy="6" rx="8" ry="3" fill="currentColor" fill-opacity=".25"/><path d="M4 6v5c0 1.66 3.58 3 8 3s8-1.34 8-3V6"/><path d="M4 11v5c0 1.66 3.58 3 8 3s8-1.34 8-3v-5"/><path d="M12 8.5v3.5M10.5 10.2h3" stroke-width="1.2" opacity=".7"/><path d="M12 13.5v3.5M10.5 15.2h3" stroke-width="1.2" opacity=".7"/>',
+    goals:
+      '<circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="6" fill="currentColor" fill-opacity=".2"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3" stroke-width="1.3"/>',
     arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
     down: '<path d="M12 5v14M6 13l6 6 6-6"/>',
     steps: '<path d="M7.500 3c2 0 3 2 3 5s-1 4-2.500 4S5.500 10.500 5.500 8 6 3 7.500 3z"/><path d="M8 15.500h2.500V18a1.300 1.300 0 0 1-2.500 0z"/><path d="M16.500 9c2 0 3 2 3 5s-1 4-2.500 4-2.500-1.500-2.500-4 .5-5 2-5z"/><path d="M17 20h2.500"/>',
@@ -52,6 +61,247 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
   };
   const ic = (n: string, sz = 18, sw = 1.8) =>
     `<svg viewBox="0 0 24 24" width="${sz}" height="${sz}" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}</svg>`;
+
+  /* ───────── hyper-realistic 3D pure icons (volumetric models with lighting & bevels) ───────── */
+  function render3DIcon(k: string, cx?: number, cy?: number, size = 32, idSuffix = 'i') {
+    const s = size;
+    const isPlaced = cx !== undefined && cy !== undefined;
+    const pfx = `i3d-${k}-${idSuffix}`;
+    let content = '';
+
+    if (k === 'goals') {
+      content = `
+        <defs>
+          <radialGradient id="${pfx}-core" cx="35%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="25%" stop-color="#fca5a5"/>
+            <stop offset="60%" stop-color="#ef4444"/>
+            <stop offset="100%" stop-color="#991b1b"/>
+          </radialGradient>
+          <radialGradient id="${pfx}-ring" cx="32%" cy="28%" r="70%">
+            <stop offset="0%" stop-color="#ff8577"/>
+            <stop offset="40%" stop-color="#ee4444"/>
+            <stop offset="80%" stop-color="#b91c1c"/>
+            <stop offset="100%" stop-color="#701010"/>
+          </radialGradient>
+          <linearGradient id="${pfx}-metal" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="35%" stop-color="#e2e8f0"/>
+            <stop offset="70%" stop-color="#94a3b8"/>
+            <stop offset="100%" stop-color="#f8fafc"/>
+          </linearGradient>
+          <filter id="${pfx}-sh" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2.5" stdDeviation="2" flood-color="#7f1d1d" flood-opacity="0.35"/>
+          </filter>
+        </defs>
+        <g filter="url(#${pfx}-sh)">
+          <circle cx="18" cy="18" r="16" fill="url(#${pfx}-metal)"/>
+          <circle cx="18" cy="18" r="14.2" fill="#701010"/>
+          <circle cx="18" cy="18" r="13.8" fill="url(#${pfx}-ring)"/>
+          <circle cx="18" cy="18" r="9.8" fill="url(#${pfx}-metal)"/>
+          <circle cx="18" cy="18" r="7.8" fill="url(#${pfx}-ring)"/>
+          <circle cx="18" cy="18" r="4.8" fill="url(#${pfx}-core)"/>
+          <path d="M 5.5,16 A 13,13 0 0,1 30.5,16 A 13,6.5 0 0,0 5.5,16 Z" fill="#ffffff" opacity="0.45"/>
+          <rect x="17.2" y="2.5" width="1.6" height="3" rx="0.8" fill="#ffffff" opacity="0.9"/>
+          <rect x="17.2" y="30.5" width="1.6" height="3" rx="0.8" fill="#ffffff" opacity="0.9"/>
+          <rect x="2.5" y="17.2" width="3" height="1.6" rx="0.8" fill="#ffffff" opacity="0.9"/>
+          <rect x="30.5" y="17.2" width="3" height="1.6" rx="0.8" fill="#ffffff" opacity="0.9"/>
+          <circle cx="16.5" cy="16.5" r="1.3" fill="#ffffff" opacity="0.95"/>
+        </g>
+      `;
+    } else if (k === 'study') {
+      content = `
+        <defs>
+          <linearGradient id="${pfx}-top" x1="10%" y1="0%" x2="90%" y2="100%">
+            <stop offset="0%" stop-color="#93c5fd"/>
+            <stop offset="25%" stop-color="#4f75f7"/>
+            <stop offset="65%" stop-color="#2546cf"/>
+            <stop offset="100%" stop-color="#1e2f8d"/>
+          </linearGradient>
+          <linearGradient id="${pfx}-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fffbeb"/>
+            <stop offset="35%" stop-color="#f59e0b"/>
+            <stop offset="75%" stop-color="#b45309"/>
+            <stop offset="100%" stop-color="#fbbf24"/>
+          </linearGradient>
+          <linearGradient id="${pfx}-book" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="50%" stop-color="#dbeafe"/>
+            <stop offset="100%" stop-color="#93c5fd"/>
+          </linearGradient>
+          <filter id="${pfx}-sh" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2.5" stdDeviation="2" flood-color="#1e3a8a" flood-opacity="0.35"/>
+          </filter>
+        </defs>
+        <g filter="url(#${pfx}-sh)">
+          <path d="M 6,26 Q 18,21 18,24 Q 18,21 30,26 L 30,29 Q 18,24 18,27 Q 18,24 6,29 Z" fill="url(#${pfx}-book)"/>
+          <ellipse cx="18" cy="20.5" rx="7.5" ry="4" fill="#172554"/>
+          <polygon points="18,6 33,13.5 18,20 3,13.5" fill="url(#${pfx}-top)"/>
+          <polyline points="3,13.5 18,20 33,13.5" stroke="rgba(255,255,255,0.6)" stroke-width="0.9" fill="none"/>
+          <polygon points="18,7.5 29.5,13 18,17.5 6.5,13" fill="rgba(255,255,255,0.2)"/>
+          <ellipse cx="18" cy="13.5" rx="2.5" ry="1.6" fill="url(#${pfx}-gold)"/>
+          <path d="M 18,13.5 Q 26,14.5 27.5,19 Q 28.5,23.5 29,27" fill="none" stroke="url(#${pfx}-gold)" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="29" cy="27" r="1.8" fill="url(#${pfx}-gold)"/>
+          <circle cx="29" cy="29.2" r="1.2" fill="#d97706"/>
+        </g>
+      `;
+    } else if (k === 'focus' || k === 'sun') {
+      content = `
+        <defs>
+          <radialGradient id="${pfx}-lens" cx="35%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="#fffbeb"/>
+            <stop offset="25%" stop-color="#fde047"/>
+            <stop offset="55%" stop-color="#f59e0b"/>
+            <stop offset="85%" stop-color="#d97706"/>
+            <stop offset="100%" stop-color="#78350f"/>
+          </radialGradient>
+          <linearGradient id="${pfx}-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fef9c3"/>
+            <stop offset="35%" stop-color="#fbbf24"/>
+            <stop offset="70%" stop-color="#b45309"/>
+            <stop offset="100%" stop-color="#78350f"/>
+          </linearGradient>
+          <linearGradient id="${pfx}-ray-l" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#fef08a"/>
+            <stop offset="100%" stop-color="#f59e0b"/>
+          </linearGradient>
+          <linearGradient id="${pfx}-ray-d" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#d97706"/>
+            <stop offset="100%" stop-color="#78350f"/>
+          </linearGradient>
+          <filter id="${pfx}-sh" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#78350f" flood-opacity="0.3"/>
+          </filter>
+        </defs>
+        <g filter="url(#${pfx}-sh)">
+          <polygon points="18,1 18,9 15.5,9" fill="url(#${pfx}-ray-l)"/>
+          <polygon points="18,1 20.5,9 18,9" fill="url(#${pfx}-ray-d)"/>
+          <polygon points="18,35 15.5,27 18,27" fill="url(#${pfx}-ray-l)"/>
+          <polygon points="18,35 18,27 20.5,27" fill="url(#${pfx}-ray-d)"/>
+          <polygon points="1,18 9,15.5 9,18" fill="url(#${pfx}-ray-l)"/>
+          <polygon points="1,18 9,18 9,20.5" fill="url(#${pfx}-ray-d)"/>
+          <polygon points="35,18 27,15.5 27,18" fill="url(#${pfx}-ray-l)"/>
+          <polygon points="35,18 27,18 27,20.5" fill="url(#${pfx}-ray-d)"/>
+          <polygon points="30,6 23.5,10.5 25,12" fill="url(#${pfx}-ray-l)"/>
+          <polygon points="30,6 25,12 26.5,13.5" fill="url(#${pfx}-ray-d)"/>
+          <polygon points="6,6 11,12.5 9.5,14" fill="url(#${pfx}-ray-l)"/>
+          <polygon points="6,6 12.5,11 11,12.5" fill="url(#${pfx}-ray-d)"/>
+          <polygon points="30,30 25,24 23.5,25.5" fill="url(#${pfx}-ray-l)"/>
+          <polygon points="30,30 26.5,22.5 25,24" fill="url(#${pfx}-ray-d)"/>
+          <polygon points="6,30 12.5,25 11,23.5" fill="url(#${pfx}-ray-l)"/>
+          <polygon points="6,30 9.5,22 11,23.5" fill="url(#${pfx}-ray-d)"/>
+          <circle cx="18" cy="18" r="11" fill="url(#${pfx}-gold)"/>
+          <circle cx="18" cy="18" r="9.5" fill="#451a03"/>
+          <circle cx="18" cy="18" r="8.8" fill="url(#${pfx}-lens)"/>
+          <path d="M 11,17 A 7.5,7.5 0 0,1 25,17 A 7.5,4 0 0,0 11,17 Z" fill="#ffffff" opacity="0.55"/>
+          <circle cx="18" cy="18" r="3.2" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="0.8"/>
+          <circle cx="16.5" cy="16.5" r="1.3" fill="#ffffff"/>
+        </g>
+      `;
+    } else if (k === 'health' || k === 'heart') {
+      content = `
+        <defs>
+          <linearGradient id="${pfx}-heart" x1="15%" y1="0%" x2="85%" y2="100%">
+            <stop offset="0%" stop-color="#a7f3d0"/>
+            <stop offset="25%" stop-color="#34d399"/>
+            <stop offset="65%" stop-color="#059669"/>
+            <stop offset="100%" stop-color="#064e3b"/>
+          </linearGradient>
+          <filter id="${pfx}-sh" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2.5" stdDeviation="2" flood-color="#064e3b" flood-opacity="0.35"/>
+          </filter>
+        </defs>
+        <g filter="url(#${pfx}-sh)">
+          <path d="M 18,31 C 10,24 4,18 4,11 C 4,6 8,2.5 13,2.5 C 15.8,2.5 17.2,3.8 18,5.5 C 18.8,3.8 20.2,2.5 23,2.5 C 28,2.5 32,6 32,11 C 32,18 26,24 18,31 Z" fill="url(#${pfx}-heart)"/>
+          <ellipse cx="11.5" cy="7.5" rx="4.5" ry="2.6" transform="rotate(-30 11.5 7.5)" fill="#ffffff" opacity="0.6"/>
+          <ellipse cx="24.5" cy="7.5" rx="4.5" ry="2.6" transform="rotate(30 24.5 7.5)" fill="#ffffff" opacity="0.45"/>
+          <path d="M 23,3.5 C 27,3.5 30.5,6.5 30.5,11 C 30.5,17 25,23 18,29" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M 6.5,16 L 11.5,16 L 14,10.5 L 17.5,21.5 L 20.5,12.5 L 23,17 L 29.5,17" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0 0 3px #10b981)"/>
+          <circle cx="17.5" cy="21.5" r="1.2" fill="#ffffff"/>
+        </g>
+      `;
+    } else if (k === 'sleep' || k === 'moon') {
+      content = `
+        <defs>
+          <radialGradient id="${pfx}-moon" cx="30%" cy="25%" r="70%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="25%" stop-color="#ddd6fe"/>
+            <stop offset="60%" stop-color="#8b5cf6"/>
+            <stop offset="85%" stop-color="#6d28d9"/>
+            <stop offset="100%" stop-color="#4c1d95"/>
+          </radialGradient>
+          <linearGradient id="${pfx}-cloud" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#ede9fe"/>
+            <stop offset="45%" stop-color="#c4b5fd"/>
+            <stop offset="85%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#4c1d95"/>
+          </linearGradient>
+          <filter id="${pfx}-sh" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2.5" stdDeviation="2" flood-color="#4c1d95" flood-opacity="0.35"/>
+          </filter>
+        </defs>
+        <g filter="url(#${pfx}-sh)">
+          <path d="M 7,27 C 4.5,27 3,25 3,23 C 3,21 4.5,19.2 6.5,18.8 C 7.5,15.5 10.8,13.5 14.5,13.5 C 18.5,13.5 21.8,16 22.8,19.5 C 23.6,19 24.8,18.5 26,18.5 C 28.5,18.5 31,20.5 31,23 C 31,25.5 29,27 26.5,27 Z" fill="url(#${pfx}-cloud)" opacity="0.95"/>
+          <path d="M 26,6 C 18,6.8 11.5,13.5 11.5,21.5 C 11.5,24.2 12.2,26.8 13.5,29 C 9.8,26.2 7.5,22 7.5,17 C 7.5,8.8 14.2,2 22.5,2 C 23.7,2 24.9,2.2 26,2.5 C 25.1,3.5 25.5,4.9 26,6 Z" fill="url(#${pfx}-moon)"/>
+          <path d="M 25,3 C 23.9,2.5 22.7,2.2 21.5,2.2 C 14,2.2 8,8.5 8,16.5 C 8,21 10.2,25 13.5,27.5" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.1" stroke-linecap="round"/>
+          <path d="M 27,4 L 28,8 L 32,9 L 28,10 L 27,14 L 26,10 L 22,9 L 26,8 Z" fill="#ffffff" filter="drop-shadow(0 0 2.5px #c4b5fd)"/>
+          <circle cx="21" cy="15.5" r="1.1" fill="#ffffff"/>
+        </g>
+      `;
+    } else if (k === 'money') {
+      content = `
+        <defs>
+          <linearGradient id="${pfx}-gold-rim" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fef08a"/>
+            <stop offset="35%" stop-color="#f59e0b"/>
+            <stop offset="70%" stop-color="#b45309"/>
+            <stop offset="100%" stop-color="#78350f"/>
+          </linearGradient>
+          <radialGradient id="${pfx}-coin" cx="35%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="#99f6e4"/>
+            <stop offset="30%" stop-color="#2dd4bf"/>
+            <stop offset="65%" stop-color="#0d9488"/>
+            <stop offset="90%" stop-color="#115e59"/>
+            <stop offset="100%" stop-color="#042f2e"/>
+          </radialGradient>
+          <linearGradient id="${pfx}-edge" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#fde047"/>
+            <stop offset="50%" stop-color="#d97706"/>
+            <stop offset="100%" stop-color="#78350f"/>
+          </linearGradient>
+          <filter id="${pfx}-sh" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2.5" stdDeviation="2" flood-color="#042f2e" flood-opacity="0.35"/>
+          </filter>
+        </defs>
+        <g filter="url(#${pfx}-sh)">
+          <ellipse cx="14" cy="14" rx="10" ry="5.5" fill="url(#${pfx}-edge)"/>
+          <ellipse cx="14" cy="13" rx="10" ry="5.5" fill="url(#${pfx}-coin)"/>
+          <path d="M 5.5,19 L 5.5,23.5 C 5.5,27.5 11,30.5 18,30.5 C 25,30.5 30.5,27.5 30.5,23.5 L 30.5,19 Z" fill="url(#${pfx}-edge)"/>
+          <line x1="8" y1="21" x2="8" y2="25" stroke="#92400e" stroke-width="0.8"/>
+          <line x1="12" y1="23" x2="12" y2="27" stroke="#92400e" stroke-width="0.8"/>
+          <line x1="18" y1="24.5" x2="18" y2="28.5" stroke="#92400e" stroke-width="0.8"/>
+          <line x1="24" y1="23" x2="24" y2="27" stroke="#92400e" stroke-width="0.8"/>
+          <line x1="28" y1="21" x2="28" y2="25" stroke="#92400e" stroke-width="0.8"/>
+          <ellipse cx="18" cy="19" rx="12.5" ry="7" fill="url(#${pfx}-gold-rim)"/>
+          <ellipse cx="18" cy="19" rx="10.2" ry="5.5" fill="url(#${pfx}-coin)"/>
+          <ellipse cx="18" cy="19" rx="5.8" ry="3" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.2"/>
+          <path d="M 18,15 L 18,23 M 15.5,17.5 Q 18,16.5 20.5,18 Q 18,19.5 15.5,20.5" stroke="#ffffff" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+          <ellipse cx="14.5" cy="17" rx="6.5" ry="2.2" fill="#ffffff" opacity="0.5" transform="rotate(-15 14.5 17)"/>
+        </g>
+      `;
+    } else {
+      content = ic(k, s);
+    }
+
+    if (isPlaced) {
+      const scale = (s / 36).toFixed(3);
+      const ox = (cx! - s / 2).toFixed(1);
+      const oy = (cy! - s / 2).toFixed(1);
+      return `<g class="icon-3d icon-3d-${k}" transform="translate(${ox} ${oy}) scale(${scale})">${content}</g>`;
+    }
+
+    return `<svg class="icon-3d icon-3d-${k}" viewBox="0 0 36 36" width="${s}" height="${s}" aria-hidden="true">${content}</svg>`;
+  }
 
   /* ───────── data ───────── */
   const DIMS = [
@@ -138,10 +388,16 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
   if (bestIc) bestIc.innerHTML = ic('sun', 22);
   const sideCard = $('#db-sideCard');
   if (sideCard)
-    sideCard.innerHTML = `${ic('clock', 22, 1.5)}<p>Your life works better together.</p><hr><small>LIFEOS</small><small>Your life, in one clear view.</small>`;
+    sideCard.innerHTML = `${ic('clock', 22, 1.5)}<p>Your life works better together.</p><hr><div style="display:flex;align-items:center;margin-bottom:2px;"><img src="/logo.png" alt="LifeOS" style="height:18px;width:auto;object-fit:contain;" /></div><small>Your life, in one clear view.</small>`;
 
   const themeBtn = $('#db-themeBtn');
-  const dark = () => (root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches);
+  const savedTheme = typeof localStorage !== 'undefined' ? localStorage.getItem('lifeos-theme') : null;
+  if (savedTheme === 'dark' || savedTheme === 'light') {
+    root.dataset.theme = savedTheme;
+  } else {
+    root.dataset.theme = 'light';
+  }
+  const dark = () => root.dataset.theme === 'dark';
   const setIcon = () => {
     if (themeBtn) themeBtn.innerHTML = ic(dark() ? 'sun' : 'moon', 20);
   };
@@ -149,7 +405,11 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
 
   if (themeBtn) {
     themeBtn.onclick = () => {
-      root.dataset.theme = dark() ? 'light' : 'dark';
+      const nextTheme = dark() ? 'light' : 'dark';
+      root.dataset.theme = nextTheme;
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('lifeos-theme', nextTheme);
+      }
       setIcon();
     };
   }
@@ -204,53 +464,66 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
     if (!ow) return;
     const cx = 320,
       cy = 200,
-      R = 148,
+      R = 152,
       d = state.dims,
       weak = weakest(d).k;
     const P = (a: number) => [cx + R * Math.cos((a * Math.PI) / 180), cy + R * Math.sin((a * Math.PI) / 180)];
-    const calm = reduced();
+
     let s = `<svg viewBox="60 0 520 400" role="group" aria-label="Life orbit: six dimensions around you" class="${
       state.intro ? 'intro' : ''
     }${state.spot ? ' has-spot' : ''}">
-    <defs><filter id="db-blur" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="9"/></filter></defs>
-    ${stars()}<circle class="ring" cx="${cx}" cy="${cy}" r="62"/><circle class="ring" cx="${cx}" cy="${cy}" r="106"/>
-    <circle class="ring dash spin" cx="${cx}" cy="${cy}" r="${R}"/><circle class="ring" cx="${cx}" cy="${cy}" r="190" opacity=".6"/>`;
-    DIMS.forEach((m, i) => {
+    <defs>
+      <filter id="db-blur" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="11"/></filter>
+      <radialGradient id="db-core-flare" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="var(--acc)" stop-opacity="0.8"/>
+        <stop offset="40%" stop-color="var(--acc)" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="var(--acc)" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="db-glass-gleam" cx="40%" cy="35%" r="60%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <circle class="ring" cx="${cx}" cy="${cy}" r="64"/>
+    <circle class="ring" cx="${cx}" cy="${cy}" r="108"/>
+    <circle class="ring dash spin" cx="${cx}" cy="${cy}" r="${R}"/>
+    <circle class="ring" cx="${cx}" cy="${cy}" r="195" opacity=".4"/>`;
+
+    // Connected spokes to each dimension
+    DIMS.forEach((m) => {
       const [x, y] = P(m.angle);
-      s += `<line class="spoke" x1="${cx}" y1="${cy}" x2="${x}" y2="${y}"/>`;
-      if (!calm) {
-        s += `<circle r="2.6" fill="var(--${m.k})"><animateMotion dur="${3.2 + i * 0.45}s" begin="${
-          -i * 0.8
-        }s" repeatCount="indefinite" path="M${x},${y} L${cx},${cy}"/><animate attributeName="opacity" values="0;1;1;0" dur="${
-          3.2 + i * 0.45
-        }s" begin="${-i * 0.8}s" repeatCount="indefinite"/></circle>`;
-      }
+      s += `<line class="spoke spoke-${m.k}" data-k="${m.k}" style="--c:var(--${m.k})" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`;
     });
+
     s += linksSvg(P, cx, cy);
-    s += `<circle class="core-halo" cx="${cx}" cy="${cy}" r="48"/><circle class="core" cx="${cx}" cy="${cy}" r="35"/><text class="you" x="${cx}" y="${
-      cy + 4.5
+    s += `<circle class="core-glow" cx="${cx}" cy="${cy}" r="68" fill="url(#db-core-flare)" pointer-events="none"/>
+    <circle class="core-halo" cx="${cx}" cy="${cy}" r="52"/><circle class="core" cx="${cx}" cy="${cy}" r="38"/><text class="you" x="${cx}" y="${
+      cy + 5
     }">YOU</text>`;
+
     DIMS.forEach((m, i) => {
       const [x, y] = P(m.angle),
         v = Math.round(d[m.k]),
         dv = v - BASE[m.k];
       const left = Math.cos((m.angle * Math.PI) / 180) < -0.1,
-        tx = left ? x - 38 : x + 38,
+        tx = left ? x - 48 : x + 48,
         an = left ? 'end' : 'start';
       s += `<g class="node${weak === m.k ? ' weak' : ''}${state.spot === m.k ? ' on' : ''}" data-k="${m.k}" style="--c:var(--${
         m.k
       });--i:${i}" tabindex="0" role="button" aria-label="${m.name}, ${v} percent. Press to spotlight.">
-        <g class="orb">
-          ${weak === m.k ? `<circle class="pulse" cx="${x}" cy="${y}" r="25"/>` : ''}
-          <circle class="glow" cx="${x}" cy="${y}" r="33"/>
-          <circle class="disc" cx="${x}" cy="${y}" r="25"/>
-          <circle class="halo" cx="${x}" cy="${y}" r="33"/>
-          <g class="gl" transform="translate(${x - 10} ${y - 10}) scale(.8333)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${
-            ICON[m.orb]
-          }</g>
+        <g class="orb-anchor" transform="translate(${x.toFixed(1)}, ${y.toFixed(1)})">
+          <g class="orb">
+            ${weak === m.k ? `<circle class="pulse" cx="0" cy="0" r="28"/>` : ''}
+            <circle class="glow" cx="0" cy="0" r="38"/>
+            <circle class="disc" cx="0" cy="0" r="28"/>
+            <circle class="glass-gleam" cx="0" cy="-8" r="16" fill="url(#db-glass-gleam)" opacity="0.4" pointer-events="none"/>
+            <circle class="halo" cx="0" cy="0" r="38"/>
+            <circle class="hover-ring" cx="0" cy="0" r="32" pointer-events="none"/>
+            ${render3DIcon(m.k, 0, 0, 32, 'orb-' + m.k)}
+          </g>
         </g>
-        <text class="nm" x="${tx}" y="${y - 3}" text-anchor="${an}">${m.name}</text>
-        <text class="vl" x="${tx}" y="${y + 15}" text-anchor="${an}">${v}%${
+        <text class="nm" x="${tx.toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="${an}">${m.name}</text>
+        <text class="vl" x="${tx.toFixed(1)}" y="${(y + 16).toFixed(1)}" text-anchor="${an}">${v}%${
           dv > 0 ? `<tspan class="up" dx="5">+${dv}</tspan>` : ''
         }</text>
       </g>`;
@@ -278,18 +551,32 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
 
   const ow = $('#db-orbitWrap');
   if (ow) {
+    const handleNodeHover = (k?: string | null) => {
+      setNote(k);
+      const svg = ow.querySelector('svg');
+      if (!svg) return;
+      svg.querySelectorAll('.spoke').forEach((sp) => sp.classList.remove('active'));
+      const core = svg.querySelector('.core');
+      if (k) {
+        svg.querySelector(`.spoke-${k}`)?.classList.add('active');
+        core?.classList.add('active-core');
+      } else {
+        core?.classList.remove('active-core');
+      }
+    };
+
     ow.addEventListener('mouseover', (e: MouseEvent) => {
       const n = (e.target as Element).closest('.node') as HTMLElement;
-      if (n) setNote(n.dataset.k);
+      if (n) handleNodeHover(n.dataset.k);
     });
     ow.addEventListener('mouseout', (e: MouseEvent) => {
-      if ((e.target as Element).closest('.node')) setNote();
+      if ((e.target as Element).closest('.node')) handleNodeHover(null);
     });
     ow.addEventListener('focusin', (e: FocusEvent) => {
       const n = (e.target as Element).closest('.node') as HTMLElement;
-      if (n) setNote(n.dataset.k);
+      if (n) handleNodeHover(n.dataset.k);
     });
-    ow.addEventListener('focusout', () => setNote());
+    ow.addEventListener('focusout', () => handleNodeHover(null));
     ow.addEventListener('click', (e: MouseEvent) => {
       const n = (e.target as Element).closest('.node') as HTMLElement;
       if (n) spotlight(n.dataset.k);
@@ -308,12 +595,48 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
   function renderList() {
     const ol = $('#db-orbList');
     if (!ol) return;
-    ol.innerHTML = DIMS.map((m) => {
+    ol.innerHTML = DIMS.map((m, i) => {
       const v = Math.round(state.dims[m.k]);
-      return `<button class="row" data-k="${m.k}" style="--c:var(--${m.k})"><span class="bdg">${ic(
-        m.orb,
-        17
-      )}</span><span>${m.name}</span><span class="t"><i style="width:${v}%"></i></span><b>${v}%</b></button>`;
+      const isSelected = state.spot === m.k;
+      return `<button class="row${isSelected ? ' on electric' : ''}" data-k="${m.k}" style="--c:var(--${m.k});--i:${i}" tabindex="0" role="button" aria-label="${m.name}, ${v} percent. Press to spotlight.">
+        <span class="bdg">
+          <i class="bdg-blob"></i>
+          ${isSelected ? '<span class="electric-ring"></span>' : ''}
+          ${render3DIcon(m.k, undefined, undefined, 26, 'lst-' + m.k)}
+        </span>
+        <span class="nm">${m.name}</span>
+        <span class="t" role="progressbar" aria-valuenow="${v}" aria-valuemin="0" aria-valuemax="100">
+          <i class="t-liquid" style="width:${v}%">
+            <!-- Living Water Wave Crest -->
+            <svg class="water-wave-svg" viewBox="0 0 120 20" preserveAspectRatio="none" aria-hidden="true">
+              <path class="wave-crest" d="M0,10 C15,4 30,16 45,10 C60,4 75,16 90,10 C105,4 120,16 135,10 L135,20 L0,20 Z" />
+            </svg>
+            <span class="t-wave"></span>
+            <span class="t-sheen"></span>
+            <!-- Rising Micro-bubbles -->
+            <span class="t-bubbles">
+              <i class="b1"></i><i class="b2"></i><i class="b3"></i>
+            </span>
+            <!-- Leading Meniscus Blob -->
+            <span class="t-blob"></span>
+            <!-- Electric Lightning Arcs when Clicked -->
+            ${
+              isSelected
+                ? `
+              <svg class="lightning-svg" viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true">
+                <path class="electric-bolt b1" d="M0,10 L12,4 L24,16 L38,5 L52,14 L66,6 L80,15 L92,5 L100,10" />
+                <path class="electric-bolt b2" d="M0,10 L16,15 L30,5 L44,15 L58,4 L72,16 L86,6 L94,14 L100,10" />
+              </svg>
+              <span class="electric-sparks">
+                <i class="es1"></i><i class="es2"></i><i class="es3"></i><i class="es4"></i>
+              </span>
+            `
+                : ''
+            }
+          </i>
+        </span>
+        <b class="val">${v}%</b>
+      </button>`;
     }).join('');
   }
 
@@ -336,9 +659,9 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
   if (vListBtn) vListBtn.onclick = () => setView('list');
 
   /* ───────── balance dial (onboarding style) ───────── */
-  const R0 = 74,
-    R1 = 112,
-    DM = 5,
+  const R0 = 66,
+    R1 = 98,
+    DM = 4.5,
     HI = 0.385;
   const P_ = (a0: number, a1: number, r0: number, r1: number) => {
     const c = (a: number) => [Math.cos(a), Math.sin(a)];
@@ -402,12 +725,13 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
       for (let i = 0; i < 72; i++) {
         const a = (i * Math.PI) / 36;
         const L = i % 6 === 0;
-        const r0 = L ? 127 : 132;
+        const r0 = L ? 104 : 108;
+        const r1 = 117;
         s += `<line x1="${(r0 * Math.cos(a)).toFixed(2)}" y1="${(r0 * Math.sin(a)).toFixed(2)}" x2="${(
-          140 * Math.cos(a)
-        ).toFixed(2)}" y2="${(140 * Math.sin(a)).toFixed(2)}" stroke="rgba(21,23,28,${
-          L ? 0.45 : 0.2
-        })" stroke-width="${L ? 1.6 : 1}"/>`;
+          r1 * Math.cos(a)
+        ).toFixed(2)}" y2="${(r1 * Math.sin(a)).toFixed(2)}" stroke="rgba(21,23,28,${
+          L ? 0.55 : 0.28
+        })" stroke-width="${L ? 2.2 : 1.4}"/>`;
       }
       tk.innerHTML = s;
     }
@@ -494,10 +818,12 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
         const e = document.createElement('button');
         e.type = 'button';
         e.className = 'pl';
-        const pr = 37.5 + 3.5 * Math.abs(Math.cos(m)) ** 2;
-        e.style.cssText = `left:${(50 + pr * Math.cos(m)).toFixed(2)}%;top:${(50 + pr * Math.sin(m)).toFixed(
-          2
-        )}%;--c:var(--${k});--i:${i}`;
+        const isSide = Math.abs(Math.sin(m)) < 0.2;
+        const prX = isSide ? 49 : 43;
+        const prY = isSide ? 0 : 42;
+        const px = 50 + prX * Math.cos(m);
+        const py = 50 + (isSide ? 0 : prY * Math.sin(m));
+        e.style.cssText = `left:${px.toFixed(2)}%;top:${py.toFixed(2)}%;--c:var(--${k});--i:${i}`;
         e.innerHTML = `<i></i>${N[i]}<b class="num">${Math.round(state.dims[k] || 0)}</b>`;
         e.onmouseenter = e.onfocus = () => {
           hovD = i;
@@ -537,14 +863,13 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
           const f1 = mid + HI + DM / 93;
           const frac = clamp((curScores[i] - 30) / 70);
           const fe = f0 + (f1 - f0) * frac;
-          const o = hs[i] * 10;
-
           const td = P_(mid - HI, mid + HI, R0 + DM, R1 - DM);
           arc.t.setAttribute('d', td);
           arc.u.setAttribute('d', td);
           arc.p.setAttribute('d', frac > 0.006 ? W(f0 - 0.03, fe, R0 - 2, R1 + 2, T, i, rm) : '');
-          arc.h.setAttribute('d', fe - f0 > 0.22 ? H_(f0 + 0.1, fe - 0.07, R1 - 9) : '');
+          arc.h.setAttribute('d', fe - f0 > 0.22 ? H_(f0 + 0.1, fe - 0.07, R1 - 8) : '');
           arc.h.style.opacity = String(hs[i]);
+          const o = hs[i] * 5;
           arc.g.setAttribute('transform', `translate(${(o * Math.cos(mid)).toFixed(2)} ${(o * Math.sin(mid)).toFixed(2)})`);
           arc.g.style.filter =
             hs[i] > 0.02
@@ -630,8 +955,11 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
   const balChip = $('#db-balChip');
   if (balChip) {
     balChip.onclick = (e) => {
-      const k = (e.currentTarget as HTMLElement).dataset.k;
-      openWhatIf(k === 'sleep' ? { sleep: 1 } : k === 'health' ? { steps: 3000 } : k === 'study' ? { study: 1.5 } : {});
+      const k = (e.currentTarget as HTMLElement).dataset.k || 'sleep';
+      spotlight(k);
+      const target = document.getElementById('db-msList') || document.getElementById('db-tiles');
+      target?.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'center' });
+      toast(`Jumped to today's ${dn(k)} missions.`);
     };
   }
 
@@ -735,7 +1063,7 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
     s += `<rect class="band" x="${bx}" y="${mt}" width="${bw}" height="${ih}" rx="8"/>`;
     s += `<g transform="translate(${bx + bw / 2} ${
       mt - 6
-    })"><rect x="-58" y="-17" width="116" height="30" rx="9" fill="var(--btn)"/><text x="0" y="-5" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--btnink)" font-family="var(--sans)">Best focus window</text><text x="0" y="7" text-anchor="middle" font-size="9" fill="var(--btnink)" opacity=".75" font-family="var(--sans)">9:00 – 11:00 AM</text></g>`;
+    })"><rect class="band-tip-bg" x="-58" y="-17" width="116" height="30" rx="9" fill="var(--btn)"/><text class="band-tip-txt" x="0" y="-5" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--btnink)" font-family="var(--sans)">Best focus window</text><text class="band-tip-sub" x="0" y="7" text-anchor="middle" font-size="9" fill="var(--btnink)" opacity=".75" font-family="var(--sans)">9:00 – 11:00 AM</text></g>`;
 
     const n = new Date(),
       nh = n.getHours() + n.getMinutes() / 60;
@@ -848,39 +1176,63 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
 
   /* ───────── insights ───────── */
   function renderInsights() {
-    const d = state.dims,
-      s = Math.round(d.sleep),
-      st = Math.round(d.study);
-    const lag = s < st - 10;
+    const d = state.dims;
+    const walkDone = mdone.has('m2');
     const I = [
       {
-        c: 'sleep',
-        ic: 'moon',
-        t: lag ? 'Recovery is lagging' : 'Recovery is keeping pace',
-        p: lag
-          ? `Sleep is at ${s} while Study is at ${st}. Your recovery needs attention.`
-          : `Sleep is at ${s}, close behind Study at ${st}. Keep your bedtime steady.`,
-        a: 'Explore Sleep',
-        f: () => openWhatIf({ sleep: 1 }),
+        c: 'health',
+        ic: 'health',
+        t: 'Active Momentum Streak',
+        p: `You're at ${steps.toLocaleString('en-US')} steps today. A quick 15-min walk will hit your daily activity goal and unlock +15 XP.`,
+        a: walkDone ? 'Walk logged today ✓' : 'Log 15-min walk (+15 XP)',
+        f: () => {
+          if (!mdone.has('m2')) {
+            mdone.add('m2');
+            steps += 1200;
+            state.dims.health = clamp(state.dims.health + 2);
+            state.dims.focus = clamp(state.dims.focus + 1);
+            xp += 15;
+            setXP();
+            renderMissions();
+            renderGlance();
+            renderInsights();
+            celebrate();
+            toast('🚶 15-min walk logged! +1,200 steps & +15 XP earned.');
+          } else {
+            $('#db-msList')?.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'center' });
+            toast('Walk goal already completed for today!');
+          }
+        },
       },
       {
         c: 'focus',
         ic: 'sun',
-        t: 'Your best focus window',
-        p: '9–11 AM is your strongest focus period. Keep it free for deep work.',
-        a: 'Explore Study',
+        t: 'Peak Focus Window: 9–11 AM',
+        p: 'Your natural circadian rhythm peaks from 9:00–11:00 AM. Guard these two hours from shallow distractions.',
+        a: 'Protect on Calendar 📅',
         f: () => {
-          spotlight('study');
-          $('#db-orbitWrap')?.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'center' });
+          const rh = $('#db-chart') || $('#db-rhT');
+          rh?.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'center' });
+          const blockBtn = document.getElementById('db-blockBtn') as HTMLElement;
+          if (blockBtn && blockBtn.getAttribute('aria-pressed') !== 'true') {
+            blockBtn.click();
+          } else {
+            toast('📅 9:00 – 11:00 AM is protected on your calendar for Deep Work.');
+          }
         },
       },
       {
         c: 'study',
         ic: 'study',
-        t: 'Marketing exam in 3 days',
-        p: 'See how two hours of daily study could change your plan.',
-        a: 'Simulate a plan',
-        f: () => openWhatIf({ study: 2 }),
+        t: 'Marketing Exam in 3 Days',
+        p: 'Exam readiness is at 73%. Completing today’s notes will advance your score past the 85% mastery threshold.',
+        a: 'Start Study Session ⏱',
+        f: () => {
+          spotlight('study');
+          const ms = $('#db-msList');
+          ms?.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'center' });
+          toast('🎓 Marketing Exam review block started! Let’s lock in +3 Study XP.');
+        },
       },
     ];
     const insList = $('#db-insList');
@@ -916,24 +1268,51 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
   let lastFocus: any = null;
 
   function renderWhatIf() {
+    const findEl = (s: string) => (root.querySelector(s) || document.querySelector(s)) as HTMLElement | null;
     const base = state.dims,
       proj = project(base, plan);
     const b0 = balance(base),
       b1 = balance(proj),
       df = b1 - b0;
-    const oSleep = $('#db-oSleep');
-    if (oSleep) oSleep.textContent = plan.sleep ? `${plan.sleep}h earlier · bed by ${bedtime(plan.sleep)}` : 'No change';
-    const oStudy = $('#db-oStudy');
-    if (oStudy) oStudy.textContent = plan.study ? `+${plan.study}h a day` : 'No change';
-    const oSteps = $('#db-oSteps');
-    if (oSteps) oSteps.textContent = plan.steps ? `+${plan.steps.toLocaleString('en-US')} steps` : 'No change';
-    const wiA = $('#db-wiA');
+
+    const rSleep = findEl('#db-rSleep') as HTMLInputElement;
+    if (rSleep) {
+      if (document.activeElement !== rSleep) rSleep.value = String(plan.sleep || 0);
+      rSleep.style.setProperty('--pct', `${((plan.sleep || 0) / 2) * 100}%`);
+    }
+    const rStudy = findEl('#db-rStudy') as HTMLInputElement;
+    if (rStudy) {
+      if (document.activeElement !== rStudy) rStudy.value = String(plan.study || 0);
+      rStudy.style.setProperty('--pct', `${((plan.study || 0) / 3) * 100}%`);
+    }
+    const rSteps = findEl('#db-rSteps') as HTMLInputElement;
+    if (rSteps) {
+      if (document.activeElement !== rSteps) rSteps.value = String(plan.steps || 0);
+      rSteps.style.setProperty('--pct', `${((plan.steps || 0) / 5000) * 100}%`);
+    }
+
+    const oSleep = findEl('#db-oSleep');
+    if (oSleep) {
+      oSleep.textContent = plan.sleep ? `${plan.sleep}h earlier · bed by ${bedtime(plan.sleep)}` : 'No change';
+      oSleep.classList.toggle('active', !!plan.sleep);
+    }
+    const oStudy = findEl('#db-oStudy');
+    if (oStudy) {
+      oStudy.textContent = plan.study ? `+${plan.study}h a day` : 'No change';
+      oStudy.classList.toggle('active', !!plan.study);
+    }
+    const oSteps = findEl('#db-oSteps');
+    if (oSteps) {
+      oSteps.textContent = plan.steps ? `+${plan.steps.toLocaleString('en-US')} steps` : 'No change';
+      oSteps.classList.toggle('active', !!plan.steps);
+    }
+    const wiA = findEl('#db-wiA');
     if (wiA) wiA.textContent = String(b0);
-    const wiB = $('#db-wiB');
+    const wiB = findEl('#db-wiB');
     if (wiB) wiB.textContent = String(b1);
-    const D = $('#db-wiD');
+    const D = findEl('#db-wiD');
     if (D) {
-      D.textContent = df ? `${df > 0 ? '+' : ''}${df}` : '';
+      D.textContent = df !== 0 ? `${df > 0 ? '+' : ''}${df}` : '0';
       D.classList.toggle('neg', df < 0);
     }
     const ds = DIMS.map((m) => ({ n: m.name, d: Math.round(proj[m.k]) - Math.round(base[m.k]) }))
@@ -941,7 +1320,7 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
       .sort((a, b) => b.d - a.d);
     const up = ds.filter((x) => x.d > 0).slice(0, 2),
       down = ds.filter((x) => x.d < 0)[0];
-    const wiN = $('#db-wiN');
+    const wiN = findEl('#db-wiN');
     if (wiN) {
       wiN.textContent = ds.length
         ? `${up.length ? `This plan lifts ${up.map((u) => `${u.n} by ${u.d}`).join(' and ')}` : 'This plan costs more than it gives'}${
@@ -949,67 +1328,132 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
           }. Balance moves from ${b0} to ${b1}.`
         : 'Move a lever to see how one change spreads across all six dimensions.';
     }
-    const wiRows = $('#db-wiRows');
+    const wiRows = findEl('#db-wiRows');
     if (wiRows) {
       wiRows.innerHTML = DIMS.map((m) => {
         const a = Math.round(base[m.k]),
           c = Math.round(proj[m.k]),
           dl = c - a;
-        return `<div class="wr" style="--c:var(--${m.k})"><span>${
-          m.name
-        }</span><span class="t"><i class="b0" style="width:${a}%"></i><i class="b1" style="width:${Math.min(
-          a,
-          c
-        )}%"></i>${c > a ? `<i class="b1" style="left:${a}%;width:${c - a}%;opacity:1"></i>` : ''}</span><em>${c}${
-          dl ? ` <u class="${dl < 0 ? 'neg' : ''}">${dl > 0 ? '+' : ''}${dl}</u>` : ''
-        }</em></div>`;
+        const baseW = Math.min(a, c);
+        const gainW = c > a ? c - a : 0;
+        const lossW = c < a ? a - c : 0;
+        return `<div class="wr" style="--c:var(--${m.k})">
+          <span class="wr-name"><i class="wr-dot" style="background:var(--${m.k})"></i>${m.name}</span>
+          <div class="wr-track">
+            <div class="wr-fill base" style="width:${baseW}%;background:var(--${m.k})"></div>
+            ${gainW > 0 ? `<div class="wr-fill gain" style="left:${a}%;width:${gainW}%;background:var(--${m.k})"></div>` : ''}
+            ${lossW > 0 ? `<div class="wr-fill loss" style="left:${c}%;width:${lossW}%"></div>` : ''}
+          </div>
+          <div class="wr-meta">
+            <span class="wr-num">${c}</span>
+            ${dl !== 0 ? `<span class="wr-delta ${dl > 0 ? 'pos' : 'neg'}">${dl > 0 ? '+' + dl : dl}</span>` : '<span class="wr-delta-empty"></span>'}
+          </div>
+        </div>`;
       }).join('');
     }
-    const wiE = $('#db-wiE');
+    const wiE = findEl('#db-wiE');
     if (wiE) wiE.textContent = exam(plan) + '%';
+
+    // ── Impact Stats Strip (use getElementById for reliability) ──
+    const hasChange = plan.sleep !== 0 || plan.study !== 0 || plan.steps !== 0;
+    const wisTop  = document.getElementById('db-wisTop');
+    const wisExam = document.getElementById('db-wisExam');
+    const wisBal  = document.getElementById('db-wisBal');
+
+    const examPct = exam(plan);
+    if (wisExam) wisExam.textContent = examPct + '%';
+
+    const topGainer = DIMS
+      .map((m) => ({ n: m.name, d: Math.round(proj[m.k]) - Math.round(base[m.k]) }))
+      .sort((a, b) => b.d - a.d)[0];
+
+    if (wisTop) {
+      if (hasChange && topGainer && topGainer.d !== 0) {
+        wisTop.textContent = `${topGainer.n} ${topGainer.d > 0 ? '+' : ''}${topGainer.d}`;
+        wisTop.className = 'wis-val' + (topGainer.d > 0 ? ' pos' : ' neg');
+      } else {
+        wisTop.textContent = '—';
+        wisTop.className = 'wis-val';
+      }
+    }
+    if (wisBal) {
+      if (hasChange && df !== 0) {
+        wisBal.textContent = df > 0 ? `+${df}` : String(df);
+        wisBal.className = 'wis-val' + (df > 0 ? ' pos' : ' neg');
+      } else {
+        wisBal.textContent = df !== 0 ? (df > 0 ? `+${df}` : String(df)) : '0';
+        wisBal.className = 'wis-val' + (df > 0 ? ' pos' : df < 0 ? ' neg' : '');
+      }
+    }
   }
 
   function openWhatIf(preset: any = {}) {
+    const findEl = (s: string) => (root.querySelector(s) || document.querySelector(s)) as HTMLElement | null;
     plan.sleep = preset.sleep || 0;
     plan.study = preset.study || 0;
     plan.steps = preset.steps || 0;
-    const rSleep = $('#db-rSleep') as HTMLInputElement;
-    if (rSleep) rSleep.value = String(plan.sleep);
-    const rStudy = $('#db-rStudy') as HTMLInputElement;
-    if (rStudy) rStudy.value = String(plan.study);
-    const rSteps = $('#db-rSteps') as HTMLInputElement;
-    if (rSteps) rSteps.value = String(plan.steps);
-    renderWhatIf();
-    lastFocus = document.activeElement;
-    const drawer = $('#db-drawer');
+    const drawer = findEl('#db-drawer');
     if (drawer) {
-      drawer.inert = false;
+      drawer.removeAttribute('inert');
       drawer.classList.add('on');
     }
-    $('#db-scrim')?.classList.add('on');
-    const mainEl = $('#db-main');
-    if (mainEl) mainEl.inert = true;
-    setTimeout(() => ($('#db-drClose') as HTMLElement)?.focus(), 60);
+    const scrim = findEl('#db-scrim');
+    if (scrim) scrim.classList.add('on');
+    // Lock page scroll — both html and body to cover all browsers
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    renderWhatIf();
+    lastFocus = document.activeElement;
+    setTimeout(() => findEl('#db-drClose')?.focus(), 60);
   }
 
   function closeWhatIf() {
-    const drawer = $('#db-drawer');
+    const findEl = (s: string) => (root.querySelector(s) || document.querySelector(s)) as HTMLElement | null;
+    const drawer = findEl('#db-drawer');
     if (drawer) drawer.classList.remove('on');
-    $('#db-scrim')?.classList.remove('on');
-    const mainEl = $('#db-main');
-    if (mainEl) mainEl.inert = false;
-    setTimeout(() => {
-      if (drawer) drawer.inert = true;
-    }, 400);
+    const scrim = findEl('#db-scrim');
+    if (scrim) scrim.classList.remove('on');
+    // Restore page scroll
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
-  [['db-rSleep', 'sleep'], ['db-rStudy', 'study'], ['db-rSteps', 'steps']].forEach(([id, k]) => {
-    $('#' + id)?.addEventListener('input', (e: any) => {
-      plan[k] = parseFloat(e.target.value);
-      renderWhatIf();
-    });
-  });
+  const updateLever = (k: 'sleep' | 'study' | 'steps', val: number) => {
+    plan[k] = val;
+    renderWhatIf();
+  };
+
+  const onRangeEvent = (e: Event) => {
+    const t = e.target as HTMLInputElement;
+    if (!t || !t.id) return;
+    if (t.id === 'db-rSleep') updateLever('sleep', parseFloat(t.value) || 0);
+    else if (t.id === 'db-rStudy') updateLever('study', parseFloat(t.value) || 0);
+    else if (t.id === 'db-rSteps') updateLever('steps', parseFloat(t.value) || 0);
+  };
+  root.addEventListener('input', onRangeEvent, true);
+  root.addEventListener('change', onRangeEvent, true);
+  window.addEventListener('input', onRangeEvent, true);
+  window.addEventListener('change', onRangeEvent, true);
+
+  const rSleepInput = $('#db-rSleep') as HTMLInputElement;
+  if (rSleepInput) {
+    const fn = () => updateLever('sleep', parseFloat(rSleepInput.value) || 0);
+    rSleepInput.oninput = fn;
+    rSleepInput.onchange = fn;
+  }
+  const rStudyInput = $('#db-rStudy') as HTMLInputElement;
+  if (rStudyInput) {
+    const fn = () => updateLever('study', parseFloat(rStudyInput.value) || 0);
+    rStudyInput.oninput = fn;
+    rStudyInput.onchange = fn;
+  }
+  const rStepsInput = $('#db-rSteps') as HTMLInputElement;
+  if (rStepsInput) {
+    const fn = () => updateLever('steps', parseFloat(rStepsInput.value) || 0);
+    rStepsInput.oninput = fn;
+    rStepsInput.onchange = fn;
+  }
 
   const drCloseBtn = $('#db-drClose');
   if (drCloseBtn) drCloseBtn.onclick = closeWhatIf;
@@ -1021,41 +1465,47 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
   const tabWhatIf = $('#db-tabWhatIf');
   if (tabWhatIf) tabWhatIf.onclick = () => openWhatIf({ sleep: 1 });
 
-  const wiApply = $('#db-wiApply');
-  if (wiApply) {
-    wiApply.onclick = () => {
-      const before = balance(state.dims),
-        next = project(state.dims, plan);
-      DIMS.forEach((m) => (state.dims[m.k] = Math.round(next[m.k])));
-      const after = balance(state.dims);
-      closeWhatIf();
-      refreshAll();
-      toast(after === before ? 'Plan applied. Balance holds at ' + after + '.' : `Plan applied. Balance ${before} → ${after}.`);
-      if (opts.onApplyPlan) opts.onApplyPlan(state.dims);
-    };
+  // ── Drawer buttons: use document-level delegation so they always fire ──
+  function applyPlan() {
+    const before = balance(state.dims),
+      next = project(state.dims, plan);
+    DIMS.forEach((m) => (state.dims[m.k] = Math.round(next[m.k])));
+    const after = balance(state.dims);
+    closeWhatIf();
+    refreshAll();
+    toast(after === before ? 'Plan applied. Balance holds at ' + after + '.' : `Plan applied. Balance ${before} → ${after}.`);
+    if (opts.onApplyPlan) opts.onApplyPlan(state.dims);
   }
 
-  const wiReset = $('#db-wiReset');
-  if (wiReset) {
-    wiReset.onclick = () => {
-      state.dims = { ...BASE };
-      plan.sleep = plan.study = plan.steps = 0;
-      mdone.clear();
-      xp = 640;
-      level = 7;
-      const rSleep = $('#db-rSleep') as HTMLInputElement;
-      if (rSleep) rSleep.value = '0';
-      const rStudy = $('#db-rStudy') as HTMLInputElement;
-      if (rStudy) rStudy.value = '0';
-      const rSteps = $('#db-rSteps') as HTMLInputElement;
-      if (rSteps) rSteps.value = '0';
-      refreshAll();
-      renderMissions();
-      setXP();
-      renderWhatIf();
-      toast('Back to the demo data.');
-    };
+  function resetDemo() {
+    state.dims = { ...BASE };
+    plan.sleep = plan.study = plan.steps = 0;
+    mdone.clear();
+    xp = 640;
+    level = 7;
+    const rSleep = document.getElementById('db-rSleep') as HTMLInputElement;
+    if (rSleep) rSleep.value = '0';
+    const rStudy = document.getElementById('db-rStudy') as HTMLInputElement;
+    if (rStudy) rStudy.value = '0';
+    const rSteps = document.getElementById('db-rSteps') as HTMLInputElement;
+    if (rSteps) rSteps.value = '0';
+    refreshAll();
+    renderMissions();
+    setXP();
+    renderWhatIf();
+    toast('Back to the demo data.');
   }
+
+  (window as any).lifeOSApplyPlan = applyPlan;
+  (window as any).lifeOSResetDemo = resetDemo;
+
+  // Single delegated click on document catches Apply + Reset even if React re-renders
+  const onDrawerClick = (e: MouseEvent) => {
+    const t = e.target as Element;
+    if (t.closest('#db-wiApply')) { applyPlan(); return; }
+    if (t.closest('#db-wiReset')) { resetDemo(); return; }
+  };
+  document.addEventListener('click', onDrawerClick, true);
 
   function refreshAll() {
     renderNav();
@@ -1088,22 +1538,9 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
   let steps = 4820,
     lastBal: number | null = null;
 
-  /* starfield */
+  /* particles removed for a clean, distraction-free orbit */
   function stars() {
-    let r = 7,
-      o = '';
-    const rnd = () => (r = (r * 16807) % 2147483647) / 2147483647;
-    for (let i = 0; i < 46; i++) {
-      const x = 70 + rnd() * 500,
-        y = 8 + rnd() * 384,
-        z = 0.6 + rnd() * 1.3,
-        d = 2.5 + rnd() * 4,
-        dl = -rnd() * 5;
-      o += `<circle class="star" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${z.toFixed(
-        2
-      )}" fill="var(--ink)" style="animation-duration:${d.toFixed(1)}s;animation-delay:${dl.toFixed(2)}s"/>`;
-    }
-    return o;
+    return '';
   }
 
   /* links */
@@ -1128,23 +1565,37 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
       const [x2, y2] = P(b.angle);
       const qx = cx + ((x1 + x2) / 2 - cx) * 0.3,
         qy = cy + ((y1 + y2) / 2 - cy) * 0.3;
-      const lx = 0.25 * x1 + 0.5 * qx + 0.25 * x2,
-        ly = 0.25 * y1 + 0.5 * qy + 0.25 * y2;
-      o += `<g class="lk" style="--c:var(--${a.k});--i:${i}"><path d="M${x1.toFixed(1)},${y1.toFixed(1)} Q${qx.toFixed(1)},${qy.toFixed(
-        1
-      )} ${x2.toFixed(1)},${y2.toFixed(1)}"/><text x="${lx.toFixed(1)}" y="${(ly - 6).toFixed(1)}" text-anchor="middle">${verb}</text></g>`;
+
+      // Cleanly offset start and end points by 34px towards the curve control point so lines don't collide with disks or text
+      const d1 = Math.hypot(qx - x1, qy - y1) || 1;
+      const sx = x1 + ((qx - x1) / d1) * 34;
+      const sy = y1 + ((qy - y1) / d1) * 34;
+      const d2 = Math.hypot(qx - x2, qy - y2) || 1;
+      const ex = x2 + ((qx - x2) / d2) * 34;
+      const ey = y2 + ((qy - y2) / d2) * 34;
+
+      const lx = 0.25 * sx + 0.5 * qx + 0.25 * ex,
+        ly = 0.25 * sy + 0.5 * qy + 0.25 * ey;
+
+      o += `<g class="lk" style="--c:var(--${a.k});--i:${i}">
+        <path d="M${sx.toFixed(1)},${sy.toFixed(1)} Q${qx.toFixed(1)},${qy.toFixed(1)} ${ex.toFixed(1)},${ey.toFixed(1)}"/>
+        <g class="lk-pill" transform="translate(${lx.toFixed(1)}, ${ly.toFixed(1)})">
+          <rect x="-30" y="-11" width="60" height="22" rx="11" class="lk-pill-bg" />
+          <text x="0" y="3.5" text-anchor="middle" class="lk-pill-txt">${verb}</text>
+        </g>
+      </g>`;
     });
     return o;
   }
 
-  /* sparkline */
-  function spark(a: number[], w: number, h: number, color: string) {
+  /* hyper-realistic telemetry sparkline graph */
+  function spark(a: number[], w: number, h: number, color: string, k: string) {
     const mn = Math.min(...a) - 4,
       mx = Math.max(...a) + 4,
-      X = (i: number) => (i / (a.length - 1)) * w,
-      Y = (v: number) => h - ((v - mn) / (mx - mn)) * (h - 6) - 3;
+      X = (i: number) => 12 + (i / (a.length - 1)) * (w - 24),
+      Y = (v: number) => h - 14 - ((v - mn) / (mx - mn)) * (h - 26);
     const pts = a.map((v, i) => [X(i), Y(v)]);
-    let d = `M${pts[0][0]},${pts[0][1].toFixed(1)}`;
+    let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
     for (let i = 1; i < pts.length; i++) {
       const [x0, y0] = pts[i - 1],
         [x1, y1] = pts[i],
@@ -1152,9 +1603,54 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
       d += ` C${c.toFixed(1)},${y0.toFixed(1)} ${c.toFixed(1)},${y1.toFixed(1)} ${x1.toFixed(1)},${y1.toFixed(1)}`;
     }
     const last = pts[pts.length - 1];
-    return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true"><path d="${d} L${w},${h} L0,${h}Z" fill="${color}" opacity=".16"/><path class="sp-l" d="${d}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linecap="round"/><circle cx="${
-      last[0]
-    }" cy="${last[1].toFixed(1)}" r="3.8" fill="${color}"/></svg>`;
+    const gid = `sp-grad-${k}`;
+    const fltid = `sp-flt-${k}`;
+
+    const gridY1 = (h * 0.28).toFixed(1);
+    const gridY2 = (h * 0.54).toFixed(1);
+    const gridY3 = (h * 0.8).toFixed(1);
+
+    const nodes = pts
+      .map(
+        ([px, py], i) => `
+        <g class="sp-node">
+          <circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${i === 6 ? '5' : '2.5'}" fill="${
+            i === 6 ? '#fff' : color
+          }" stroke="${color}" stroke-width="${i === 6 ? '2.8' : '1.2'}"/>
+        </g>`
+      )
+      .join('');
+
+    return `<svg class="hyper-graph" viewBox="0 0 ${w} ${h}" width="100%" height="${h}" aria-hidden="true">
+      <defs>
+        <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${color}" stop-opacity="0.48"/>
+          <stop offset="45%" stop-color="${color}" stop-opacity="0.18"/>
+          <stop offset="100%" stop-color="${color}" stop-opacity="0.0"/>
+        </linearGradient>
+        <filter id="${fltid}" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3.5" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- Telemetry horizon grid -->
+      <line class="sp-grid" x1="6" y1="${gridY1}" x2="${w - 6}" y2="${gridY1}"/>
+      <line class="sp-grid" x1="6" y1="${gridY2}" x2="${w - 6}" y2="${gridY2}"/>
+      <line class="sp-grid" x1="6" y1="${gridY3}" x2="${w - 6}" y2="${gridY3}"/>
+      <!-- Luminous Area Fill -->
+      <path class="sp-area" d="${d} L${(w - 12).toFixed(1)},${h} L12,${h}Z" fill="url(#${gid})"/>
+      <!-- Diffuse Ambient Neon Tube Glow -->
+      <path d="${d}" fill="none" stroke="${color}" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.38" filter="url(#${fltid})"/>
+      <!-- Main Colored Laser Core -->
+      <path class="sp-l" d="${d}" fill="none" stroke="${color}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Razor Specular Thread -->
+      <path d="${d}" fill="none" stroke="#ffffff" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+      <!-- Daily Telemetry Nodes -->
+      ${nodes}
+      <!-- Radar Pulse at Current Day 7 -->
+      <circle class="sp-radar" cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="5" fill="none" stroke="${color}" stroke-width="2"/>
+      <circle class="sp-radar r2" cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="5" fill="none" stroke="#fff" stroke-width="1.5"/>
+    </svg>`;
   }
 
   function syncSpot() {
@@ -1177,11 +1673,22 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
     const spotIn = $('#db-spotIn');
     if (spotIn) {
       spotIn.innerHTML = `<div class="spot-row" style="--c:var(--${k})">
-      <div class="sp-v"><span class="sp-n">${v}</span><span class="sp-u">%</span><small>${dn(k)}</small></div>
-      <div class="sp-c">${spark(h, 170, 54, COLORS[k])}<small>${dl >= 0 ? 'Up' : 'Down'} <b class="${
-        dl < 0 ? 'neg' : ''
-      }">${Math.abs(dl)}</b> points in 7 days</small></div>
-      <button class="mini" id="db-spotAct">${act ? 'Simulate a change' : 'Log a spend'} ${ic('arrow', 13, 2)}</button></div>`;
+        <div class="sp-left">
+          <div class="sp-v"><span class="sp-n">${v}</span><span class="sp-u">%</span></div>
+          <span class="sp-tag"><i class="sp-dot"></i>${dn(k)}</span>
+        </div>
+        <div class="sp-c">
+          <div class="sp-graph-hdr">
+            <span class="sp-gh-title">7-DAY TELEMETRY</span>
+            <span class="sp-pill ${dl >= 0 ? 'pos' : 'neg'}">${dl >= 0 ? '▲ +' : '▼ -'}${Math.abs(dl)} pts</span>
+          </div>
+          ${spark(h, 250, 72, COLORS[k], k)}
+        </div>
+        <button class="mini" id="db-spotAct">
+          <span>${act ? 'Simulate a change' : 'Log a spend'}</span>
+          ${ic('arrow', 13, 2)}
+        </button>
+      </div>`;
       const spotAct = $('#db-spotAct');
       if (spotAct) spotAct.onclick = () => (act ? openWhatIf(act) : toast('Spending logged. Money stays on plan.'));
     }
@@ -1779,6 +2286,7 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
     focusChip();
     typeLede();
     syncSpot();
+    renderWhatIf();
     root.classList.remove('go');
     void root.offsetWidth;
     root.classList.add('go');
@@ -1826,10 +2334,14 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
     if (stepsInterval) clearInterval(stepsInterval);
     if (focusInterval) clearInterval(focusInterval);
     if (resizeObserver) resizeObserver.disconnect();
+    // Always restore body scroll on unmount
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
 
     window.removeEventListener('keydown', onKeyDown);
     window.removeEventListener('resize', sizeFx);
     root.removeEventListener('pointermove', onPointerMove);
     root.removeEventListener('click', onBootClick);
+    document.removeEventListener('click', onDrawerClick, true);
   };
 }
