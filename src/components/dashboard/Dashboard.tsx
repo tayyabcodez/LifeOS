@@ -6,8 +6,185 @@ import './dashboard.css';
 import { initDashboard } from './dashboardEngine';
 import { DimensionId } from '@/data/demo-data';
 
+function getLocalDateString(): string {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function Dashboard() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const [appliedPlan, setAppliedPlan] = React.useState<{
+    scenarioId: string;
+    headline: string;
+    socialHours?: number;
+    noPhoneAfterMidnight?: boolean;
+    bedtime?: string;
+    sleepHours?: string;
+    studyHours?: string;
+    scoresBefore: number[];
+    scoresAfter: number[];
+    lifeBalanceBefore: number;
+    lifeBalanceAfter: number;
+    actionLine?: string;
+    topGains?: string;
+    appliedAt: string;
+  } | null>(null);
+
+  /* Phone habits & Nudges state */
+  const [socialHours, setSocialHours] = React.useState<number>(3);
+  const [midnightFreq, setMidnightFreq] = React.useState<'never' | 'sometimes' | 'often'>('never');
+  const [dismissedNudges, setDismissedNudges] = React.useState<string[]>([]);
+  const [showWhyId, setShowWhyId] = React.useState<string | null>(null);
+  const [habitsMounted, setHabitsMounted] = React.useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('lifeos.appliedPlan');
+      if (saved) {
+        setAppliedPlan(JSON.parse(saved));
+      }
+    } catch {}
+
+    try {
+      const savedHabits = localStorage.getItem('lifeos-phone-habits');
+      if (savedHabits) {
+        const parsed = JSON.parse(savedHabits);
+        if (typeof parsed.socialHoursPerDay === 'number') {
+          setSocialHours(parsed.socialHoursPerDay);
+        }
+        if (parsed.midnightFrequency) {
+          setMidnightFreq(parsed.midnightFrequency);
+        }
+      }
+      const dateKey = `lifeos-nudges-dismissed-${getLocalDateString()}`;
+      const savedDismissed = localStorage.getItem(dateKey);
+      if (savedDismissed) {
+        setDismissedNudges(JSON.parse(savedDismissed));
+      }
+    } catch {}
+
+    setHabitsMounted(true);
+  }, []);
+
+  const handleRemovePlan = () => {
+    try {
+      localStorage.removeItem('lifeos.appliedPlan');
+    } catch {}
+    setAppliedPlan(null);
+  };
+
+  const handleSocialChange = (nextVal: number) => {
+    const clamped = Math.max(0, Math.min(12, +(nextVal.toFixed(1))));
+    setSocialHours(clamped);
+    try {
+      const existing = JSON.parse(localStorage.getItem('lifeos-phone-habits') || '{}');
+      const updated = {
+        ...existing,
+        socialHoursPerDay: clamped,
+        midnightFrequency: midnightFreq,
+      };
+      localStorage.setItem('lifeos-phone-habits', JSON.stringify(updated));
+      useLifeStore.getState().setPhoneHabits(updated);
+      window.dispatchEvent(new CustomEvent('lifeos:phone-habits-changed'));
+    } catch {}
+  };
+
+  const handleMidnightFreqChange = (freq: 'never' | 'sometimes' | 'often') => {
+    setMidnightFreq(freq);
+    try {
+      const existing = JSON.parse(localStorage.getItem('lifeos-phone-habits') || '{}');
+      const updated = {
+        ...existing,
+        socialHoursPerDay: socialHours,
+        midnightFrequency: freq,
+      };
+      localStorage.setItem('lifeos-phone-habits', JSON.stringify(updated));
+      useLifeStore.getState().setPhoneHabits(updated);
+      window.dispatchEvent(new CustomEvent('lifeos:phone-habits-changed'));
+    } catch {}
+  };
+
+  const handleDismissNudge = (nudgeId: string) => {
+    const updated = [...dismissedNudges, nudgeId];
+    setDismissedNudges(updated);
+    try {
+      const dateKey = `lifeos-nudges-dismissed-${getLocalDateString()}`;
+      localStorage.setItem(dateKey, JSON.stringify(updated));
+    } catch {}
+  };
+
+  const handleTryInWhatIf = () => {
+    const tabWhatIf = document.getElementById('db-tabWhatIf');
+    if (tabWhatIf) {
+      tabWhatIf.click();
+    }
+  };
+
+  /* Nudge candidate evaluation */
+  const candidateNudges: Array<{
+    id: string;
+    category: 'focus' | 'sleep' | 'balanced';
+    badge: string;
+    text: string;
+    actionText?: string;
+    why: string;
+  }> = [];
+
+  if (socialHours >= 4) {
+    candidateNudges.push({
+      id: 'nudge-social-high',
+      category: 'focus',
+      badge: 'Focus impact',
+      text: 'High social media time is associated with weaker focus. Try cutting 30–60 minutes today.',
+      actionText: 'Try it in What if',
+      why: 'Suggested because your reported social media time is 4 hours or more per day.'
+    });
+  } else if (socialHours >= 2 && socialHours < 4) {
+    candidateNudges.push({
+      id: 'nudge-social-mod',
+      category: 'focus',
+      badge: 'Study opportunity',
+      text: 'Moderate use. One 30-minute cut would free time for study.',
+      actionText: 'Try it in What if',
+      why: 'Suggested because your reported social media time is between 2 and 4 hours per day.'
+    });
+  }
+
+  if (midnightFreq === 'sometimes' || midnightFreq === 'often') {
+    candidateNudges.push({
+      id: 'nudge-midnight',
+      category: 'sleep',
+      badge: 'Sleep routine',
+      text: 'Late-night phone use is associated with later sleep. Try keeping your phone away from bed tonight.',
+      why: `Suggested because your phone use after midnight this week is marked as "${midnightFreq}".`
+    });
+  }
+
+  let displayedNudges: Array<{
+    id: string;
+    category: 'focus' | 'sleep' | 'balanced';
+    badge: string;
+    text: string;
+    actionText?: string;
+    why: string;
+  }> = [];
+
+  if (candidateNudges.length === 0) {
+    if (!dismissedNudges.includes('nudge-balanced')) {
+      displayedNudges = [{
+        id: 'nudge-balanced',
+        category: 'balanced',
+        badge: 'Balanced',
+        text: 'Your phone habits look balanced today.',
+        why: 'Suggested because your social media use is under 2 hours and you rarely use your phone past midnight.'
+      }];
+    }
+  } else {
+    displayedNudges = candidateNudges.filter(n => !dismissedNudges.includes(n.id)).slice(0, 2);
+  }
 
   useEffect(() => {
     if (!rootRef.current) return;
@@ -120,6 +297,51 @@ export function Dashboard() {
               <button className="ask" id="db-askBtn" aria-label="Open command palette"></button>
             </div>
           </div>
+
+          {appliedPlan && (
+            <div className="db-plan-card rv" style={{ '--s': 0.5 } as any}>
+              <div className="db-plan-left">
+                <div className="db-plan-badge">
+                  <span className="db-plan-dot"></span>
+                  <span>Active plan</span>
+                </div>
+                <h2 className="db-plan-headline">{appliedPlan.headline}</h2>
+                <p className="db-plan-action">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  <span>{appliedPlan.actionLine || 'Stay on track today'}</span>
+                </p>
+              </div>
+
+              <div className="db-plan-stats">
+                <div className="db-plan-stat">
+                  <span className="db-plan-stat-lbl">Expected life balance</span>
+                  <span className="db-plan-stat-val">
+                    {appliedPlan.lifeBalanceBefore} <i>→</i> <b>{appliedPlan.lifeBalanceAfter}</b>
+                  </span>
+                </div>
+                {appliedPlan.topGains && (
+                  <div className="db-plan-stat">
+                    <span className="db-plan-stat-lbl">Top gains</span>
+                    <span className="db-plan-stat-gains">{appliedPlan.topGains}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="db-plan-action-btn">
+                <button
+                  type="button"
+                  className="db-plan-remove"
+                  onClick={handleRemovePlan}
+                  aria-label="Remove active plan"
+                >
+                  Remove plan
+                </button>
+              </div>
+            </div>
+          )}
 
           <section className="grid g1 rv" style={{ '--s': 1 } as any}>
             <article className="card orbit-card" aria-labelledby="db-orbT">
@@ -287,6 +509,185 @@ export function Dashboard() {
               </h3>
               <p className="sub">Based on your current data and connections.</p>
               <div className="ins-list" id="db-insList"></div>
+            </article>
+          </section>
+
+          {/* ── Card 1 (Phone habits) & Card 2 (Nudges) ── */}
+          <section className="grid g1 rv" style={{ '--s': 5, marginTop: '14px' } as any}>
+            {/* Card 1: Phone habits */}
+            <article className="card phone-habits-card" aria-labelledby="db-phT">
+              <div className="card-h">
+                <div className="ph-title-wrap">
+                  <div className="ph-icon-box">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                      <line x1="12" y1="18" x2="12.01" y2="18" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="lab" id="db-phT">Phone habits</h3>
+                    <p className="ph-subtitle">Screen exposure & bedtime hygiene</p>
+                  </div>
+                </div>
+                <span className={`ph-status-pill ${socialHours >= 4 ? 'high' : socialHours >= 2 ? 'mod' : 'opt'}`}>
+                  <i></i>
+                  {socialHours >= 4 ? 'High screen time' : socialHours >= 2 ? 'Moderate usage' : 'Optimal · Focused'}
+                </span>
+              </div>
+
+              <div className="ph-controls">
+                {/* Row 1: Social Media Stepper */}
+                <div className="ph-row">
+                  <div className="ph-lbl-col">
+                    <div className="ph-row-head">
+                      <label id="db-social-lbl" htmlFor="db-social-val">Social media today</label>
+                      <span className="ph-metric-tag">{socialHours <= 2 ? 'Low friction' : socialHours <= 4 ? 'Moderate' : 'Attention drag'}</span>
+                    </div>
+                    <small className="ph-desc">Usage tracked across entertainment & short video apps</small>
+                    <div className="ph-bar-track" aria-hidden="true">
+                      <div
+                        className={`ph-bar-fill ${socialHours >= 4 ? 'high' : socialHours >= 2 ? 'mod' : 'opt'}`}
+                        style={{ width: `${Math.min(100, Math.round((socialHours / 12) * 100))}%` }}
+                      ></div>
+                      <span className="ph-bar-target" title="Target: ≤2h"></span>
+                    </div>
+                  </div>
+
+                  <div className="ph-stepper-wrap">
+                    <div className="ph-stepper" role="group" aria-labelledby="db-social-lbl">
+                      <button
+                        type="button"
+                        className="ph-step-btn"
+                        onClick={() => handleSocialChange(socialHours - 0.5)}
+                        disabled={socialHours <= 0}
+                        aria-label="Decrease social media time by 30 minutes"
+                      >
+                        −
+                      </button>
+                      <span className="ph-val" id="db-social-val" aria-live="polite">
+                        {habitsMounted ? `${socialHours % 1 === 0 ? socialHours : socialHours}h` : '3h'}
+                      </span>
+                      <button
+                        type="button"
+                        className="ph-step-btn"
+                        onClick={() => handleSocialChange(socialHours + 0.5)}
+                        disabled={socialHours >= 12}
+                        aria-label="Increase social media time by 30 minutes"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Row 2: Midnight Phone Use Segmented Control */}
+                <div className="ph-row ph-row-segmented">
+                  <div className="ph-lbl-col">
+                    <label id="db-midnight-lbl">Phone use after midnight this week</label>
+                    <small className="ph-desc">Frequency of late-night scrolling or messaging</small>
+                  </div>
+
+                  <div className="ph-segmented" role="radiogroup" aria-labelledby="db-midnight-lbl">
+                    {(['never', 'sometimes', 'often'] as const).map((freq) => (
+                      <button
+                        key={freq}
+                        type="button"
+                        role="radio"
+                        aria-checked={midnightFreq === freq}
+                        className={`ph-seg-btn ${midnightFreq === freq ? 'active' : ''}`}
+                        onClick={() => handleMidnightFreqChange(freq)}
+                      >
+                        {freq.charAt(0).toUpperCase() + freq.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            {/* Card 2: Nudges */}
+            <article className="card nudges-card" aria-labelledby="db-ndgT">
+              <div className="card-h">
+                <div className="ph-title-wrap">
+                  <div className="ph-icon-box ndg-icon-box">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="lab" id="db-ndgT">Daily Nudges</h3>
+                    <p className="ph-subtitle">Smart adjustments based on your habit patterns</p>
+                  </div>
+                </div>
+                <span className="pill">Habit coaching</span>
+              </div>
+
+              <div className="ndg-list" role="feed" aria-label="Daily nudges">
+                {displayedNudges.length > 0 ? (
+                  displayedNudges.map((nudge) => (
+                    <div key={nudge.id} className={`ndg-item ndg-${nudge.category}`} role="article">
+                      <div className="ndg-top">
+                        <span className={`ndg-badge ndg-badge-${nudge.category}`}>
+                          <i></i>{nudge.badge}
+                        </span>
+                        <button
+                          type="button"
+                          className="ndg-dismiss"
+                          onClick={() => handleDismissNudge(nudge.id)}
+                          aria-label={`Dismiss nudge: ${nudge.badge}`}
+                          title="Dismiss for today"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      <p className="ndg-text">{nudge.text}</p>
+                      
+                      <div className="ndg-footer">
+                        {nudge.actionText && (
+                          <button
+                            type="button"
+                            className="ndg-act-btn"
+                            onClick={handleTryInWhatIf}
+                          >
+                            <span>{nudge.actionText}</span>
+                            <span className="ndg-act-arr" aria-hidden="true">→</span>
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="ndg-why-btn"
+                          onClick={() => setShowWhyId(showWhyId === nudge.id ? null : nudge.id)}
+                          aria-expanded={showWhyId === nudge.id}
+                        >
+                          <span>Why am I seeing this?</span>
+                          <span className={`ndg-chevron ${showWhyId === nudge.id ? 'open' : ''}`} aria-hidden="true">›</span>
+                        </button>
+                      </div>
+
+                      {showWhyId === nudge.id && (
+                        <div className="ndg-why-box" role="region">
+                          <div className="ndg-why-head">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                              <circle cx="12" cy="12" r="10"/>
+                              <line x1="12" y1="16" x2="12" y2="12"/>
+                              <line x1="12" y1="8" x2="12.01" y2="8"/>
+                            </svg>
+                            <span>Habit Rule Insight</span>
+                          </div>
+                          <p>{nudge.why}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="ndg-empty">
+                    <div className="ndg-empty-icon">✓</div>
+                    <p>No nudges left for today. You’re all caught up!</p>
+                  </div>
+                )}
+              </div>
+
+              <p className="ndg-disclaimer">Estimates, not medical advice.</p>
             </article>
           </section>
         </main>

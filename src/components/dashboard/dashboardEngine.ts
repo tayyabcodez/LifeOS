@@ -1006,13 +1006,54 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
 
   /* ───────── rhythm chart ───────── */
   const HRS = [6, 8, 10, 12, 14, 16, 18, 20, 22];
-  const SER = [
-    { id: 'focus', name: 'Focus', c: 'var(--focus)', v: [25, 52, 72, 76, 45, 35, 38, 45, 31] },
-    { id: 'energy', name: 'Energy', c: 'var(--energy)', v: [33, 64, 82, 76, 53, 41, 50, 46, 52] },
-    { id: 'recovery', name: 'Recovery', c: 'var(--recovery)', v: [76, 48, 31, 27, 32, 41, 58, 64, 94] },
-  ];
-  const BEST = [9, 11];
   const hidden = new Set<string>();
+
+  function getDynamicSeries() {
+    const focusVal = typeof state.dims.focus === 'number' ? state.dims.focus : 84;
+    const sleepVal = typeof state.dims.sleep === 'number' ? state.dims.sleep : 61;
+    const healthVal = typeof state.dims.health === 'number' ? state.dims.health : 68;
+
+    let socialH = 3;
+    let midFreq: 'never' | 'sometimes' | 'often' = 'never';
+    try {
+      const saved = JSON.parse(localStorage.getItem('lifeos-phone-habits') || '{}');
+      if (typeof saved.socialHoursPerDay === 'number') socialH = saved.socialHoursPerDay;
+      if (saved.midnightFrequency) midFreq = saved.midnightFrequency;
+    } catch {}
+
+    // Focus curve across 9 intervals: 6, 8, 10, 12, 14, 16, 18, 20, 22
+    const baseFocusProfile = [0.30, 0.62, 0.86, 0.90, 0.54, 0.42, 0.45, 0.54, 0.36];
+    const afternoonPenalty = socialH >= 4 ? Math.min(18, (socialH - 2) * 3) : socialH >= 2 ? (socialH - 1.5) * 2 : 0;
+    
+    const focusV = baseFocusProfile.map((mult, idx) => {
+      let raw = (focusVal / 84) * (mult * 85);
+      if (idx >= 4 && idx <= 6) raw -= afternoonPenalty;
+      return clamp(Math.round(raw), 15, 98);
+    });
+
+    // Recovery curve
+    const baseRecProfile = [0.82, 0.52, 0.33, 0.29, 0.34, 0.44, 0.62, 0.68, 1.0];
+    const midnightPenalty = midFreq === 'often' ? 14 : midFreq === 'sometimes' ? 7 : 0;
+    const recV = baseRecProfile.map((mult, idx) => {
+      let raw = (sleepVal / 61) * (mult * 76);
+      if (idx >= 7) raw -= midnightPenalty;
+      return clamp(Math.round(raw), 18, 98);
+    });
+
+    // Energy curve
+    const combinedVitality = (healthVal * 0.55 + sleepVal * 0.45);
+    const baseEnergyProfile = [0.38, 0.74, 0.95, 0.88, 0.62, 0.48, 0.58, 0.53, 0.59];
+    const energyV = baseEnergyProfile.map((mult) => {
+      let raw = (combinedVitality / 65) * (mult * 82);
+      return clamp(Math.round(raw), 20, 98);
+    });
+
+    return [
+      { id: 'focus', name: 'Focus', c: 'var(--focus)', grad: 'grad-focus', v: focusV },
+      { id: 'energy', name: 'Energy', c: 'var(--energy)', grad: 'grad-energy', v: energyV },
+      { id: 'recovery', name: 'Recovery', c: 'var(--recovery)', grad: 'grad-recovery', v: recV },
+    ];
+  }
 
   function cr(arr: number[], h: number) {
     const t = (h - 6) / 2,
@@ -1040,49 +1081,111 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
     const el = $('#db-chart');
     if (!el) return;
     const W = Math.max(300, el.clientWidth),
-      H = Math.min(180, Math.max(150, W * 0.25));
-    const ml = 30,
-      mr = 8,
-      mt = 18,
-      mb = 20,
+      H = Math.min(200, Math.max(160, W * 0.28));
+    const ml = 32,
+      mr = 12,
+      mt = 22,
+      mb = 24,
       iw = W - ml - mr,
       ih = H - mt - mb;
     const X = (h: number) => ml + ((h - 6) / 16) * iw,
       Y = (v: number) => mt + (1 - v / 100) * ih;
-    let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Line chart of focus, energy and recovery from 6 AM to 10 PM. Focus peaks between 9 and 11 AM.">`;
+
+    const SER = getDynamicSeries();
+
+    // Dynamically calculate peak focus window
+    const focusVals = SER.find(s => s.id === 'focus')?.v || [];
+    let peakIdx = 2;
+    let maxF = -1;
+    focusVals.forEach((val, idx) => {
+      if (val > maxF) { maxF = val; peakIdx = idx; }
+    });
+    const peakHour = HRS[peakIdx] || 10;
+    const bestStart = Math.max(6, peakHour - 1);
+    const bestEnd = Math.min(22, peakHour + 1);
+    const BEST = [bestStart, bestEnd];
+
+    // Update bottom recommendation banner text
+    const bestT = $('#db-bestT');
+    if (bestT) bestT.textContent = `${fmtH(bestStart)} – ${fmtH(bestEnd)}`;
+
+    let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Line chart of focus, energy and recovery from 6 AM to 10 PM.">
+      <defs>
+        <linearGradient id="grad-focus" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--focus)" stop-opacity="0.25" />
+          <stop offset="80%" stop-color="var(--focus)" stop-opacity="0.02" />
+          <stop offset="100%" stop-color="var(--focus)" stop-opacity="0" />
+        </linearGradient>
+        <linearGradient id="grad-energy" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--energy)" stop-opacity="0.22" />
+          <stop offset="80%" stop-color="var(--energy)" stop-opacity="0.02" />
+          <stop offset="100%" stop-color="var(--energy)" stop-opacity="0" />
+        </linearGradient>
+        <linearGradient id="grad-recovery" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--recovery)" stop-opacity="0.22" />
+          <stop offset="80%" stop-color="var(--recovery)" stop-opacity="0.02" />
+          <stop offset="100%" stop-color="var(--recovery)" stop-opacity="0" />
+        </linearGradient>
+        <filter id="chart-glow" x="-10%" y="-20%" width="120%" height="150%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000" flood-opacity="0.12" />
+        </filter>
+      </defs>`;
+
+    // Subtle modern gridlines
     [0, 25, 50, 75, 100].forEach((v) => {
-      s += `<line class="gridl" x1="${ml}" x2="${W - mr}" y1="${Y(v)}" y2="${Y(v)}"/><text class="axis" x="${ml - 10}" y="${
+      s += `<line class="gridl" x1="${ml}" x2="${W - mr}" y1="${Y(v)}" y2="${Y(v)}"/><text class="axis" x="${ml - 8}" y="${
         Y(v) + 4
       }" text-anchor="end">${v}</text>`;
     });
+
     HRS.forEach((h) => {
       s += `<text class="axis" x="${X(h)}" y="${H - 6}" text-anchor="middle">${lbl(h)}</text>`;
     });
+
+    // Best focus window band
     const bx = X(BEST[0]),
       bw = X(BEST[1]) - bx;
-    s += `<rect class="band" x="${bx}" y="${mt}" width="${bw}" height="${ih}" rx="8"/>`;
+    s += `<rect class="band" x="${bx}" y="${mt}" width="${bw}" height="${ih}" rx="10"/>`;
     s += `<g transform="translate(${bx + bw / 2} ${
       mt - 6
-    })"><rect class="band-tip-bg" x="-58" y="-17" width="116" height="30" rx="9" fill="var(--btn)"/><text class="band-tip-txt" x="0" y="-5" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--btnink)" font-family="var(--sans)">Best focus window</text><text class="band-tip-sub" x="0" y="7" text-anchor="middle" font-size="9" fill="var(--btnink)" opacity=".75" font-family="var(--sans)">9:00 – 11:00 AM</text></g>`;
+    })"><rect class="band-tip-bg" x="-60" y="-18" width="120" height="30" rx="9" fill="var(--btn)"/><text class="band-tip-txt" x="0" y="-5" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--btnink)" font-family="var(--sans)">Best focus window</text><text class="band-tip-sub" x="0" y="7" text-anchor="middle" font-size="9" fill="var(--btnink)" opacity=".8" font-family="var(--sans)">${fmtH(bestStart)} – ${fmtH(bestEnd)}</text></g>`;
 
+    // Now indicator
     const n = new Date(),
       nh = n.getHours() + n.getMinutes() / 60;
     if (nh > 6.3 && nh < 21.7) {
       s += `<line class="now" x1="${X(nh)}" x2="${X(nh)}" y1="${mt}" y2="${mt + ih}"/><g transform="translate(${X(nh)} ${
         mt + ih - 4
-      })"><rect x="-15" y="-15" width="30" height="16" rx="8" fill="var(--sleep)"/><text class="nowl" x="0" y="-3.5" text-anchor="middle">Now</text></g>`;
+      })"><rect x="-16" y="-16" width="32" height="18" rx="9" fill="var(--sleep)"/><text class="nowl" x="0" y="-3.5" text-anchor="middle">Now</text></g>`;
     }
+
+    // 1) Render area fills first (for modern depth)
     SER.forEach((se) => {
       if (hidden.has(se.id)) return;
       let d = '';
-      for (let h = 6; h <= 22.001; h += 0.25) d += (d ? 'L' : 'M') + X(h).toFixed(1) + ',' + Y(cr(se.v, h)).toFixed(1);
-      s += `<path class="ser${!drewOnce && !reduced() ? ' ser-draw' : ''}" pathLength="1" d="${d}" stroke="${se.c}"/>`;
+      for (let h = 6; h <= 22.001; h += 0.25) {
+        d += (d ? 'L' : 'M') + X(h).toFixed(1) + ',' + Y(cr(se.v, h)).toFixed(1);
+      }
+      const areaD = d + ` L${X(22).toFixed(1)},${Y(0).toFixed(1)} L${X(6).toFixed(1)},${Y(0).toFixed(1)} Z`;
+      s += `<path class="ser-area" d="${areaD}" fill="url(#${se.grad})"/>`;
+    });
+
+    // 2) Render lines & points with glow
+    SER.forEach((se) => {
+      if (hidden.has(se.id)) return;
+      let d = '';
+      for (let h = 6; h <= 22.001; h += 0.25) {
+        d += (d ? 'L' : 'M') + X(h).toFixed(1) + ',' + Y(cr(se.v, h)).toFixed(1);
+      }
+      s += `<path class="ser${!drewOnce && !reduced() ? ' ser-draw' : ''}" pathLength="1" d="${d}" stroke="${se.c}" stroke-width="2.6" filter="url(#chart-glow)"/>`;
       HRS.forEach((h, i) => {
-        s += `<circle class="pt" cx="${X(h)}" cy="${Y(se.v[i])}" r="3.2" fill="${se.c}"/>`;
+        s += `<circle class="pt-halo" cx="${X(h)}" cy="${Y(se.v[i])}" r="5" fill="var(--card)" stroke="${se.c}" stroke-width="2"/>`;
+        s += `<circle class="pt" cx="${X(h)}" cy="${Y(se.v[i])}" r="2.2" fill="${se.c}"/>`;
       });
     });
+
     s += `<g id="db-xh" style="display:none"><line class="xh" y1="${mt}" y2="${mt + ih}"/>${SER.map(
-      (se) => `<circle id="db-xd-${se.id}" r="5" fill="${se.c}" stroke="var(--card)" stroke-width="2"/>`
+      (se) => `<circle id="db-xd-${se.id}" r="5.5" fill="${se.c}" stroke="var(--card)" stroke-width="2"/>`
     ).join('')}</g>`;
     s += `<rect id="db-hit" x="${ml}" y="${mt}" width="${iw}" height="${ih}" fill="transparent"/></svg><div class="tip" id="db-tip"></div>`;
     el.innerHTML = s;
@@ -1112,10 +1215,10 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
         const v = cr(se.v, h);
         c.setAttribute('cx', String(X(h)));
         c.setAttribute('cy', String(Y(v)));
-        rows += `<span><i style="background:${se.c}"></i>${se.name} ${Math.round(v)}</span>`;
+        rows += `<span><i style="background:${se.c}"></i>${se.name} <b>${Math.round(v)}%</b></span>`;
       });
-      tip.innerHTML = `<b>${fmtH(Math.round(h * 4) / 4)}</b>${rows}`;
-      const tw = tip.offsetWidth || 110;
+      tip.innerHTML = `<div class="tip-time">${fmtH(Math.round(h * 4) / 4)}</div><div class="tip-rows">${rows}</div>`;
+      const tw = tip.offsetWidth || 120;
       tip.style.left = clamp(X(h), tw / 2, W - tw / 2) + 'px';
       tip.style.top = mt + 4 + 'px';
       tip.classList.add('show');
@@ -1134,6 +1237,7 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
   function renderLegend() {
     const lgd = $('#db-legend');
     if (!lgd) return;
+    const SER = getDynamicSeries();
     lgd.innerHTML =
       SER.map(
         (se) => `<button class="lg" data-id="${se.id}" aria-pressed="${!hidden.has(se.id)}" style="--c:${se.c}"><i></i>${se.name}</button>`
@@ -1516,7 +1620,16 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
     setNote();
     syncSpot();
     renderWeekly();
+    renderChart();
   }
+
+  // Reactive listener for phone habits updates from Dashboard widgets
+  const onHabitsChange = () => {
+    if (!cancelled) {
+      renderChart();
+    }
+  };
+  window.addEventListener('lifeos:phone-habits-changed', onHabitsChange);
 
   /* ═════════ v2: effects, missions, palette, intro ═════════ */
   const COLORS = { study: '#6b8cff', focus: '#f2a22a', health: '#45c388', sleep: '#8a6cf2', money: '#3dbfab', goals: '#ee6e5a' };
@@ -2340,6 +2453,7 @@ export function initDashboard(root: HTMLElement, opts: InitDashboardOptions = {}
 
     window.removeEventListener('keydown', onKeyDown);
     window.removeEventListener('resize', sizeFx);
+    window.removeEventListener('lifeos:phone-habits-changed', onHabitsChange);
     root.removeEventListener('pointermove', onPointerMove);
     root.removeEventListener('click', onBootClick);
     document.removeEventListener('click', onDrawerClick, true);
