@@ -111,6 +111,30 @@ export function Landing() {
                   </div>
                 </div>
                 <div className="nfoot">
+                  {/* ── Phone-habit inputs ── */}
+                  <div className="ph-row" id="ph-row">
+                    <label className="ph-label" htmlFor="ph-stepper">
+                      <svg className="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                        <line x1="12" y1="18" x2="12.01" y2="18"/>
+                      </svg>
+                      My daily social media time
+                    </label>
+                    <div className="ph-stepper" role="group" aria-label="Daily social media hours">
+                      <button type="button" className="ph-btn ph-minus" id="ph-minus" aria-label="Decrease by 30 minutes">−</button>
+                      <output id="ph-val" htmlFor="ph-minus ph-plus" className="ph-val">3h</output>
+                      <button type="button" className="ph-btn ph-plus" id="ph-plus" aria-label="Increase by 30 minutes">+</button>
+                    </div>
+                  </div>
+                  <div className="ph-chips" id="ph-chips">
+                    <span>What if I…</span>
+                    <button type="button" id="ph-cut1" className="ph-chip" aria-pressed="false">Cut social by 1h</button>
+                    <button type="button" id="ph-cut2" className="ph-chip" aria-pressed="false">Cut social by 2h</button>
+                    <button type="button" id="ph-midnight" className="ph-chip" aria-pressed="false">No phone after midnight</button>
+                  </div>
+                  <p className="ph-disc" id="ph-disc">
+                    Heavy late-night phone use is associated with later bedtimes and poorer sleep quality. Estimates, not medical advice.
+                  </p>
                   <div className="chips" id="chips">
                     <span>Try another what-if</span>
                     <button type="button" className="on">Sleep 1h earlier</button>

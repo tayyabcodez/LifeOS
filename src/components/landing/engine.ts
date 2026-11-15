@@ -276,36 +276,206 @@ export function initLanding(root: HTMLElement): () => void {
   ICON.Stress = '<path d="M2 12h3l2-6 4 12 3-9 2 3h6"/>';
   const ROWS = [3, 1, 0, 5, 4, 2], UP = 'M2 26L18 23L34 24L50 16L66 14L82 7L98 4', DN = 'M2 4L18 7L34 6L50 14L66 16L82 23L98 26', brs = $('#brs'), rail = $('#rail'), pls = $('#pls');
 
-  /* card tuple: name, colour-dim, row that triggers it, value, unit, sign, why */
+  const clampScore = (v: number) => Math.round(Math.max(0, Math.min(100, v)));
+  const BASEV = { Energy: 62, Stress: 41 };
+
+  /* ─── Phone-habit constants (single source of truth) ─────────────────── */
+  const PHONE_FX = {
+    focusPerHourCut: 2,
+    maxFocusGain: 6,
+    stressPerHourCut: 2,
+    maxStressGain: 6,
+    sleepPerHourCut: 1,
+    maxSleepGain: 3,
+    midnightSleepGain: 4,
+    midnightEnergyGain: 3,
+    midnightStressGain: 2,
+    midnightFocusGain: 3,
+    lowUsageThreshold: 1.5,
+  };
+
+  /* Shared phone state (hydrated from localStorage) */
+  let phSocial = 3;
+  try {
+    const saved = JSON.parse(localStorage.getItem('lifeos-phone-habits') || '{}');
+    if (typeof saved.socialHoursPerDay === 'number') phSocial = saved.socialHoursPerDay;
+  } catch {}
+
+  function makePhoneCutScen(cutHours: number, social: number) {
+    const actualCut = Math.max(0, Math.min(cutHours, social));
+    const isLow = social < PHONE_FX.lowUsageThreshold;
+    const focusGain = Math.min(actualCut * PHONE_FX.focusPerHourCut, PHONE_FX.maxFocusGain);
+    const sleepGain = Math.min(actualCut * PHONE_FX.sleepPerHourCut, PHONE_FX.maxSleepGain);
+    const stressCut = Math.min(actualCut * PHONE_FX.stressPerHourCut, PHONE_FX.maxStressGain);
+    const energyGain = Math.min(Math.round(focusGain * 0.8), 4);
+
+    const afterHours = +(Math.max(0, social - actualCut).toFixed(1));
+    const cutDisplay = actualCut % 1 === 0 ? actualCut : actualCut.toFixed(1);
+    const socialDisplay = social % 1 === 0 ? social : social.toFixed(1);
+    const afterDisplay = afterHours % 1 === 0 ? afterHours : afterHours.toFixed(1);
+
+    const sim = [
+      SCORE[0],
+      clampScore(SCORE[1] + focusGain),
+      SCORE[2],
+      clampScore(SCORE[3] + sleepGain),
+      SCORE[4],
+      SCORE[5],
+    ];
+    const bal = Math.round(sim.reduce((a, b) => a + b, 0) / 6);
+
+    const energyTo = clampScore(BASEV.Energy + energyGain);
+    const stressTo = clampScore(BASEV.Stress - stressCut);
+
+    const cards = [
+      {
+        name: 'Focus', cd: 1, row: 1, u: ' pts',
+        from: SCORE[1], to: sim[1],
+        why: isLow && actualCut === 0 ? "You're already low, small gain" : 'Less scrolling, more focus'
+      },
+      {
+        name: 'Sleep', cd: 3, row: 0, u: ' pts',
+        from: SCORE[3], to: sim[3],
+        why: isLow && actualCut === 0 ? 'Consistent evening routine' : 'Earlier to bed, better rest'
+      },
+      {
+        name: 'Energy', cd: 2, row: 5, u: '%',
+        from: BASEV.Energy, to: energyTo,
+        why: 'Focus and rest lift energy'
+      },
+      {
+        name: 'Stress', cd: 5, row: 5, u: '%',
+        from: BASEV.Stress, to: stressTo,
+        why: isLow && actualCut === 0 ? 'Exposure already minimal' : 'Less exposure, lower pressure'
+      }
+    ];
+
+    return {
+      id: cutHours === 1 ? 'social_cut_1h' : 'social_cut_2h',
+      t: actualCut === 1
+        ? 'I cut social media by 1 hour'
+        : actualCut === 2
+        ? 'I cut social media by 2 hours'
+        : `I cut social media by ${cutDisplay} hour${actualCut === 1 ? '' : 's'}`,
+      lab: 'Social',
+      fr: social,
+      to: afterHours,
+      fmt: () => `${socialDisplay}h → ${afterDisplay}h`,
+      sim,
+      bal,
+      cards,
+      actionLine: `Keep social media under ${afterDisplay}h today`,
+      topGains: `Focus +${focusGain} pts · Sleep +${sleepGain} pts`
+    };
+  }
+
+  function makeMidnightScen() {
+    const FX = PHONE_FX;
+    const sim = [
+      SCORE[0],
+      clampScore(SCORE[1] + FX.midnightFocusGain),
+      SCORE[2],
+      clampScore(SCORE[3] + FX.midnightSleepGain),
+      SCORE[4],
+      SCORE[5],
+    ];
+    const bal = Math.round(sim.reduce((a, b) => a + b, 0) / 6);
+
+    const energyTo = clampScore(BASEV.Energy + FX.midnightEnergyGain);
+    const stressTo = clampScore(BASEV.Stress - FX.midnightStressGain);
+
+    const cards = [
+      {
+        name: 'Sleep', cd: 3, row: 0, u: ' pts',
+        from: SCORE[3], to: sim[3],
+        why: 'Bedtime ~20 min earlier'
+      },
+      {
+        name: 'Focus', cd: 1, row: 1, u: ' pts',
+        from: SCORE[1], to: sim[1],
+        why: 'Better sleep sharpens focus'
+      },
+      {
+        name: 'Energy', cd: 2, row: 5, u: '%',
+        from: BASEV.Energy, to: energyTo,
+        why: 'Rested mornings, more energy'
+      },
+      {
+        name: 'Stress', cd: 5, row: 5, u: '%',
+        from: BASEV.Stress, to: stressTo,
+        why: 'No late-night scroll anxiety'
+      }
+    ];
+
+    return {
+      id: 'no_phone_midnight',
+      t: 'I stop using my phone after midnight',
+      lab: 'Night',
+      fr: 0,
+      to: 0,
+      fmt: () => 'After midnight: phone off',
+      sim,
+      bal,
+      cards,
+      actionLine: 'Stop phone use after midnight',
+      topGains: 'Sleep +4 pts · Energy +3%'
+    };
+  }
+
+  /* Single unified scenario array */
   const SCEN = [
     {
-      t: 'I sleep 1 hour earlier', lab: 'Sleep', fr: 402, to: 462, fmt: (m: number) => `${Math.floor(m / 60)}h ${String(Math.round(m) % 60).padStart(2, '0')}m`, sim: [86, 93, 72, 75, 74, 82], bal: 80,
+      id: 'sleep_1h',
+      t: 'I sleep 1 hour earlier', lab: 'Sleep', fr: 402, to: 462,
+      fmt: (m: number) => `${Math.floor(m / 60)}h ${String(Math.round(m) % 60).padStart(2, '0')}m`,
+      sim: [86, 93, 72, 75, 74, 82], bal: 80,
       cards: [
-        ['Sleep', 3, 0, 14, ' pts', '+', 'Bedtime 1 hour earlier'],
-        ['Focus', 1, 1, 9, ' pts', '+', 'Rested mornings, sharper hours'],
-        ['Energy', 2, 5, 11, '%', '+', 'Sleep and health lift together'],
-        ['Stress', 5, 5, 8, '%', '−', 'Lower is better']
-      ]
+        { name: 'Sleep', cd: 3, row: 0, u: ' pts', from: 61, to: 75, why: 'Bedtime 1 hour earlier' },
+        { name: 'Focus', cd: 1, row: 1, u: ' pts', from: 84, to: 93, why: 'Rested mornings, sharper hours' },
+        { name: 'Energy', cd: 2, row: 5, u: '%', from: 62, to: 69, why: 'Sleep and health lift together' },
+        { name: 'Stress', cd: 5, row: 5, u: '%', from: 41, to: 38, why: 'Lower is better' }
+      ],
+      actionLine: 'Aim to sleep by 11:18 pm',
+      topGains: 'Sleep +14 pts · Focus +9 pts'
     },
     {
-      t: 'I study 2 hours more', lab: 'Study', fr: 120, to: 240, fmt: (m: number) => `${Math.round(m / 60)}h a day`, sim: [91, 80, 66, 57, 74, 84], bal: 75,
+      id: 'study_2h',
+      t: 'I study 2 hours more', lab: 'Study', fr: 120, to: 240,
+      fmt: (m: number) => `${Math.round(m / 60)}h a day`,
+      sim: [91, 80, 66, 57, 74, 84], bal: 75,
       cards: [
-        ['Study', 0, 2, 9, ' pts', '+', 'Deeper revision before the exam'],
-        ['Focus', 1, 1, 4, ' pts', '−', 'Long days wear attention down'],
-        ['Energy', 2, 0, 6, '%', '−', 'Less sleep, less energy'],
-        ['Stress', 5, 3, 7, '%', '+', 'Cramming raises pressure']
-      ]
+        { name: 'Study', cd: 0, row: 2, u: ' pts', from: 82, to: 91, why: 'Deeper revision before the exam' },
+        { name: 'Focus', cd: 1, row: 1, u: ' pts', from: 84, to: 80, why: 'Long days wear attention down' },
+        { name: 'Energy', cd: 2, row: 0, u: '%', from: 62, to: 58, why: 'Less sleep, less energy' },
+        { name: 'Stress', cd: 5, row: 3, u: '%', from: 41, to: 44, why: 'Cramming raises pressure' }
+      ],
+      actionLine: 'Add 2 focused study hours to your day',
+      topGains: 'Study +9 pts · Goals +5 pts'
     },
     {
-      t: 'I work out 3 times a week', lab: 'Gym', fr: 0, to: 3, fmt: (m: number) => `${Math.round(m)}× a week`, sim: [83, 88, 80, 68, 71, 82], bal: 79,
+      id: 'gym_3x',
+      t: 'I work out 3 times a week', lab: 'Gym', fr: 0, to: 3,
+      fmt: (m: number) => `${Math.round(m)}× a week`,
+      sim: [83, 88, 80, 68, 71, 82], bal: 79,
       cards: [
-        ['Health', 2, 5, 12, ' pts', '+', 'Three sessions a week'],
-        ['Sleep', 3, 0, 7, ' pts', '+', 'Training helps you wind down'],
-        ['Energy', 2, 5, 14, '%', '+', 'Movement lifts your day'],
-        ['Stress', 5, 3, 10, '%', '−', 'Exercise clears the mind']
-      ]
-    }
+        { name: 'Health', cd: 2, row: 5, u: ' pts', from: 68, to: 80, why: 'Three sessions a week' },
+        { name: 'Sleep', cd: 3, row: 0, u: ' pts', from: 61, to: 68, why: 'Training helps you wind down' },
+        { name: 'Energy', cd: 2, row: 5, u: '%', from: 62, to: 76, why: 'Movement lifts your day' },
+        { name: 'Stress', cd: 5, row: 3, u: '%', from: 41, to: 31, why: 'Exercise clears the mind' }
+      ],
+      actionLine: 'Complete 3 workout sessions this week',
+      topGains: 'Health +12 pts · Sleep +7 pts'
+    },
+    makePhoneCutScen(1, phSocial), // sc = 3
+    makePhoneCutScen(2, phSocial), // sc = 4
+    makeMidnightScen(),           // sc = 5
   ];
+
+  function rebuildPhoneScens() {
+    SCEN[3] = makePhoneCutScen(1, phSocial);
+    SCEN[4] = makePhoneCutScen(2, phSocial);
+    SCEN[5] = makeMidnightScen();
+  }
 
   let sc = 0, liveT: number | null = null;
   // Clear any existing br items in brs except rail and pls
@@ -328,25 +498,71 @@ export function initLanding(root: HTMLElement): () => void {
   });
 
   const dg = '<span class="dg"><span class="st">' + [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(x => `<span>${x}</span>`).join('') + '</span></span>';
-  const BASEV = { Energy: 62, Stress: 41 };
+
+  function applyCardDigs(n: any, p: number = 1) {
+    if (!n._st || !n._dig) return;
+    n._st.forEach((st: HTMLElement, k: number) => {
+      const dig = n._dig[k] ?? 0;
+      st.style.transform = `translateY(${-dig * p}em)`;
+    });
+  }
+
+  function animateCardDigits(n: any) {
+    if (RM) {
+      applyCardDigs(n, 1);
+      if (n._sp) n._sp.style.strokeDashoffset = '0';
+      if (n._ed) n._ed.style.opacity = '1';
+      return;
+    }
+    if (n._animId) cancelAnimationFrame(n._animId);
+    const t0 = performance.now();
+    const dur = 400;
+    const tick = (now: number) => {
+      const prog = Math.min(1, Math.max(0, (now - t0) / dur));
+      const ep = ease(prog);
+      applyCardDigs(n, ep);
+      if (n._sp) n._sp.style.strokeDashoffset = String(1 - ep);
+      if (n._ed) n._ed.style.opacity = ep > 0.8 ? '1' : '0';
+      if (prog < 1) {
+        n._animId = requestAnimationFrame(tick);
+      } else {
+        applyCardDigs(n, 1);
+        if (n._sp) n._sp.style.strokeDashoffset = '0';
+        if (n._ed) n._ed.style.opacity = '1';
+        n._animId = null;
+      }
+    };
+    n._animId = requestAnimationFrame(tick);
+  }
 
   function buildCards(i: number) {
     let prev = -1;
     nks.forEach((n, q) => {
-      const [nm, cd, row, v, u, sg, why] = SCEN[i].cards[q], k = D[cd][0].toLowerCase(), good = nm === 'Stress' ? sg === '−' : sg === '+';
+      const c = SCEN[i].cards[q];
+      const nm = c.name, k = D[c.cd][0].toLowerCase();
+      const delta = c.to - c.from;
+      const v = Math.abs(delta);
+      const sg = delta < 0 ? '−' : '+';
+      const good = nm === 'Stress' ? delta <= 0 : delta >= 0;
+
       n.style.setProperty('--c', `var(--${k})`);
-      n.dataset.row = String(row);
-      n.dataset.dl = String(row === prev ? .12 : 0);
-      prev = row;
+      n.dataset.row = String(c.row);
+      n.dataset.dl = String(c.row === prev ? .12 : 0);
+      prev = c.row;
+
       n.querySelector('.pi')!.innerHTML = ic(nm);
       n.querySelector('.nh2 b')!.textContent = nm;
-      n.querySelector('.why')!.textContent = why;
+      n.querySelector('.why')!.textContent = c.why;
+
       const box = n.querySelector('.num')!;
       box.className = 'num big' + (good ? '' : ' bad');
-      box.innerHTML = `<span class="ar">${sg === '+' ? '↑' : '↓'}</span> ${sg}` + [...String(v)].map(() => dg).join('') + `<span class="u${u[0] === ' ' ? ' sp2' : ''}">${u.trim()}</span>`;
+      const targetStr = String(v);
+      box.innerHTML = `<span class="ar">${sg === '+' ? '↑' : '↓'}</span> ${sg}` + [...targetStr].map(() => dg).join('') + `<span class="u${c.u[0] === ' ' ? ' sp2' : ''}">${c.u.trim()}</span>`;
+
       n._st = [...box.querySelectorAll('.st')];
-      n._dig = [...String(v)].map(Number);
+      n._dig = [...targetStr].map(Number);
       n._sp = n.querySelector('.sp path');
+
       let bd = n.querySelector('.badge');
       if (!bd) {
         bd = document.createElement('span');
@@ -355,14 +571,15 @@ export function initLanding(root: HTMLElement): () => void {
       }
       bd.textContent = good ? '▲ Better' : '▼ Worse';
       bd.classList.toggle('bad', !good);
+
       let ft = n.querySelector('.ftl');
       if (!ft) {
         ft = document.createElement('small');
         ft.className = 'ftl';
         box.after(ft);
       }
-      const di = D.findIndex(x => x[0] === nm);
-      ft.textContent = di >= 0 ? `${SCORE[di]} → ${SCEN[i].sim[di]} · est.` : `${BASEV[nm]} → ${Math.round(BASEV[nm] * (1 + (sg === '+' ? 1 : -1) * v / 100))} · est.`;
+      ft.textContent = `${c.from} → ${c.to} · est.`;
+
       let ed = n.querySelector('.sp .ed');
       if (!ed) {
         ed = document.createElementNS(NS, 'circle');
@@ -374,8 +591,12 @@ export function initLanding(root: HTMLElement): () => void {
       ed.setAttribute('cy', sg === '+' ? 4 : 26);
       ed.classList.toggle('bad', !good);
       n._ed = ed;
+
       n._sp.setAttribute('d', sg === '+' ? UP : DN);
       n._sp.classList.toggle('bad', !good);
+
+      // Smooth count-up animation that guarantees ending on target
+      animateCardDigits(n);
     });
   }
   buildCards(0);
@@ -391,7 +612,7 @@ export function initLanding(root: HTMLElement): () => void {
     pointerMoveHandlers.push({ el: n, fn });
   });
 
-  const slLab = $('.slr span'), chipB = [...root.querySelectorAll('#chips button')], chipsE = $('#chips'), ncE = $('#nc');
+  const slLab = $('.slr .slab') as HTMLElement, chipB = [...root.querySelectorAll('#chips button')], chipsE = $('#chips'), ncE = $('#nc');
   let nin = ncE.querySelector('#nin');
   if (!nin) {
     nin = document.createElement('div');
@@ -400,19 +621,90 @@ export function initLanding(root: HTMLElement): () => void {
     ncE.appendChild(nin);
   }
 
+  /* Phone elements */
+  const phValEl   = root.querySelector('#ph-val')      as HTMLElement;
+  const phMinus   = root.querySelector('#ph-minus')    as HTMLButtonElement;
+  const phPlus    = root.querySelector('#ph-plus')     as HTMLButtonElement;
+  const phCut1Btn = root.querySelector('#ph-cut1')     as HTMLButtonElement;
+  const phCut2Btn = root.querySelector('#ph-cut2')     as HTMLButtonElement;
+  const phMidBtn  = root.querySelector('#ph-midnight') as HTMLButtonElement;
+  const phDiscEl  = root.querySelector('#ph-disc')     as HTMLElement;
+
+  function updateStepperUI() {
+    const fmt = (h: number) => h % 1 === 0 ? `${h}h` : `${h}h`;
+    if (phValEl) phValEl.textContent = fmt(phSocial);
+
+    const isLow = phSocial < PHONE_FX.lowUsageThreshold;
+    const cut1Actual = Math.min(1, phSocial);
+    const cut2Actual = Math.min(2, phSocial);
+    if (phCut1Btn) {
+      phCut1Btn.textContent = cut1Actual < 1 ? `Cut social by ${cut1Actual}h` : 'Cut social by 1h';
+      phCut1Btn.disabled = phSocial <= 0;
+    }
+    if (phCut2Btn) {
+      phCut2Btn.textContent = cut2Actual < 2 ? `Cut social by ${cut2Actual}h` : 'Cut social by 2h';
+      phCut2Btn.disabled = phSocial <= 0;
+    }
+    if (phDiscEl) {
+      phDiscEl.dataset.low = isLow ? '1' : '0';
+    }
+  }
+
+  function persistPhoneHabits() {
+    try {
+      localStorage.setItem('lifeos-phone-habits', JSON.stringify({
+        socialHoursPerDay: phSocial,
+        noPhoneAfterMidnight: sc === 5,
+      }));
+    } catch {}
+  }
+
   function afterSc() {
     chipB.forEach((b, i) => b.classList.toggle('on', i === sc));
+
+    if (phCut1Btn) {
+      phCut1Btn.classList.toggle('on', sc === 3);
+      phCut1Btn.setAttribute('aria-pressed', String(sc === 3));
+    }
+    if (phCut2Btn) {
+      phCut2Btn.classList.toggle('on', sc === 4);
+      phCut2Btn.setAttribute('aria-pressed', String(sc === 4));
+    }
+    if (phMidBtn) {
+      phMidBtn.classList.toggle('on', sc === 5);
+      phMidBtn.setAttribute('aria-pressed', String(sc === 5));
+    }
+
     const S0 = SCEN[sc];
-    if (slLab) slLab.textContent = S0.lab;
+    const sbox = slrE ? (slrE.querySelector('.sbox') as HTMLElement) : null;
+
     if (ty) {
       ty.textContent = S0.t;
       ty.setAttribute('aria-label', S0.t);
     }
-    if (sl) sl.textContent = S0.fmt(S0.to);
-    if (slrE) slrE.dataset.k = S0.lab;
-    if (sbed) sbed.textContent = S0.lab === 'Sleep' ? 'Bedtime ' + fclock(420 - S0.to) : '';
-    if (knob) knob.style.left = '64%';
-    if (fillE) fillE.style.width = '64%';
+
+    if (sc === 3 || sc === 4) {
+      if (slLab) slLab.textContent = 'Social media';
+      if (sbox) sbox.style.display = 'none';
+      if (sl) sl.textContent = S0.fmt(0);
+      if (slrE) slrE.dataset.k = 'Social';
+      if (sbed) sbed.textContent = '';
+    } else if (sc === 5) {
+      if (slLab) slLab.textContent = 'Phone';
+      if (sbox) sbox.style.display = 'none';
+      if (sl) sl.textContent = 'After midnight: phone off';
+      if (slrE) slrE.dataset.k = 'Night';
+      if (sbed) sbed.textContent = '';
+    } else {
+      if (sbox) sbox.style.display = '';
+      if (slLab) slLab.textContent = S0.lab;
+      if (sl) sl.textContent = S0.fmt(S0.to);
+      if (slrE) slrE.dataset.k = S0.lab;
+      if (sbed) sbed.textContent = S0.lab === 'Sleep' ? 'Bedtime ' + fclock(420 - S0.to) : '';
+      if (knob) knob.style.left = '64%';
+      if (fillE) fillE.style.width = '64%';
+    }
+
     if (status) {
       status.textContent = '✓ Estimate ready';
       status.classList.add('done');
@@ -444,8 +736,70 @@ export function initLanding(root: HTMLElement): () => void {
       sc = i;
       buildCards(i);
       afterSc();
+      persistPhoneHabits();
     };
   });
+
+  if (phCut1Btn) {
+    phCut1Btn.onclick = (e) => {
+      e.preventDefault();
+      rebuildPhoneScens();
+      sc = 3;
+      buildCards(3);
+      afterSc();
+      persistPhoneHabits();
+    };
+  }
+  if (phCut2Btn) {
+    phCut2Btn.onclick = (e) => {
+      e.preventDefault();
+      rebuildPhoneScens();
+      sc = 4;
+      buildCards(4);
+      afterSc();
+      persistPhoneHabits();
+    };
+  }
+  if (phMidBtn) {
+    phMidBtn.onclick = (e) => {
+      e.preventDefault();
+      rebuildPhoneScens();
+      sc = 5;
+      buildCards(5);
+      afterSc();
+      persistPhoneHabits();
+    };
+  }
+
+  if (phMinus) {
+    phMinus.onclick = (e) => {
+      e.preventDefault();
+      phSocial = Math.max(0, +(phSocial - 0.5).toFixed(1));
+      updateStepperUI();
+      rebuildPhoneScens();
+      if (sc === 3 || sc === 4) {
+        buildCards(sc);
+        afterSc();
+      }
+      persistPhoneHabits();
+    };
+  }
+  if (phPlus) {
+    phPlus.onclick = (e) => {
+      e.preventDefault();
+      phSocial = Math.min(12, +(phSocial + 0.5).toFixed(1));
+      updateStepperUI();
+      rebuildPhoneScens();
+      if (sc === 3 || sc === 4) {
+        buildCards(sc);
+        afterSc();
+      }
+      persistPhoneHabits();
+    };
+  }
+
+  // Initial stepper UI
+  updateStepperUI();
 
   /* water tubes + electric bolt */
   const npinE = root.querySelector('#nightpin') as HTMLElement;
@@ -599,11 +953,28 @@ export function initLanding(root: HTMLElement): () => void {
       status.style.opacity = '1';
       stat.style.opacity = '1';
       bn2.textContent = String(S0.bal);
+      bn2.className = 'num ' + (S0.bal >= 74 ? 'up' : 'dn');
       rowsE.forEach(r => {
         r.e.style.opacity = '1';
         r.e.style.transform = 'none';
-        const now = SCORE[r.d], tg = SM[r.d];
+        const now = SCORE[r.d], tg = SM[r.d], df = tg - now;
+        if (r.bv) r.bv.textContent = String(tg);
+        if (r.dl) {
+          r.dl.textContent = df ? (df > 0 ? '+' : '−') + Math.abs(df) : '–';
+          r.dl.classList.toggle('neg', df < 0);
+          r.dl.style.opacity = '1';
+        }
         water(r, tg, now, tg, 1);
+      });
+      nks.forEach(n => {
+        n.style.opacity = '1';
+        n.style.transform = 'none';
+        n.classList.add('live');
+        if (!n._animId) {
+          applyCardDigs(n, 1);
+          if (n._sp) n._sp.style.strokeDashoffset = '0';
+          if (n._ed) n._ed.style.opacity = '1';
+        }
       });
     }
 
@@ -618,25 +989,65 @@ export function initLanding(root: HTMLElement): () => void {
 
   apply.onclick = (e: MouseEvent) => {
     e.preventDefault();
-    apply.querySelectorAll('.rl>span').forEach(x => x.textContent = 'Added to today ✓');
+
+    const S = SCEN[sc] || SCEN[0];
+    const appliedPlan = {
+      scenarioId: S.id || `scenario_${sc}`,
+      headline: S.t,
+      socialHours: phSocial,
+      noPhoneAfterMidnight: sc === 5,
+      bedtime: sc === 0 ? '11:18 pm' : undefined,
+      sleepHours: sc === 0 ? '7h 42m' : undefined,
+      studyHours: sc === 1 ? '4h a day' : undefined,
+      scoresBefore: [...SCORE],
+      scoresAfter: [...S.sim],
+      lifeBalanceBefore: 74,
+      lifeBalanceAfter: S.bal,
+      actionLine: S.actionLine || 'Stay consistent with your daily targets',
+      topGains: S.topGains || 'Focus +9 pts · Sleep +14 pts',
+      appliedAt: new Date().toISOString(),
+    };
+
     try {
-      const r = apply.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-      for (let i = 0; i < 24; i++) {
-        const d = document.createElement('i'), a = Math.random() * Math.PI * 2, dist = 70 + Math.random() * 90, k = D[i % 6][0].toLowerCase();
-        d.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;width:8px;height:8px;border-radius:${i % 2 ? '50%' : '2px'};background:var(--${k});pointer-events:none;z-index:99999`;
-        document.body.appendChild(d);
-        d.animate([
-          { transform: 'translate(0,0) scale(1)', opacity: 1 },
-          { transform: `translate(${Math.cos(a) * dist}px,${Math.sin(a) * dist - 30}px) scale(.3) rotate(${Math.random() * 360}deg)`, opacity: 0 }
-        ], {
-          duration: 700 + Math.random() * 300,
-          easing: 'cubic-bezier(.22,1,.36,1)'
-        }).onfinish = () => d.remove();
+      localStorage.setItem('lifeos.appliedPlan', JSON.stringify(appliedPlan));
+    } catch {}
+
+    apply.querySelectorAll('.rl>span').forEach(x => x.textContent = 'Plan applied ✓');
+    apply.classList.add('applied');
+
+    if (!RM) {
+      try {
+        const r = apply.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        for (let i = 0; i < 24; i++) {
+          const d = document.createElement('i'), a = Math.random() * Math.PI * 2, dist = 70 + Math.random() * 90, k = D[i % 6][0].toLowerCase();
+          d.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;width:8px;height:8px;border-radius:${i % 2 ? '50%' : '2px'};background:var(--${k});pointer-events:none;z-index:99999`;
+          document.body.appendChild(d);
+          d.animate([
+            { transform: 'translate(0,0) scale(1)', opacity: 1 },
+            { transform: `translate(${Math.cos(a) * dist}px,${Math.sin(a) * dist - 30}px) scale(.3) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+          ], {
+            duration: 700 + Math.random() * 300,
+            easing: 'cubic-bezier(.22,1,.36,1)'
+          }).onfinish = () => d.remove();
+        }
+      } catch {}
+    }
+
+    let onboardingDone = false;
+    try {
+      const store = useLifeStore.getState();
+      if (store?.profile?.onboardingCompleted || store?.onboarding?.completed) {
+        onboardingDone = true;
+      }
+      if (localStorage.getItem('lifeos.onboardingCompleted') === 'true') {
+        onboardingDone = true;
       }
     } catch {}
+
+    const targetUrl = onboardingDone ? '/app' : '/onboarding';
     setTimeout(() => {
-      window.location.href = '/onboarding';
-    }, 400);
+      window.location.href = targetUrl;
+    }, 600);
   };
 
   /* hero section is now handled by Hero.tsx */

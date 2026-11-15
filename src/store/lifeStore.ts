@@ -33,6 +33,12 @@ interface Settings {
   orbitView: 'visual' | 'list' | 'auto';
 }
 
+export interface PhoneHabits {
+  socialHoursPerDay: number;      // 0–12, step 0.5
+  noPhoneAfterMidnight: boolean;
+  midnightFrequency?: 'never' | 'sometimes' | 'often';
+}
+
 interface LifeState {
   profile: Profile;
   dimensions: Record<DimensionId, DimensionData>;
@@ -41,6 +47,8 @@ interface LifeState {
   todayStats: typeof demoToday;
   settings: Settings;
   onboarding?: OnboardingData;
+  phoneHabits: PhoneHabits;
+  setPhoneHabits: (habits: Partial<PhoneHabits>) => void;
   setOnboarding: (data: {
     priorities: string[];
     challenge: string | null;
@@ -87,6 +95,19 @@ export const useLifeStore = create<LifeState>((set) => ({
     },
     completed: false,
   },
+  phoneHabits: (() => {
+    try {
+      const saved = localStorage.getItem('lifeos-phone-habits');
+      if (saved) return JSON.parse(saved) as PhoneHabits;
+    } catch {}
+    return { socialHoursPerDay: 3, noPhoneAfterMidnight: false, midnightFrequency: 'never' };
+  })(),
+  setPhoneHabits: (habits) =>
+    set((state) => {
+      const next = { ...state.phoneHabits, ...habits };
+      try { localStorage.setItem('lifeos-phone-habits', JSON.stringify(next)); } catch {}
+      return { phoneHabits: next };
+    }),
 
   setOnboarding: (data) =>
     set((state) => {
