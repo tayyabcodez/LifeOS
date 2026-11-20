@@ -66,7 +66,9 @@ export function Landing() {
                         </div>
                         <b id="knob">
                           <u className="halo"></u>
-                          <svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" /></svg>
+                          <svg viewBox="0 0 24 24" fill="#4338ca" stroke="none" aria-hidden="true">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                          </svg>
                         </b>
                       </div>
                       <span className="sbed" id="sbed">Bedtime 12:18 am</span>
@@ -112,42 +114,62 @@ export function Landing() {
                 </div>
                 <div className="nfoot">
                   {/* ── Phone-habit inputs ── */}
-                  <div className="ph-row" id="ph-row">
-                    <label className="ph-label" htmlFor="ph-stepper">
-                      <svg className="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
-                        <line x1="12" y1="18" x2="12.01" y2="18"/>
-                      </svg>
-                      My daily social media time
-                    </label>
-                    <div className="ph-stepper" role="group" aria-label="Daily social media hours">
-                      <button type="button" className="ph-btn ph-minus" id="ph-minus" aria-label="Decrease by 30 minutes">−</button>
-                      <output id="ph-val" htmlFor="ph-minus ph-plus" className="ph-val">3h</output>
-                      <button type="button" className="ph-btn ph-plus" id="ph-plus" aria-label="Increase by 30 minutes">+</button>
+                  <div className="ph-controls-wrap">
+                    <div className="ph-row" id="ph-row">
+                      <label className="ph-label" htmlFor="ph-minus">
+                        <svg className="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                          <line x1="12" y1="18" x2="12.01" y2="18"/>
+                        </svg>
+                        My daily social media time
+                      </label>
+                      <div className="ph-stepper" role="group" aria-label="Daily social media hours">
+                        <button type="button" className="ph-btn ph-minus" id="ph-minus" aria-label="Decrease by 30 minutes">−</button>
+                        <output id="ph-val" htmlFor="ph-minus ph-plus" className="ph-val">3h</output>
+                        <button type="button" className="ph-btn ph-plus" id="ph-plus" aria-label="Increase by 30 minutes">+</button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="ph-chips" id="ph-chips">
-                    <span>What if I…</span>
-                    <button type="button" id="ph-cut1" className="ph-chip" aria-pressed="false">Cut social by 1h</button>
-                    <button type="button" id="ph-cut2" className="ph-chip" aria-pressed="false">Cut social by 2h</button>
-                    <button type="button" id="ph-midnight" className="ph-chip" aria-pressed="false">No phone after midnight</button>
+                    <div className="ph-chips" id="ph-chips">
+                      <span>What if I…</span>
+                      <button type="button" id="ph-cut1" className="ph-chip" aria-pressed="false">Cut social by 1h</button>
+                      <button type="button" id="ph-cut2" className="ph-chip" aria-pressed="false">Cut social by 2h</button>
+                      <button type="button" id="ph-midnight" className="ph-chip" aria-pressed="false">No phone after midnight</button>
+                    </div>
                   </div>
                   <p className="ph-disc" id="ph-disc">
                     Heavy late-night phone use is associated with later bedtimes and poorer sleep quality. Estimates, not medical advice.
                   </p>
-                  <div className="chips" id="chips">
-                    <span>Try another what-if</span>
-                    <button type="button" className="on">Sleep 1h earlier</button>
-                    <button type="button">Study 2h more</button>
-                    <button type="button">Work out 3× a week</button>
+                  {/* Feature 2: Why it matters panel */}
+                  <div id="why-matters" className="why-matters" hidden aria-live="polite">
+                    <div className="wm-header">
+                      <svg className="wm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="16" x2="12" y2="12" />
+                        <line x1="12" y1="8" x2="12.01" y2="8" />
+                      </svg>
+                      <b>Why this matters</b>
+                    </div>
+                    <ul className="wm-list">
+                      <li id="wm-studies"></li>
+                      <li id="wm-sleep"></li>
+                      <li id="wm-health"></li>
+                    </ul>
                   </div>
-                  <p className="stat" id="stat">Life balance <b className="num" id="bn">74</b><span className="ar2">→</span><b className="num up" id="bn2">74</b><small>estimate</small></p>
-                  <a className="btn nb" id="apply" href="/onboarding">
-                    <span className="rl">
-                      <span>Apply to my plan</span>
-                      <span aria-hidden="true">Apply to my plan</span>
-                    </span>
-                  </a>
+                  <div className="nfoot-actions">
+                    <div className="chips" id="chips">
+                      <span>Try another what-if</span>
+                      <button type="button" className="on">Sleep 1h earlier</button>
+                      <button type="button">Study 2h more</button>
+                      <button type="button">Work out 3× a week</button>
+                    </div>
+                    <p className="stat" id="stat">Life balance <b className="num" id="bn">74</b><span className="ar2">→</span><b className="num up" id="bn2">74</b><small>estimate</small></p>
+                    <a className="btn nb" id="apply" href="/onboarding">
+                      <span className="rl">
+                        <span>Apply to my plan</span>
+                        <span aria-hidden="true">Apply to my plan</span>
+                      </span>
+                    </a>
+                  </div>
                   <p className="note">Estimates based on demo data, not medical advice.</p>
                 </div>
               </div>
@@ -160,20 +182,102 @@ export function Landing() {
           <h2>Design your day.<br /><em>Watch your life react.</em></h2>
           <p>Alex has an exam in 3 days. Drag the sliders and see what every hour really costs.</p>
           <div className="ddg">
-            <div className="dialw">
-              <div className="dial">
-                <svg id="dsv" viewBox="-190 -190 380 380" aria-hidden="true"></svg>
-                <div className="dc"><small>Free time</small><b className="num" id="dfree">8h 48m</b><span id="dnote">per day</span></div>
+            <div className="dd-left">
+              <div className="dialw">
+                <div className="dial">
+                  <svg id="dsv" viewBox="-190 -190 380 380" aria-hidden="true"></svg>
+                  <div className="dc"><small>Free time</small><b className="num" id="dfree">8h 48m</b><span id="dnote">per day</span></div>
+                </div>
+                <ul className="dleg" aria-hidden="true">
+                  <li><i style={{ background: 'var(--sleep)' }}></i>Sleep</li>
+                  <li><i style={{ background: 'var(--study)' }}></i>Study</li>
+                  <li><i style={{ background: 'var(--health)' }}></i>Move</li>
+                  <li><i style={{ background: '#D9D3C4' }}></i>Routine</li>
+                  <li><i style={{ background: '#fff', border: '1px solid #CFC9B8' }}></i>Free</li>
+                </ul>
               </div>
-              <ul className="dleg" aria-hidden="true">
-                <li><i style={{ background: 'var(--sleep)' }}></i>Sleep</li>
-                <li><i style={{ background: 'var(--study)' }}></i>Study</li>
-                <li><i style={{ background: 'var(--health)' }}></i>Move</li>
-                <li><i style={{ background: '#D9D3C4' }}></i>Routine</li>
-                <li><i style={{ background: '#fff', border: '1px solid #CFC9B8' }}></i>Free</li>
-              </ul>
+              <div className="res">
+                <div className="rdy">
+                  <svg viewBox="-60 -60 120 120" aria-hidden="true">
+                    <circle r="48" className="rt0" />
+                    <circle r="48" className="rt1" id="rring" transform="rotate(-90)" />
+                  </svg>
+                  <div className="rn"><b className="num" id="rnum">78</b><small>%</small></div>
+                </div>
+                <div className="rtx"><b>Exam readiness</b><span id="rlab">On track</span></div>
+                <div className="mini" id="mini"></div>
+              </div>
             </div>
+
             <div className="dctl">
+              {/* Feature 1: Plan my day collapsible panel */}
+              <div className="pl-wrap" id="pl-wrap">
+                <button
+                  type="button"
+                  id="pl-toggle"
+                  className="pl-toggle-btn"
+                  aria-expanded="false"
+                  aria-controls="pl-panel"
+                >
+                  <span className="pl-toggle-left">
+                    <svg className="pl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                      <line x1="16" y1="2" x2="16" y2="6"/>
+                      <line x1="8" y1="2" x2="8" y2="6"/>
+                      <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    <b>Plan my day</b>
+                  </span>
+                  <span className="pl-toggle-tag">Rule-based planner</span>
+                  <span className="pl-toggle-chevron" id="pl-chevron" aria-hidden="true">▾</span>
+                </button>
+                <div id="pl-panel" className="pl-panel" hidden>
+                  <div className="pl-grid">
+                    <div className="pl-field">
+                      <label htmlFor="pl-uni">University hours per day</label>
+                      <input id="pl-uni" type="number" min="0" max="10" step="0.5" defaultValue="6" />
+                    </div>
+                    <div className="pl-field">
+                      <label htmlFor="pl-study">Self-study hours I want per day</label>
+                      <input id="pl-study" type="number" min="0" max="8" step="0.5" defaultValue="2" />
+                    </div>
+                    <div className="pl-field">
+                      <label htmlFor="pl-due">Assignments / exams due this week</label>
+                      <input id="pl-due" type="number" min="0" max="10" step="1" defaultValue="2" />
+                    </div>
+                    <div className="pl-field">
+                      <label htmlFor="pl-sleep">Sleep target hours</label>
+                      <input id="pl-sleep" type="number" min="4" max="10" step="0.5" defaultValue="7.5" />
+                    </div>
+                    <div className="pl-field">
+                      <label htmlFor="pl-personal">Personal / free time wanted per day</label>
+                      <input id="pl-personal" type="number" min="0" max="6" step="0.5" defaultValue="1.5" />
+                    </div>
+                    <div className="pl-field">
+                      <label htmlFor="pl-routine">Fixed routine (meals, travel, prayer, chores) hours</label>
+                      <input id="pl-routine" type="number" min="0" max="6" step="0.5" defaultValue="3" />
+                    </div>
+                  </div>
+                  <div className="pl-actions">
+                    <button type="button" id="pl-build" className="btn pl-build-btn">
+                      <span className="rl">
+                        <span>Build my plan</span>
+                        <span aria-hidden="true">Build my plan</span>
+                      </span>
+                    </button>
+                  </div>
+                  <div id="pl-summary" className="pl-summary" hidden aria-live="polite">
+                    <div id="pl-warn" className="pl-warn" hidden></div>
+                    <ul id="pl-lines" className="pl-lines"></ul>
+                    <div className="pl-split-wrap">
+                      <span className="pl-split-title">24h Time Allocation:</span>
+                      <div id="pl-split-bar" className="pl-split-bar" role="img" aria-label="24 hour time allocation breakdown"></div>
+                      <div id="pl-split-labels" className="pl-split-labels"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="srow">
                 <label htmlFor="inS">Sleep</label>
                 <output id="outS" htmlFor="inS">6h 42m</output>
@@ -192,17 +296,6 @@ export function Landing() {
               <div className="acts">
                 <button type="button" className="btn" id="dbest"><span className="rl"><span>Suggest a plan</span><span aria-hidden="true">Suggest a plan</span></span></button>
                 <button type="button" className="gh" id="dreset">Reset to today</button>
-              </div>
-              <div className="res">
-                <div className="rdy">
-                  <svg viewBox="-60 -60 120 120" aria-hidden="true">
-                    <circle r="48" className="rt0" />
-                    <circle r="48" className="rt1" id="rring" transform="rotate(-90)" />
-                  </svg>
-                  <div className="rn"><b className="num" id="rnum">78</b><small>%</small></div>
-                </div>
-                <div className="rtx"><b>Exam readiness</b><span id="rlab">On track</span></div>
-                <div className="mini" id="mini"></div>
               </div>
               <p className="dins" id="dins" aria-live="polite">Slide to see the trade-offs.</p>
             </div>

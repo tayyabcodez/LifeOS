@@ -2,6 +2,168 @@
 /* eslint-disable */
 import { useLifeStore } from '@/store/lifeStore';
 
+export interface PlannerInputs {
+  university: number;
+  selfStudyWanted: number;
+  due: number;
+  sleep: number;
+  personal: number;
+  routine: number;
+}
+
+export interface DayPlanResult {
+  sleep: number;
+  study: number;
+  move: number;
+  moveMinutes: number;
+  buffer: number;
+  university: number;
+  routine: number;
+  personal: number;
+  available: number;
+  overCommitted: boolean;
+  overCommittedHours: number;
+  warningText?: string;
+  trimmedSummary?: string;
+  socialNote?: string;
+  summaryLines: string[];
+  split24h: { name: string; hours: number; color: string }[];
+}
+
+export function planDay(inputs: PlannerInputs, socialHours: number = 0): DayPlanResult {
+  let { university, selfStudyWanted, due, sleep, personal, routine } = inputs;
+  const total = 24;
+  let committed = +(sleep + university + routine + personal).toFixed(1);
+  let available = +(total - committed).toFixed(1);
+
+  let overCommitted = false;
+  let overCommittedHours = 0;
+  let warningText = '';
+  const trimmedItems: string[] = [];
+
+  const baseOver = available < 0;
+  const studyOver = available < selfStudyWanted;
+
+  if (baseOver || studyOver) {
+    overCommitted = true;
+    overCommittedHours = baseOver
+      ? +(-available).toFixed(1)
+      : +(selfStudyWanted - available).toFixed(1);
+
+    warningText = `Your day is over-committed by ${overCommittedHours} h.`;
+    let neededCut = overCommittedHours;
+
+    // 1. reduce personal time first (down to min 0.5h)
+    const personalCut = Math.min(neededCut, Math.max(0, +(personal - 0.5).toFixed(1)));
+    if (personalCut > 0) {
+      personal = +(personal - personalCut).toFixed(1);
+      neededCut = +(neededCut - personalCut).toFixed(1);
+      trimmedItems.push(`personal time reduced by ${personalCut}h (to ${personal}h)`);
+    }
+
+    // 2. then reduce routine (down to min 2h)
+    if (neededCut > 0) {
+      const routineCut = Math.min(neededCut, Math.max(0, +(routine - 2.0).toFixed(1)));
+      if (routineCut > 0) {
+        routine = +(routine - routineCut).toFixed(1);
+        neededCut = +(neededCut - routineCut).toFixed(1);
+        trimmedItems.push(`fixed routine reduced by ${routineCut}h (to ${routine}h)`);
+      }
+    }
+
+    // 3. then reduce self-study
+    if (neededCut > 0) {
+      const studyCut = Math.min(neededCut, selfStudyWanted);
+      if (studyCut > 0) {
+        selfStudyWanted = +(selfStudyWanted - studyCut).toFixed(1);
+        neededCut = +(neededCut - studyCut).toFixed(1);
+        trimmedItems.push(`self-study target reduced by ${studyCut}h (to ${selfStudyWanted}h)`);
+      }
+    }
+
+    // 4. Never let sleep go below 6h
+    if (neededCut > 0) {
+      const sleepCut = Math.min(neededCut, Math.max(0, +(sleep - 6.0).toFixed(1)));
+      if (sleepCut > 0) {
+        sleep = +(sleep - sleepCut).toFixed(1);
+        neededCut = +(neededCut - sleepCut).toFixed(1);
+        trimmedItems.push(`sleep target reduced by ${sleepCut}h (to ${sleep}h)`);
+      }
+    }
+
+    // 5. If still over-committed after trimming
+    if (neededCut > 0) {
+      trimmedItems.push(`Still over-committed by ${neededCut}h. Consider cutting optional commitments or moving work to the weekend.`);
+    }
+
+    // Recompute committed & available with trimmed values
+    committed = +(sleep + university + routine + personal).toFixed(1);
+    available = Math.max(0, +(total - committed).toFixed(1));
+  }
+
+  // Allocation of available:
+  const move = available >= 0.5 ? Math.min(0.5, available) : 0;
+  const remaining = Math.max(0, +(available - move).toFixed(1));
+
+  let studyTarget = selfStudyWanted;
+  let dueBoost = false;
+  if (due >= 3) {
+    studyTarget = selfStudyWanted + 1.5;
+    dueBoost = true;
+  }
+  const study = Math.min(remaining, studyTarget);
+  const buffer = Math.max(0, +(remaining - study).toFixed(1));
+
+  // Clamping to slider ranges
+  const clampedSleep = Math.max(4, Math.min(10, sleep));
+  const clampedStudy = Math.max(0, Math.min(10, study));
+  const moveMinutes = Math.round(move * 60);
+
+  const summaryLines: string[] = [];
+  summaryLines.push(`Available after sleep, university, routine and personal time: ${available} h per day.`);
+  summaryLines.push(`Suggested: ${clampedStudy} h study, ${move} h movement, ${buffer} h buffer.`);
+  if (dueBoost) {
+    summaryLines.push(`Assignments due: ${due}, so study time was increased by 1.5 h.`);
+  }
+
+  let socialNote: string | undefined;
+  if (socialHours >= 3) {
+    socialNote = "Cutting 1 h of social media could add about 1 h to your study time.";
+    summaryLines.push(socialNote);
+  }
+
+  const trimmedSummary = trimmedItems.length > 0 ? `Trimming applied: ${trimmedItems.join('; ')}` : undefined;
+
+  const split24h = [
+    { name: 'Sleep', hours: clampedSleep, color: 'var(--sleep)' },
+    { name: 'University', hours: university, color: '#6366f1' },
+    { name: 'Routine', hours: routine, color: '#D9D3C4' },
+    { name: 'Personal', hours: personal, color: '#f59e0b' },
+    { name: 'Study', hours: clampedStudy, color: 'var(--study)' },
+    { name: 'Move', hours: move, color: 'var(--health)' },
+    { name: 'Buffer', hours: buffer, color: '#10b981' },
+  ];
+
+  return {
+    sleep: clampedSleep,
+    study: clampedStudy,
+    move,
+    moveMinutes,
+    buffer,
+    university,
+    routine,
+    personal,
+    available,
+    overCommitted,
+    overCommittedHours,
+    warningText: warningText || undefined,
+    trimmedSummary,
+    socialNote,
+    summaryLines,
+    split24h
+  };
+}
+
 export function initLanding(root: HTMLElement): () => void {
   let cancelled = false;
   const $ = (s: string) => root.querySelector(s);
@@ -38,15 +200,17 @@ export function initLanding(root: HTMLElement): () => void {
     [.86, 'And it all feeds your goals.', 'Change one thing and the whole chain moves.']
   ];
   const SCORE = [82, 84, 68, 61, 74, 79];
-  const ICON = {
+  const ICON: Record<string, string> = {
     Study: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
     Focus: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
     Health: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
-    Sleep: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+    Sleep: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="none" fill="currentColor"/>',
     Money: '<circle cx="12" cy="12" r="10"/><path d="M15 9.5A3 3 0 0 0 12 8c-1.7 0-3 .9-3 2.2 0 3 6 1.6 6 4.6 0 1.3-1.3 2.2-3 2.2a3 3 0 0 1-3-1.5"/><path d="M12 6v2M12 16v2"/>',
-    Goals: '<path d="M4 22V4"/><path d="M4 4c3-2 5 2 8 0s5-2 8 0v9c-3-2-5-2-8 0s-5 2-8 0"/>'
+    Goals: '<path d="M4 22V4"/><path d="M4 4c3-2 5 2 8 0s5-2 8 0v9c-3-2-5-2-8 0s-5 2-8 0"/>',
+    Energy: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="none" fill="currentColor"/>',
+    Stress: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12" fill="none"/>'
   };
-  const ic = (n: string) => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICON[n]}</svg>`;
+  const ic = (n: string) => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICON[n] || ''}</svg>`;
 
   const stage = $('#stage'), svg = $('#svg'), head = $('#head'), sub = $('#sub'), NS = 'http://www.w3.org/2000/svg';
   
@@ -683,20 +847,22 @@ export function initLanding(root: HTMLElement): () => void {
       ty.setAttribute('aria-label', S0.t);
     }
 
+    if (sbox) sbox.style.display = '';
     if (sc === 3 || sc === 4) {
       if (slLab) slLab.textContent = 'Social media';
-      if (sbox) sbox.style.display = 'none';
       if (sl) sl.textContent = S0.fmt(0);
       if (slrE) slrE.dataset.k = 'Social';
       if (sbed) sbed.textContent = '';
+      if (knob) knob.style.left = sc === 3 ? '48%' : '32%';
+      if (fillE) fillE.style.width = sc === 3 ? '48%' : '32%';
     } else if (sc === 5) {
-      if (slLab) slLab.textContent = 'Phone';
-      if (sbox) sbox.style.display = 'none';
-      if (sl) sl.textContent = 'After midnight: phone off';
+      if (slLab) slLab.textContent = 'Phone curfew';
+      if (sl) sl.textContent = '12:00 am off';
       if (slrE) slrE.dataset.k = 'Night';
-      if (sbed) sbed.textContent = '';
+      if (sbed) sbed.textContent = 'Bedtime: phone off';
+      if (knob) knob.style.left = '60%';
+      if (fillE) fillE.style.width = '60%';
     } else {
-      if (sbox) sbox.style.display = '';
       if (slLab) slLab.textContent = S0.lab;
       if (sl) sl.textContent = S0.fmt(S0.to);
       if (slrE) slrE.dataset.k = S0.lab;
@@ -728,6 +894,46 @@ export function initLanding(root: HTMLElement): () => void {
     apply.querySelectorAll('.rl>span').forEach(x => x.textContent = 'Apply to my plan');
     bn2.textContent = String(S0.bal);
     bn2.className = 'num ' + (S0.bal >= 74 ? 'up' : 'dn');
+
+    /* Feature 2: Why it matters impact panel */
+    const whyMatters = root.querySelector('#why-matters') as HTMLElement | null;
+    const wmStudies = root.querySelector('#wm-studies') as HTMLElement | null;
+    const wmSleep = root.querySelector('#wm-sleep') as HTMLElement | null;
+    const wmHealth = root.querySelector('#wm-health') as HTMLElement | null;
+
+    if (whyMatters) {
+      if (sc === 3 || sc === 4 || sc === 5) {
+        whyMatters.hidden = false;
+        if (phDiscEl) phDiscEl.style.display = 'none';
+        const cSleep = S0.cards ? S0.cards.find((c: any) => c.name === 'Sleep') : null;
+        const cFocus = S0.cards ? S0.cards.find((c: any) => c.name === 'Focus') : null;
+        const cEnergy = S0.cards ? S0.cards.find((c: any) => c.name === 'Energy') : null;
+        const cStress = S0.cards ? S0.cards.find((c: any) => c.name === 'Stress') : null;
+
+        const dfSleep = cSleep ? cSleep.to - cSleep.from : 0;
+        const dfFocus = cFocus ? cFocus.to - cFocus.from : 0;
+        const dfEnergy = cEnergy ? cEnergy.to - cEnergy.from : 0;
+        const dfStress = cStress ? cStress.to - cStress.from : 0;
+
+        const fStr = `${dfFocus >= 0 ? '+' : '−'}${Math.abs(dfFocus)} pts`;
+        const sStr = `${dfSleep >= 0 ? '+' : '−'}${Math.abs(dfSleep)} pts`;
+        const eStr = `${dfEnergy >= 0 ? '+' : '−'}${Math.abs(dfEnergy)}%`;
+        const stStr = `${dfStress <= 0 ? '−' : '+'}${Math.abs(dfStress)}%`;
+
+        if (wmStudies) {
+          wmStudies.innerHTML = `<strong>Studies:</strong> Long social media sessions are associated with more distraction and shorter focused study blocks. <em>(Focus: ${fStr})</em>`;
+        }
+        if (wmSleep) {
+          wmSleep.innerHTML = `<strong>Sleep:</strong> Using your phone late at night or waking up to scroll is associated with later bedtimes and lighter sleep. <em>(Sleep: ${sStr})</em>`;
+        }
+        if (wmHealth) {
+          wmHealth.innerHTML = `<strong>Health &amp; stress:</strong> Less late-night screen time is associated with better energy and lower stress the next day. <em>(Energy: ${eStr}, Stress: ${stStr})</em>`;
+        }
+      } else {
+        whyMatters.hidden = true;
+        if (phDiscEl) phDiscEl.style.display = '';
+      }
+    }
   }
 
   chipB.forEach((b, i) => {
@@ -912,7 +1118,10 @@ export function initLanding(root: HTMLElement): () => void {
     const nr = npinE.getBoundingClientRect();
     NV = nr.top < window.innerHeight && nr.bottom > 0;
     const lp = liveT === null ? 0 : clamp((performance.now() - liveT) / 1500), pe = liveT === null ? p : .2 + .6 * lp, S0 = SCEN[sc], SM = S0.sim;
-    nin.style.transform = `scale(${Math.min(1, (ncE.clientHeight - 48) / nin.offsetHeight)})`;
+    const availH = ncE.clientHeight - 16;
+    const contentH = nin.scrollHeight || nin.offsetHeight || 580;
+    const fitScale = Math.min(1.02, Math.max(0.72, availH / Math.max(contentH, 540)));
+    nin.style.transform = `scale(${fitScale})`;
     const e = ease(clamp(p / .16)), hk = ease(clamp((p - .1) / .1));
     nw.style.clipPath = `circle(${lerp(0, 150, e)}% at 50% 64%)`; nhs.style.transform = `translateY(${(1 - hk) * 115}%)`;
     
@@ -1252,7 +1461,124 @@ export function initLanding(root: HTMLElement): () => void {
     };
 
     Q('dbest').onclick = () => go(7.8, 4, 40);
-    Q('dreset').onclick = () => go(6.7, 3, 30);
+    Q('dreset').onclick = () => {
+      go(6.7, 3, 30);
+      if (plSummary) plSummary.hidden = true;
+    };
+
+    /* Feature 1: Plan my day panel */
+    const plToggle = root.querySelector('#pl-toggle') as HTMLButtonElement | null;
+    const plChevron = root.querySelector('#pl-chevron') as HTMLElement | null;
+    const plPanel = root.querySelector('#pl-panel') as HTMLElement | null;
+    const plUni = root.querySelector('#pl-uni') as HTMLInputElement | null;
+    const plStudy = root.querySelector('#pl-study') as HTMLInputElement | null;
+    const plDue = root.querySelector('#pl-due') as HTMLInputElement | null;
+    const plSleep = root.querySelector('#pl-sleep') as HTMLInputElement | null;
+    const plPersonal = root.querySelector('#pl-personal') as HTMLInputElement | null;
+    const plRoutine = root.querySelector('#pl-routine') as HTMLInputElement | null;
+    const plBuild = root.querySelector('#pl-build') as HTMLButtonElement | null;
+    const plSummary = root.querySelector('#pl-summary') as HTMLElement | null;
+    const plWarn = root.querySelector('#pl-warn') as HTMLElement | null;
+    const plLines = root.querySelector('#pl-lines') as HTMLElement | null;
+    const plSplitBar = root.querySelector('#pl-split-bar') as HTMLElement | null;
+    const plSplitLabels = root.querySelector('#pl-split-labels') as HTMLElement | null;
+
+    // Load persisted inputs if any
+    try {
+      const savedInputsRaw = localStorage.getItem('lifeos.plannerInputs');
+      if (savedInputsRaw) {
+        const p = JSON.parse(savedInputsRaw);
+        if (plUni && typeof p.university === 'number') plUni.value = String(p.university);
+        if (plStudy && typeof p.selfStudyWanted === 'number') plStudy.value = String(p.selfStudyWanted);
+        if (plDue && typeof p.due === 'number') plDue.value = String(p.due);
+        if (plSleep && typeof p.sleep === 'number') plSleep.value = String(p.sleep);
+        if (plPersonal && typeof p.personal === 'number') plPersonal.value = String(p.personal);
+        if (plRoutine && typeof p.routine === 'number') plRoutine.value = String(p.routine);
+      }
+    } catch {}
+
+    if (plToggle && plPanel) {
+      plToggle.onclick = () => {
+        const isHidden = plPanel.hidden;
+        plPanel.hidden = !isHidden;
+        plToggle.setAttribute('aria-expanded', String(isHidden));
+        if (plChevron) plChevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+      };
+    }
+
+    if (plBuild) {
+      plBuild.onclick = (e) => {
+        e.preventDefault();
+        const uniVal = plUni ? +plUni.value : 6;
+        const studyVal = plStudy ? +plStudy.value : 2;
+        const dueVal = plDue ? +plDue.value : 2;
+        const sleepVal = plSleep ? +plSleep.value : 7.5;
+        const personalVal = plPersonal ? +plPersonal.value : 1.5;
+        const routineVal = plRoutine ? +plRoutine.value : 3;
+
+        const inputs: PlannerInputs = {
+          university: isNaN(uniVal) ? 6 : uniVal,
+          selfStudyWanted: isNaN(studyVal) ? 2 : studyVal,
+          due: isNaN(dueVal) ? 2 : dueVal,
+          sleep: isNaN(sleepVal) ? 7.5 : sleepVal,
+          personal: isNaN(personalVal) ? 1.5 : personalVal,
+          routine: isNaN(routineVal) ? 3 : routineVal
+        };
+
+        try {
+          localStorage.setItem('lifeos.plannerInputs', JSON.stringify(inputs));
+        } catch {}
+
+        let socialHours = phSocial;
+        try {
+          const phRaw = localStorage.getItem('lifeos-phone-habits');
+          if (phRaw) {
+            const parsed = JSON.parse(phRaw);
+            if (typeof parsed.socialHoursPerDay === 'number') socialHours = parsed.socialHoursPerDay;
+          }
+        } catch {}
+
+        const plan = planDay(inputs, socialHours);
+
+        // Apply to sliders using go()
+        go(plan.sleep, plan.study, plan.moveMinutes);
+
+        // Display summary
+        if (plSummary) {
+          plSummary.hidden = false;
+          if (plWarn) {
+            if (plan.overCommitted && plan.warningText) {
+              plWarn.hidden = false;
+              plWarn.innerHTML = `<strong>⚠️ ${plan.warningText}</strong>${plan.trimmedSummary ? `<br/><small>${plan.trimmedSummary}</small>` : ''}`;
+            } else {
+              plWarn.hidden = true;
+              plWarn.textContent = '';
+            }
+          }
+          if (plLines) {
+            plLines.innerHTML = plan.summaryLines.map(l => `<li>${l}</li>`).join('');
+          }
+          if (plSplitBar) {
+            plSplitBar.innerHTML = plan.split24h
+              .filter(s => s.hours > 0)
+              .map(s => {
+                const pct = ((s.hours / 24) * 100).toFixed(1);
+                return `<div class="pl-split-seg" style="width: ${pct}%; background: ${s.color};" title="${s.name}: ${s.hours}h (${pct}%)"></div>`;
+              }).join('');
+          }
+          if (plSplitLabels) {
+            plSplitLabels.innerHTML = plan.split24h
+              .filter(s => s.hours > 0)
+              .map(s => `<span class="pl-split-pill"><i style="background: ${s.color}"></i><b>${s.name}</b> ${s.hours}h</span>`).join('');
+          }
+        }
+
+        // Save last plan to localStorage
+        try {
+          localStorage.setItem('lifeos.dayPlan', JSON.stringify(plan));
+        } catch {}
+      };
+    }
     upd();
   }
 

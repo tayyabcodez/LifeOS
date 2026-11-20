@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   title: "LIFEOS",
   description: "Your life, in one clear view.",
   icons: {
-    icon: "/logo.png",
+    icon: "/icon.png",
   },
 };
 

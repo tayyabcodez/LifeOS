@@ -2217,36 +2217,36 @@
 
 /* ---- v11 wide + compact ---- */
 .lp #nc h2.nh {
-  font-size: clamp(40px, min(7vw, 9vh), 90px);
+  font-size: clamp(32px, min(5.5vw, 6.8vh), 64px);
 }
 
 .lp .nrow {
-  margin: clamp(6px, 1.4vh, 16px) 0 clamp(8px, 2vh, 22px);
+  margin: clamp(4px, 1vh, 8px) 0 clamp(6px, 1.4vh, 12px);
 }
 
 .lp .nmain {
   max-width: 1240px;
-  gap: clamp(32px, 6vw, 100px);
+  gap: clamp(24px, 5vw, 80px);
 }
 
 .lp .bars {
   width: min(640px, 100%);
-  --rh: clamp(34px, 6vh, 52px);
+  --rh: clamp(28px, 4.4vh, 38px);
 }
 
-.lp .bl { width: 104px; }
-.lp .bl b { font-size: 15px; }
-.lp .bv { width: 96px; }
-.lp .bv b { font-size: 22px; }
-.lp .bt { height: 16px; }
+.lp .bl { width: 96px; }
+.lp .bl b { font-size: 14px; }
+.lp .bv { width: 88px; }
+.lp .bv b { font-size: 20px; }
+.lp .bt { height: 14px; }
 
 .lp .ncards {
-  width: min(540px, 100%);
-  gap: clamp(8px, 1.6vh, 16px);
+  width: min(500px, 100%);
+  gap: clamp(8px, 1.4vh, 14px);
 }
 
 .lp .nk {
-  padding: clamp(10px, 2.2vh, 18px) 18px;
+  padding: clamp(8px, 1.8vh, 14px) 16px;
 }
 
 .lp .nh2 {
@@ -2269,18 +2269,16 @@
 
 @media(min-width: 821px) {
   .lp .nfoot {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 12px 36px;
-    margin-top: clamp(8px, 2.4vh, 24px);
+    gap: 6px;
+    margin-top: clamp(4px, 1.2vh, 10px);
   }
   .lp .nfoot .chips {
     margin-top: 0;
   }
   .lp .nfoot .note {
-    flex-basis: 100%;
     text-align: center;
     margin: 0;
   }
@@ -2656,15 +2654,15 @@
 
 /* ---- v13 day designer ---- */
 .lp .dd {
-  max-width: 1180px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: clamp(80px, 12vh, 140px) 24px;
+  padding: clamp(32px, 4.5vh, 56px) 24px clamp(20px, 3vh, 36px);
   text-align: center;
 }
 
 .lp .dd h2 {
-  font-size: clamp(40px, 6vw, 76px);
-  line-height: 1.04;
+  font-size: clamp(32px, 4.4vw, 52px);
+  line-height: 1.05;
 }
 
 .lp .dd h2 em {
@@ -2673,14 +2671,15 @@
 
 .lp .dd > p {
   color: var(--ink2);
-  margin: 16px 0 44px;
+  margin: 8px 0 22px;
+  font-size: 15px;
 }
 
 .lp .ddg {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(24px, 5vw, 72px);
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.18fr);
+  gap: clamp(20px, 3.5vw, 44px);
+  align-items: start;
   text-align: left;
   opacity: 0;
   transform: translateY(30px);
@@ -2698,16 +2697,25 @@
   transition: none;
 }
 
+.lp .dd-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
 .lp .dialw {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+  width: 100%;
 }
 
 .lp .dial {
   position: relative;
-  width: min(100%, 430px);
+  width: min(100%, 280px);
   aspect-ratio: 1;
 }
 
@@ -2879,19 +2887,21 @@
 .lp .res {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 6px 18px;
+  gap: 6px 16px;
   align-items: center;
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 22px;
-  padding: 18px;
-  box-shadow: 0 20px 50px rgba(21, 23, 28, .08);
+  border-radius: 18px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 30px rgba(21, 23, 28, .06);
+  width: 100%;
+  max-width: 440px;
 }
 
 .lp .rdy {
   position: relative;
-  width: 104px;
-  height: 104px;
+  width: 76px;
+  height: 76px;
 }
 
 .lp .rdy svg {
@@ -2922,11 +2932,11 @@
   display: flex;
   align-items: baseline;
   justify-content: center;
-  padding-top: 34px;
+  padding-top: 24px;
 }
 
 .lp .rn b {
-  font-size: 30px;
+  font-size: 24px;
 }
 
 .lp .rn small {
@@ -3771,14 +3781,11 @@
 }
 
 .lp .trk b svg {
-  width: 13px !important;
-  height: 13px !important;
+  width: 14px !important;
+  height: 14px !important;
   position: static !important;
-  fill: none;
-  stroke: #4f46e5 !important;
-  stroke-width: 2.2 !important;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  fill: #4338ca !important;
+  stroke: none !important;
 }
 
 .lp .halo {
@@ -3991,4 +3998,458 @@
 
 .lp .sbed {
   bottom: 0 !important;
+}
+
+/* ── Feature 1: Plan My Day Collapsible Panel ── */
+.lp .pl-wrap {
+  width: 100%;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(21, 23, 28, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lp .pl-wrap:focus-within {
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.lp .pl-toggle-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--ink);
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.lp .pl-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.lp .pl-toggle-btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.lp .pl-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.lp .pl-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--study);
+}
+
+.lp .pl-toggle-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.1);
+  color: #4f46e5;
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+.lp .pl-toggle-chevron {
+  font-size: 13px;
+  color: var(--ink2);
+  transition: transform 0.2s ease;
+}
+
+.lp .pl-panel {
+  padding: 2px 14px 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.lp .pl-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 10px;
+  margin-top: 10px;
+}
+
+.lp .pl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.lp .pl-field label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink2);
+  line-height: 1.25;
+}
+
+.lp .pl-field input {
+  padding: 5px 8px;
+  font-size: 13px;
+  height: 32px;
+  font-family: var(--font-geist), monospace;
+  font-weight: 600;
+  color: var(--ink);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.lp .pl-field input:focus {
+  outline: none;
+  border-color: var(--study);
+  box-shadow: 0 0 0 2px rgba(45, 80, 220, 0.12);
+}
+
+.lp .pl-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.lp .pl-build-btn {
+  padding: 7px 18px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.lp .pl-summary {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(246, 243, 236, 0.85);
+  border: 1px solid rgba(200, 195, 180, 0.5);
+  border-radius: 10px;
+}
+
+.lp .pl-warn {
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  background: #fff3ed;
+  border-left: 3px solid #ea580c;
+  border-radius: 4px;
+  font-size: 11.5px;
+  color: #9a3412;
+  line-height: 1.35;
+}
+
+.lp .pl-lines {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lp .pl-lines li {
+  font-size: 12px;
+  color: var(--ink);
+  line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.lp .pl-lines li::before {
+  content: "•";
+  color: var(--study);
+  font-weight: bold;
+}
+
+.lp .pl-split-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.lp .pl-split-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink2);
+}
+
+.lp .pl-split-bar {
+  width: 100%;
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  display: flex;
+}
+
+.lp .pl-split-seg {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.lp .pl-split-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.lp .pl-split-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--ink);
+}
+
+.lp .pl-split-pill i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* ── Feature 2: Why This Matters Impact Panel ── */
+.lp .why-matters {
+  margin: 4px auto 3px !important;
+  padding: 6px 14px !important;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  color: #fff;
+  max-width: 740px !important;
+}
+
+.lp .wm-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px !important;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px !important;
+}
+
+.lp .wm-icon {
+  width: 12px !important;
+  height: 12px !important;
+  color: #38bdf8;
+}
+
+.lp .wm-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px !important;
+}
+
+.lp .wm-list li {
+  font-size: 11px !important;
+  color: rgba(241, 245, 249, 0.88);
+  line-height: 1.25 !important;
+}
+
+.lp .wm-list li strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.lp .wm-list li em {
+  font-style: normal;
+  font-weight: 600;
+  color: #34d399;
+  margin-left: 4px;
+}
+
+/* ── Compact responsive nightpin fit ── */
+.lp #nc {
+  padding: 10px 20px !important;
+  justify-content: center !important;
+  align-items: center !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.lp #nin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  transform-origin: center center;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lp #nc h2.nh {
+  font-size: clamp(28px, 4.2vh, 40px) !important;
+  line-height: 1.1 !important;
+  margin: 0 0 2px 0 !important;
+}
+
+.lp .nrow {
+  margin: 4px 0 6px !important;
+  gap: 16px !important;
+}
+
+.lp .bars {
+  --rh: 32px !important;
+}
+
+.lp .bh {
+  margin: 0 0 6px 20px !important;
+}
+
+.lp .ncards {
+  gap: 10px !important;
+  width: min(420px, 100%) !important;
+}
+
+.lp .nk {
+  padding: 10px 14px 8px !important;
+  border-radius: 14px !important;
+}
+
+.lp .nk .big {
+  font-size: 24px !important;
+}
+
+.lp .nh2 {
+  margin-bottom: 2px !important;
+}
+
+.lp .nh2 b {
+  font-size: 13px !important;
+}
+
+.lp .sp {
+  height: 20px !important;
+  margin-top: 2px !important;
+}
+
+.lp .nk .why {
+  margin-top: 3px !important;
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+}
+
+.lp .nfoot {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 960px !important;
+  margin: 6px auto 0 !important;
+  gap: 6px !important;
+}
+
+.lp .ph-controls-wrap {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 14px !important;
+  flex-wrap: wrap !important;
+  width: 100% !important;
+}
+
+.lp .ph-row {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin: 0 !important;
+}
+
+.lp .ph-chips {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 0 !important;
+}
+
+.lp .ph-disc {
+  margin: 2px auto !important;
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+  color: rgba(246, 243, 236, .45) !important;
+  text-align: center !important;
+}
+
+.lp .nfoot-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 20px !important;
+  flex-wrap: wrap !important;
+  width: 100% !important;
+  margin-top: 2px !important;
+}
+
+.lp .chips {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 0 !important;
+}
+
+.lp .chips button {
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+}
+
+.lp .stat {
+  display: inline-flex !important;
+  align-items: baseline !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  font-size: 14px !important;
+}
+
+.lp .stat .num {
+  font-size: 24px !important;
+}
+
+.lp #apply {
+  position: static !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 8px 20px !important;
+  font-size: 13px !important;
+  border-radius: 999px !important;
+  white-space: nowrap !important;
+}
+
+.lp .note {
+  margin: 2px auto 0 !important;
+  font-size: 11px !important;
+  color: rgba(246, 243, 236, .4) !important;
+  text-align: center !important;
 }

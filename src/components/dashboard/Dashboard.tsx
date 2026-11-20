@@ -33,6 +33,17 @@ export function Dashboard() {
     appliedAt: string;
   } | null>(null);
 
+  const [dayPlan, setDayPlan] = React.useState<{
+    available: number;
+    study: number;
+    move: number;
+    buffer: number;
+    sleep: number;
+    overCommitted?: boolean;
+    warningText?: string;
+    trimmedSummary?: string;
+  } | null>(null);
+
   /* Phone habits & Nudges state */
   const [socialHours, setSocialHours] = React.useState<number>(3);
   const [midnightFreq, setMidnightFreq] = React.useState<'never' | 'sometimes' | 'often'>('never');
@@ -45,6 +56,13 @@ export function Dashboard() {
       const saved = localStorage.getItem('lifeos.appliedPlan');
       if (saved) {
         setAppliedPlan(JSON.parse(saved));
+      }
+    } catch {}
+
+    try {
+      const savedPlan = localStorage.getItem('lifeos.dayPlan');
+      if (savedPlan) {
+        setDayPlan(JSON.parse(savedPlan));
       }
     } catch {}
 
@@ -74,6 +92,13 @@ export function Dashboard() {
       localStorage.removeItem('lifeos.appliedPlan');
     } catch {}
     setAppliedPlan(null);
+  };
+
+  const handleClearDayPlan = () => {
+    try {
+      localStorage.removeItem('lifeos.dayPlan');
+    } catch {}
+    setDayPlan(null);
   };
 
   const handleSocialChange = (nextVal: number) => {
@@ -338,6 +363,60 @@ export function Dashboard() {
                   aria-label="Remove active plan"
                 >
                   Remove plan
+                </button>
+              </div>
+            </div>
+          )}
+
+          {dayPlan && (
+            <div className="db-plan-card rv" style={{ '--s': 0.5 } as any}>
+              <div className="db-plan-left">
+                <div className="db-plan-badge">
+                  <span className="db-plan-dot" style={{ background: '#6366f1' }}></span>
+                  <span>Your day plan</span>
+                </div>
+                <h2 className="db-plan-headline">
+                  Available for study &amp; move: <b>{dayPlan.available} h</b>
+                </h2>
+                <p className="db-plan-action">
+                  <span>Suggested: <b>{dayPlan.study}h study</b> · <b>{dayPlan.move}h move</b> · <b>{dayPlan.buffer}h buffer</b></span>
+                </p>
+                {dayPlan.warningText && (
+                  <p style={{ fontSize: '12px', color: '#ea580c', marginTop: '4px', fontWeight: 500 }}>
+                    ⚠️ {dayPlan.warningText}
+                  </p>
+                )}
+              </div>
+
+              <div className="db-plan-stats">
+                <div className="db-plan-stat">
+                  <span className="db-plan-stat-lbl">Allocation</span>
+                  <span className="db-plan-stat-val">
+                    <b>{dayPlan.study}h</b> study / <b>{dayPlan.move}h</b> move
+                  </span>
+                </div>
+                <div className="db-plan-stat">
+                  <span className="db-plan-stat-lbl">Buffer / Free</span>
+                  <span className="db-plan-stat-gains" style={{ color: '#10b981' }}>+{dayPlan.buffer}h buffer</span>
+                </div>
+              </div>
+
+              <div className="db-plan-action-btn" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <a
+                  href="/#dd"
+                  className="db-nudge-action"
+                  style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '6px 14px', fontSize: '12.5px' }}
+                >
+                  Rebuild plan →
+                </a>
+                <button
+                  type="button"
+                  className="db-plan-remove"
+                  onClick={handleClearDayPlan}
+                  aria-label="Clear day plan"
+                  title="Clear day plan"
+                >
+                  Clear
                 </button>
               </div>
             </div>
