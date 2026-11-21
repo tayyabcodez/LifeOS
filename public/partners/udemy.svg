@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 36" width="140" height="36" fill="none">
+  <!-- Udemy logo mark -->
+  <path d="M16 4L4 12V24C4 28.4 7.6 32 12 32H20C24.4 32 28 28.4 28 24V12L16 4Z" fill="#A435F0"/>
+  <path d="M16 10L9 15V23C9 25.2 10.8 27 13 27H19C21.2 27 23 25.2 23 23V15L16 10Z" fill="#FFFFFF"/>
+  <path d="M16 6L24 12V22C24 25.3 21.3 28 18 28H14C10.7 28 8 25.3 8 22V12L16 6Z" fill="#A435F0"/>
+  <!-- Udemy Wordmark -->
+  <text x="36" y="25" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="800" fill="#1C1D1F" letter-spacing="-0.5">udemy</text>
+</svg>

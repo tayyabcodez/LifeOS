@@ -5,6 +5,7 @@ import Link from 'next/link';
 import './landing.css';
 import { initLanding } from './engine';
 import { Hero } from './Hero';
+import { PartnersMarquee } from './PartnersMarquee';
 
 export function Landing() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -37,6 +38,7 @@ export function Landing() {
 
       <div id="mainw">
         <Hero />
+        <PartnersMarquee />
 
         <section className="pin" id="pin">
           <div className="stage" id="stage">

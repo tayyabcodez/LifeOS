@@ -5,6 +5,9 @@ import { useLifeStore } from '@/store/lifeStore';
 import './dashboard.css';
 import { initDashboard } from './dashboardEngine';
 import { DimensionId } from '@/data/demo-data';
+import { ExamCountdown } from './ExamCountdown';
+import { AssignmentTracker } from './AssignmentTracker';
+import { NotificationBell } from './NotificationBell';
 
 function getLocalDateString(): string {
   const d = new Date();
@@ -287,6 +290,7 @@ export function Dashboard() {
               What If?
             </button>
           </nav>
+          <NotificationBell />
           <button
             className="icon-btn"
             id="db-calmBtn"
@@ -518,6 +522,11 @@ export function Dashboard() {
               Today at a glance
             </h2>
             <div className="tiles" id="db-tiles"></div>
+          </section>
+
+          <section className="grid g1 rv" style={{ '--s': 2.5, marginTop: '14px' } as any}>
+            <ExamCountdown />
+            <AssignmentTracker />
           </section>
 
           <section className="grid g1 rv" style={{ '--s': 3, marginTop: '14px' } as any}>

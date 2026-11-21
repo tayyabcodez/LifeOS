@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 36" width="140" height="36" fill="none">
+  <!-- Daraz Dynamic Shopping/Fold Icon -->
+  <g transform="translate(4, 5)">
+    <path d="M4 8L13 2L22 8V20L13 25L4 20V8Z" fill="#F57224"/>
+    <path d="M13 2V13L22 8L13 2Z" fill="#FF8A43"/>
+    <path d="M4 8L13 13V25L4 20V8Z" fill="#D8560F"/>
+  </g>
+  <!-- Daraz Wordmark -->
+  <text x="36" y="25" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="23" font-weight="800" fill="#F57224" letter-spacing="-0.5">daraz</text>
+</svg>
